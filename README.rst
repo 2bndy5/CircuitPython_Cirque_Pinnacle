@@ -1,10 +1,8 @@
 Introduction
 ============
-
-.. .. image:: https://readthedocs.org/projects/circuitpython-cirque-pinnacle/badge/?version=latest
-..     :target: https://circuitpython-cirque-pinnacle.readthedocs.io/en/latest/?badge=latest
-..     :alt: Documentation Status
-
+.. image:: https://readthedocs.org/projects/circuitpython-cirque-pinnacle/badge/?version=latest
+    :target: https://circuitpython-cirque-pinnacle.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 .. .. image:: https://travis-ci.org/2bndy5/CircuitPython_Cirque_Pinnacle.svg?branch=master
 ..     :target: https://travis-ci.org/2bndy5/CircuitPython_Cirque_Pinnacle
 ..     :alt: Build Status
