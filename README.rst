@@ -15,7 +15,7 @@ for interfacing with the Cirque Pinnacle (1CA027) touch controller used in Cirqu
 Pinout
 ========
 
-.. image:: https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/blob/master/docs/_static/Cirque_GlidePoint-Circle-Trackpad.png
+.. image:: https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/raw/master/docs/_static/Cirque_GlidePoint-Circle-Trackpad.png
     :target: https://www.mouser.com/new/cirque/glidepoint-circle-trackpads/
 
 The above picture is a example of the Cirque GlidePoint circle trackpad. This picture
