@@ -1,4 +1,5 @@
-""" a simple test to debug the library's API """
+""" This example uses CircuitPython's built-in `usb_hid` API
+to emulate a mouse with the Cirque circle trackpad."""
 import time
 import struct
 import board
@@ -26,7 +27,7 @@ trackpad = pinnacle.PinnacleTouchSPI(SPI, ss_pin, dr_pin)
 trackpad.set_adc_gain(1) # for curved overlay type
 trackpad.set_data_mode() # ensure mouse mode is enabled
 
-def enable_mouse(timeout=10):
+def move(timeout=10):
     """Send mouse X & Y reported data from the Pinnacle touch controller
     for a period of ``timeout`` seconds.
     """
@@ -34,6 +35,5 @@ def enable_mouse(timeout=10):
     while time.monotonic() - start < timeout:
         data = trackpad.report()
         if data:
-            rep = struct.pack('Bbb', data['buttons'], data['x'] >> 1, data['y'] >> 1)
-            mouse.send_report(rep + b'\x00') # not using scroll wheel
+            mouse.send_report(data) # not using scroll wheel
     mouse.send_report(b'\x00' * 4) # release buttons (just in case)

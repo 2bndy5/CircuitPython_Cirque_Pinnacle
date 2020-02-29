@@ -1,4 +1,4 @@
-""" a simple test to debug the library's API """
+""" a simple test example using SPI """
 import time
 from struct import unpack
 import board
@@ -22,4 +22,4 @@ def print_data(timeout=10):
     while time.monotonic() - start < timeout:
         data = trackpad.report()
         if data:
-            print(unpack('Bbb', data) if trackpad.mouse_mode else data)
+            print(unpack('Bbbb', data) if trackpad.mouse_mode else data)
