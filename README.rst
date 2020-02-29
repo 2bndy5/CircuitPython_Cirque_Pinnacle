@@ -1,11 +1,10 @@
-Introduction
-============
+
 .. image:: https://readthedocs.org/projects/circuitpython-cirque-pinnacle/badge/?version=latest
     :target: https://circuitpython-cirque-pinnacle.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
-.. .. image:: https://travis-ci.org/2bndy5/CircuitPython_Cirque_Pinnacle.svg?branch=master
-..     :target: https://travis-ci.org/2bndy5/CircuitPython_Cirque_Pinnacle
-..     :alt: Build Status
+
+Introduction
+============
 
 A CircuitPython driver library that implements the Adafruit_BusDevice library
 for interfacing with the Cirque Pinnacle (1CA027) touch controller used in Cirque Circle Trackpads.
@@ -67,7 +66,7 @@ To install globally, prefix the last command with ``sudo``.
 Usage Example
 =============
 
-Ensure you've connected the TM0dd0dd-202i-30x correctly by running the simple test located in the `examples folder of this library <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/tree/master/examples>`_. See also the `examples/` section.
+Ensure you've connected the TMyyyxxx correctly by running the simple test located in the `examples folder of this library <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/tree/master/examples>`_. See also the `examples/` section.
 
 Contributing
 ============

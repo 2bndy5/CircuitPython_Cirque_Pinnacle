@@ -23,8 +23,8 @@
 PinnacleTouch API
 =================
 
-A driver class for the Pinnacle touch controller ASIC on the Cirque capacitve touch based circular
-trackpads.
+A driver class for the Cirque Pinnacle touch controller ASIC on the Cirque capacitve touch
+based circular trackpads.
 """
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
@@ -97,15 +97,11 @@ class PinnacleTouch:
                  feed_enable=True, allow_sleep=False, z_idle_count=30):
         self.dr_pin = dr_pin
         self.dr_pin.switch_to_input()
-        # init internal attribute
-        self._sample_rate, self._z_idle_count = (0, 0)
-        self._feed_config1, self._feed_config2 = (0, 0)
-        self._sys_config = 0
-        # read defaults and set user defined values
-        self._read_init_values() # reads default values from Pinnacle registers
-        self._feed_config1 = (self._feed_config1 & 0xFE) | invert_y << 7 | invert_x << 6 | (
-            not relative) << 1 | feed_enable
-        self._sys_config = (self._sys_config & 0xFB) | allow_sleep << 2
+        # init internal attribute and set user defined values
+        self._feed_config1 = invert_y << 7 | invert_x << 6 | (not relative) << 1 | feed_enable
+        self._feed_config2 = self._rap_read(PINNACLE_FEED_CONFIG2)
+        self._sample_rate = self._rap_read(PINNACLE_SAMPLE_RATE)
+        self._sys_config = allow_sleep << 2
         self._z_idle_count = z_idle_count
         with self:
             self.clear_flags() # clear any "Command Complete" and "Data Ready" flags
@@ -118,11 +114,21 @@ class PinnacleTouch:
     def __exit__(self, *exc):
         return False
 
-    def _read_init_values(self):
+    def _read_reg_values(self):
         # this is called on init() and reset()
         self._feed_config1, self._feed_config2 = self._rap_read_bytes(PINNACLE_FEED_CONFIG1, 2)
         self._sample_rate, self._z_idle_count = self._rap_read_bytes(PINNACLE_SAMPLE_RATE, 2)
         self._sys_config = self._rap_read(PINNACLE_SYS_CONFIG)
+
+    @property
+    def mouse_mode(self):
+        """A helper attribute to verify which mode the data report is configured for. (read-only)
+
+        Use `set_data_mode()` to change this attribute.
+
+        :Returns: `True` for Relative mode (AKA mouse mode) or `False` for Absolute mode.
+        """
+        return bool(not self._feed_config1 & 2)
 
     def set_data_mode(self, relative=True, invert_x=False, invert_y=False):
         """ Set the mode in which the data is reported. (write only)
@@ -136,8 +142,7 @@ class PinnacleTouch:
         :param bool invert_y: Specifies if the y-axis data is to be inverted before reporting it.
             Default is `False`.
         """
-        self._feed_config1 = (self._feed_config1 & 0xFE) | invert_y << 7 | invert_x << 6 | (
-            not relative) << 1
+        self._feed_config1 = (self._feed_config1 & 0x3D) | invert_y << 7 | invert_x << 6 | (not relative) << 1
         self._rap_write(PINNACLE_FEED_CONFIG1, self._feed_config1)
 
     def relative_mode_config(self, rotate90=False, glide_extend=True, scroll_disable=False,
@@ -232,25 +237,21 @@ class PinnacleTouch:
             #. value of scroll wheel ()
         """
         temp = [] # placeholder for data reception
-        return_vals = {}
+        return_vals = None
         if self.dr_pin.value:
             if self._feed_config1 & 2: # if absolute mode
                 temp = self._rap_read_bytes(PINNACLE_PACKET_BYTE_0, 6)
-                return_vals = {'x': ((temp[4] & 0x0F) << 8) | temp[2],
-                               'y': ((temp[4] & 0xF0) << 4) | temp[3],
-                               'z': temp[5] & 0x3F,
-                               'buttons': temp[0] & 0x3F}
+                return_vals = [temp[0] & 0x3F # buttons
+                    ((temp[4] & 0x0F) << 8) | temp[2], # x
+                    ((temp[4] & 0xF0) << 4) | temp[3], # y
+                    temp[5] & 0x3F] # z
             else: # if in relative mode
                 is_intellimouse = self._feed_config2 & 1
                 # get relative data packets
                 temp = self._rap_read_bytes(PINNACLE_PACKET_BYTE_0, 3 + is_intellimouse)
-                return_vals = {'x': twos_comp(temp[1] | ((temp[0] & 16) << 4), 9),
-                               'y': twos_comp(temp[2] | ((temp[0] & 32) << 3), 9),
-                               'left': bool(temp[0] & 1),
-                               'right': bool(temp[0] & 2),
-                               'middle': bool(temp[0] & 4),}
+                return_vals = bytearray([temp[0] & 7, temp[1], temp[2]])
                 if is_intellimouse: # scroll wheel data is captured
-                    return_vals['wheel'] = twos_comp(temp[3], 8)
+                    return_vals += bytes([temp[3]])
             self.clear_flags()
         return return_vals
 
@@ -323,7 +324,7 @@ class PinnacleTouch:
         self._rap_write(PINNACLE_SYS_CONFIG, self._sys_config)
         while not self.dr_pin.value:
             pass # wait for power-on & calibration to be performed
-        self._read_init_values()
+        self._read_reg_values()
         self.clear_flags()
 
     @property
