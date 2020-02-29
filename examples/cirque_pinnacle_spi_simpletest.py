@@ -8,7 +8,7 @@ SPI = board.SPI()
 ss_pin = DigitalInOut(board.D7)
 dr_pin = DigitalInOut(board.D2)
 
-trackpad = pinnacle.PinnacleTouchSPI(SPI, ss_pin, dr_pin, allow_sleep=1)
+trackpad = pinnacle.PinnacleTouchSPI(SPI, ss_pin, dr_pin)
 trackpad.set_adc_gain(1) # for curved overlay type
 
 def print_data(timeout=10):

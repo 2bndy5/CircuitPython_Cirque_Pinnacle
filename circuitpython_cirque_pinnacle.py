@@ -32,21 +32,21 @@ from adafruit_bus_device.i2c_device import I2CDevice
 
 # internal registers
 # pylint: disable=bad-whitespace
-PINNACLE_FIRMWARE_ID           = 0x00 # Firmware ASIC ID
-PINNACLE_FIRMWARE_VER          = 0x01 # Firmware revision number
+# PINNACLE_FIRMWARE_ID           = 0x00 # Firmware ASIC ID
+# PINNACLE_FIRMWARE_VER          = 0x01 # Firmware revision number
 PINNACLE_STATUS                = 0x02 # Contains status flags about the state of Pinnacle
 PINNACLE_SYS_CONFIG            = 0x03 # Contains system operation and configuration bits
 PINNACLE_FEED_CONFIG1          = 0x04 # Contains feed operation and configuration bits
 PINNACLE_FEED_CONFIG2          = 0x05 # Contains feed operation and configuration bits
 PINNACLE_FEED_CONFIG3          = 0x06 # Contains feed operation and configuration bits
 PINNACLE_CALIBRATE_CONFIG      = 0x07 # Contains calibration configuration bits
-PINNACLE_PS_2_AUX_CTRL         = 0x08 # Contains Data register for PS/2 Aux Control
+# PINNACLE_PS_2_AUX_CTRL         = 0x08 # Contains Data register for PS/2 Aux Control
 PINNACLE_SAMPLE_RATE           = 0x09 # Number of samples generated per second
 PINNACLE_Z_IDLE                = 0x0A # Number of Z=0 packets sent when Z goes from >0 to 0
 PINNACLE_Z_SCALAR              = 0x0B # Contains the pen Z_On threshold
-PINNACLE_SLEEP_INTERVAL        = 0x0C # No description
-PINNACLE_SLEEP_TIMER           = 0x0D # No description
-PINNACLE_EMI_THRESHOLD         = 0x0E # Threshold to adjust EMI settings
+# PINNACLE_SLEEP_INTERVAL        = 0x0C # No description
+# PINNACLE_SLEEP_TIMER           = 0x0D # No description
+# PINNACLE_EMI_THRESHOLD         = 0x0E # Threshold to adjust EMI settings
 PINNACLE_PACKET_BYTE_0         = 0x12 # trackpad Data
 PINNACLE_PACKET_BYTE_1         = 0x13 # trackpad Data
 PINNACLE_PACKET_BYTE_2         = 0x14 # trackpad Data
@@ -60,7 +60,7 @@ PINNACLE_ERA_VALUE             = 0x1B # Value for extended register access
 PINNACLE_ERA_ADDR_HIGH         = 0x1C # High byte of 16 bit extended register address
 PINNACLE_ERA_ADDR_LOW          = 0x1D # Low byte of 16 bit extended register address
 PINNACLE_ERA_CTRL              = 0x1E # Control of extended register access
-PINNACLE_PRODUCT_ID            = 0x1F # Product ID
+# PINNACLE_PRODUCT_ID            = 0x1F # Product ID
 # pylint: enable=bad-whitespace
 # pylint: disable=too-many-arguments
 
@@ -140,7 +140,8 @@ class PinnacleTouch:
 
     def relative_mode_config(self, rotate90=False, glide_extend=True, scroll_disable=False,
                              secondary_tap=True, disable_taps=True, intellimouse=False):
-        """set the configuration register for features specific to relative mode data reporting.
+        """Set the configuration register for features specific to relative mode (AKA mouse mode)
+        data reporting.
 
         :param bool rotate90: Specifies if the axis data is altered for 90 degree rotation before
             reporting it. Default is `False`.
@@ -155,9 +156,9 @@ class PinnacleTouch:
             orientation) triggers the secondary button data. Defaults to `True`. This feature is
             only implemented on the AG variant of the Pinnacle touch controller ASIC.
         :param bool disable_taps: Specifies if all taps should be reported (`True`) or not
-            (`False`). Default is `True`. This affects secondary tap option as well. Only the
-            primary button is emulated with a tap on the non-AG variant of the Pinnacle touch
-            controller ASIC.
+            (`False`). Default is `True`. This affects ``secondary_tap`` option as well. Only the
+            primary button (left mouse button) is emulated with a tap on the non-AG variant of the
+            Pinnacle touch controller ASIC.
         :param bool intellimouse: Specifies if the data reported includes a byte about scroll data.
             Default is `False`. Because this flag is specific to scroll data, this feature is only
             implemented on the AG variant of the Pinnacle touch controller ASIC.
@@ -417,9 +418,12 @@ class PinnacleTouchI2C(PinnacleTouch):
     See the base class for other instantiating parameters.
     """
 
-    def __init__(self, i2c, dr_pin, address=0x2A, **kwargs):
+    def __init__(self, i2c, dr_pin, address=0x2A, relative=True, invert_x=False, invert_y=False,
+                 feed_enable=True, allow_sleep=False, z_idle_count=30):
         self._i2c = I2CDevice(i2c, (address << 1))
-        super(PinnacleTouchI2C, self).__init__(dr_pin, **kwargs)
+        super(PinnacleTouchI2C, self).__init__(dr_pin, relative=relative, invert_x=invert_x,
+                                               invert_y=invert_y, feed_enable=feed_enable,
+                                               allow_sleep=allow_sleep, z_idle_count=z_idle_count)
 
     def _rap_read(self, reg):
         return self._rap_read_bytes(reg)
@@ -466,10 +470,13 @@ class PinnacleTouchSPI(PinnacleTouch):
     See the base class for other instantiating parameters.
     """
 
-    def __init__(self, spi, ss_pin, dr_pin, **kwargs):
+    def __init__(self, spi, ss_pin, dr_pin, relative=True, invert_x=False, invert_y=False,
+                 feed_enable=True, allow_sleep=False, z_idle_count=30):
         # MAX baudrate is up to 13MHz; use 10MHz to be safe
         self._spi = SPIDevice(spi, chip_select=ss_pin, baudrate=12000000, phase=1)
-        super(PinnacleTouchSPI, self).__init__(dr_pin, **kwargs)
+        super(PinnacleTouchSPI, self).__init__(dr_pin, relative=relative, invert_x=invert_x,
+                                               invert_y=invert_y, feed_enable=feed_enable,
+                                               allow_sleep=allow_sleep, z_idle_count=z_idle_count)
 
     def _rap_read(self, reg):
         buf_out = bytearray([reg | 0xA0]) + b'\xFB' * 3

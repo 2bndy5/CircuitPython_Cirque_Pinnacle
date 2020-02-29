@@ -69,7 +69,7 @@ To install globally, prefix the last command with ``sudo``.
 Usage Example
 =============
 
-Ensure you've connected the TM0dd0dd-202i-30x correctly by running the simple test located in the `examples folder of this library <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/tree/master/examples>`_. See also the examples section.
+Ensure you've connected the TM0dd0dd-202i-30x correctly by running the simple test located in the `examples folder of this library <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/tree/master/examples>`_. See also the `examples/` section.
 
 Contributing
 ============
