@@ -36,7 +36,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Circuitpython Cirque-Pinnacle Library'
+project = u'Circuitpython Cirque Pinnacle Library'
 copyright = u'2020 Brendan Doherty'
 author = u'Brendan Doherty'
 
@@ -118,7 +118,7 @@ html_css_files = [
 html_favicon = '_static/favicon.ico'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'CircuitpythonPinnacle1ca027Librarydoc'
+htmlhelp_basename = 'CircuitpythonCirquePinnacleLibrarydoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -144,7 +144,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'CircuitPythonPinnacle1ca027Library.tex', u'CircuitPython Pinnacle 1ca027 Library Documentation',
+    (master_doc, 'CircuitPythonCirquePinnacleLibrary.tex', u'CircuitPython Cirque Pinnacle Library Documentation',
      author, 'manual'),
 ]
 
@@ -153,7 +153,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'CircuitPythonPinnacle1ca027library', u'CircuitPython Pinnacle 1ca027 Library Documentation',
+    (master_doc, 'CircuitPythonCirquePinnaclelibrary', u'CircuitPython Cirque Pinnacle Library Documentation',
      [author], 1)
 ]
 
@@ -163,7 +163,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'CircuitpythonPinnacle1ca027Library', u'Circuitpython Pinnacle 1ca027 Library Documentation',
-     author, 'CircuitpythonPinnacle1ca027Library', 'One line description of project.',
+    (master_doc, 'CircuitpythonCirquePinnacleLibrary', u'Circuitpython Cirque Pinnacle Library Documentation',
+     author, 'CircuitpythonCirquePinnacleLibrary', 'CircuitPython Library for Cirque Pinnacle touch Controller.',
      'Miscellaneous'),
 ]

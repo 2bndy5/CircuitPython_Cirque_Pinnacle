@@ -22,7 +22,7 @@ setup(
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
 
-    description='A CircuitPython driver for the Pinnacle (1CA027) touch '
+    description='A CircuitPython driver for Cirque Pinnacle (1CA027) touch '
                 'controller used in Cirque Trackpads implementing the Adafruit_BusDevice library.',
     long_description=long_description,
     long_description_content_type='text/x-rst',

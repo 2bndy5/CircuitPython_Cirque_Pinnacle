@@ -26,6 +26,8 @@ PinnacleTouch API
 A driver class for the Pinnacle touch controller ASIC on the Cirque capacitve touch based circular
 trackpads.
 """
+__version__ = "0.0.0-auto.0"
+__repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
 import time
 from adafruit_bus_device.spi_device import SPIDevice
 from adafruit_bus_device.i2c_device import I2CDevice
