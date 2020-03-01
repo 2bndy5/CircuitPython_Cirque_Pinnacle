@@ -3,6 +3,10 @@
     :target: https://circuitpython-cirque-pinnacle.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/workflows/Build%20CI/badge.svg
+    :target: https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/actions/
+    :alt: Build Status
+
 Introduction
 ============
 
