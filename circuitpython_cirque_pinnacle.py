@@ -34,45 +34,32 @@ from adafruit_bus_device.i2c_device import I2CDevice
 
 # internal registers
 # pylint: disable=bad-whitespace
-# PINNACLE_FIRMWARE_ID           = 0x00 # Firmware ASIC ID
-# PINNACLE_FIRMWARE_VER          = 0x01 # Firmware revision number
-PINNACLE_STATUS                = 0x02 # Contains status flags about the state of Pinnacle
-PINNACLE_SYS_CONFIG            = 0x03 # Contains system operation and configuration bits
-PINNACLE_FEED_CONFIG1          = 0x04 # Contains feed operation and configuration bits
-PINNACLE_FEED_CONFIG2          = 0x05 # Contains feed operation and configuration bits
-PINNACLE_FEED_CONFIG3          = 0x06 # Contains feed operation and configuration bits
-PINNACLE_CALIBRATE_CONFIG      = 0x07 # Contains calibration configuration bits
-# PINNACLE_PS_2_AUX_CTRL         = 0x08 # Contains Data register for PS/2 Aux Control
-PINNACLE_SAMPLE_RATE           = 0x09 # Number of samples generated per second
-PINNACLE_Z_IDLE                = 0x0A # Number of Z=0 packets sent when Z goes from >0 to 0
-PINNACLE_Z_SCALAR              = 0x0B # Contains the pen Z_On threshold
-# PINNACLE_SLEEP_INTERVAL        = 0x0C # No description
-# PINNACLE_SLEEP_TIMER           = 0x0D # No description
-# PINNACLE_EMI_THRESHOLD         = 0x0E # Threshold to adjust EMI settings
-PINNACLE_PACKET_BYTE_0         = 0x12 # trackpad Data
-PINNACLE_PACKET_BYTE_1         = 0x13 # trackpad Data
-PINNACLE_PACKET_BYTE_2         = 0x14 # trackpad Data
-PINNACLE_PACKET_BYTE_3         = 0x15 # trackpad Data
-PINNACLE_PACKET_BYTE_4         = 0x16 # trackpad Data
-PINNACLE_PACKET_BYTE_5         = 0x17 # trackpad Data
-PINNACLE_PORTA_GPIO_CTRL       = 0x18 # Control of Port A GPIOs
-PINNACLE_PORTA_GPIO_DATA       = 0x19 # Data of Port A GPIOs
-PINNACLE_PORTB_GPIO_CTRL_DATA  = 0x1A # Control and Data of PortB GPIOs
-PINNACLE_ERA_VALUE             = 0x1B # Value for extended register access
-PINNACLE_ERA_ADDR_HIGH         = 0x1C # High byte of 16 bit extended register address
-PINNACLE_ERA_ADDR_LOW          = 0x1D # Low byte of 16 bit extended register address
-PINNACLE_ERA_CTRL              = 0x1E # Control of extended register access
-# PINNACLE_PRODUCT_ID            = 0x1F # Product ID
+# PINNACLE_FIRMWARE_ID             = 0x00  # Firmware ASIC ID (always = 7)
+# PINNACLE_FIRMWARE_VER            = 0x01  # Firmware revision number (always = 0x3A)
+PINNACLE_STATUS                  = 0x02  # Contains status flags about the state of Pinnacle
+PINNACLE_SYS_CONFIG              = 0x03  # Contains system operation and configuration bits
+PINNACLE_FEED_CONFIG1            = 0x04  # Contains feed operation and configuration bits
+PINNACLE_FEED_CONFIG2            = 0x05  # Contains feed operation and configuration bits
+# PINNACLE_FEED_CONFIG3          = 0x06  # Contains feed operation and configuration bits
+PINNACLE_CALIBRATE_CONFIG        = 0x07  # Contains calibration configuration bits
+PINNACLE_SAMPLE_RATE             = 0x09  # Number of samples generated per second
+PINNACLE_Z_IDLE                  = 0x0A  # Number of Z=0 packets sent when Z goes from >0 to 0
+# PINNACLE_Z_SCALAR                = 0x0B  # Contains the pen Z_On threshold
+# PINNACLE_SLEEP_INTERVAL          = 0x0C  # No description
+# PINNACLE_SLEEP_TIMER             = 0x0D  # No description
+# PINNACLE_EMI_THRESHOLD           = 0x0E  # Threshold to adjust EMI settings
+PINNACLE_PACKET_BYTE_0           = 0x12  # trackpad Data
+PINNACLE_PACKET_BYTE_1           = 0x13  # trackpad Data
+PINNACLE_PACKET_BYTE_2           = 0x14  # trackpad Data
+PINNACLE_PACKET_BYTE_3           = 0x15  # trackpad Data
+PINNACLE_PACKET_BYTE_4           = 0x16  # trackpad Data
+PINNACLE_PACKET_BYTE_5           = 0x17  # trackpad Data
+PINNACLE_ERA_VALUE               = 0x1B  # Value for extended register access
+PINNACLE_ERA_ADDR_HIGH           = 0x1C  # High byte of 16 bit extended register address
+PINNACLE_ERA_ADDR_LOW            = 0x1D  # Low byte of 16 bit extended register address
+PINNACLE_ERA_CTRL                = 0x1E  # Control of extended register access
 # pylint: enable=bad-whitespace
 # pylint: disable=too-many-arguments
-
-def twos_comp(data, bits):
-    """return integer representation of ``data`` in 2's compliment form using a
-    specified number of ``bits`` """
-    mask = 1 << (bits - 1)
-    if data & mask:
-        return -1 * mask + (data & ~mask)
-    return data
 
 class PinnacleTouch:
     """
@@ -93,22 +80,26 @@ class PinnacleTouch:
     :param bool feed_enable: Specifies if data reporting is enabled (`True`) or not (`False`).
         Default is `True`.
     """
+
     def __init__(self, dr_pin, relative=True, invert_x=False, invert_y=False,
                  feed_enable=True, allow_sleep=False, z_idle_count=30):
         self.dr_pin = dr_pin
         self.dr_pin.switch_to_input()
         # init internal attribute and set user defined values
-        self._feed_config1 = invert_y << 7 | invert_x << 6 | (not relative) << 1 | feed_enable
+        self._feed_config1 = invert_y << 7 | invert_x << 6 | (
+            not relative) << 1 | feed_enable
         self._feed_config2 = self._rap_read(PINNACLE_FEED_CONFIG2)
         self._sample_rate = self._rap_read(PINNACLE_SAMPLE_RATE)
         self._sys_config = allow_sleep << 2
         self._z_idle_count = z_idle_count
         with self:
-            self.clear_flags() # clear any "Command Complete" and "Data Ready" flags
+            self.clear_flags()  # clear any "Command Complete" and "Data Ready" flags
 
     def __enter__(self):
-        self._rap_write_bytes(PINNACLE_FEED_CONFIG1, [self._feed_config1, self._feed_config2])
-        self._rap_write_bytes(PINNACLE_SAMPLE_RATE, [self._sample_rate, self._z_idle_count])
+        self._rap_write_bytes(PINNACLE_FEED_CONFIG1, [
+            self._feed_config1, self._feed_config2])
+        self._rap_write_bytes(PINNACLE_SAMPLE_RATE, [
+            self._sample_rate, self._z_idle_count])
         self._rap_write(PINNACLE_SYS_CONFIG, self._sys_config)
 
     def __exit__(self, *exc):
@@ -116,9 +107,10 @@ class PinnacleTouch:
 
     def _read_reg_values(self):
         # this is called on init() and reset()
-        self._feed_config1, self._feed_config2 = self._rap_read_bytes(PINNACLE_FEED_CONFIG1, 2)
-        self._sample_rate, self._z_idle_count = self._rap_read_bytes(PINNACLE_SAMPLE_RATE, 2)
-        self._sys_config = self._rap_read(PINNACLE_SYS_CONFIG)
+        self._sys_config, self._feed_config1, self._feed_config2 = self._rap_read_bytes(
+            PINNACLE_SYS_CONFIG, 3)
+        self._sample_rate, self._z_idle_count = self._rap_read_bytes(
+            PINNACLE_SAMPLE_RATE, 2)
 
     @property
     def mouse_mode(self):
@@ -183,7 +175,7 @@ class PinnacleTouch:
 
     @feed_enable.setter
     def feed_enable(self, is_on):
-        if self.feed_enable != is_on: # save ourselves the unnecessary transaction
+        if self.feed_enable != is_on:  # save ourselves the unnecessary transaction
             self._feed_config1 = self._rap_read(PINNACLE_FEED_CONFIG1)
             self._feed_config1 = (self._feed_config1 & 0xFE) | is_on
             self._rap_write(PINNACLE_FEED_CONFIG1, self._feed_config1)
@@ -221,7 +213,7 @@ class PinnacleTouch:
         self._rap_write(PINNACLE_CALIBRATE_CONFIG,
                         tap << 4 | track_error << 3 | nerd << 2 | background << 1 | run)
         while self._rap_read(PINNACLE_CALIBRATE_CONFIG) & 1:
-            pass # calibration is running
+            pass  # calibration is running
         if run:
             self.clear_flags()
 
@@ -252,13 +244,12 @@ class PinnacleTouch:
             for how to use this function).
 
             The axis data reported in Absolute mode is always positive as the
-            xy-plane's origin is located to the top-left, unless ``invert-x`` or ``invert-y``
+            xy-plane's origin is located to the top-left, unless ``invert_x`` or ``invert_y``
             parameters to `set_data_mode()` are manipulated to change the perspective location
             of the origin.
 
-        :Button Data:
-            The returned button data is a byte in which each bit represents a button.
-                The bit to button order is as follows:
+        :Button Data: The returned button data is a byte in which each bit represents a button
+            The bit to button order is as follows:
 
                 0. [LSB] Button 1 (thought of as Left Button in Relative/Mouse mode).
                    If taps are enabled in Relative/Mouse mode, a single tap will be reflected here.
@@ -271,23 +262,24 @@ class PinnacleTouch:
             buffer structure of a mouse HID report
             (see `USB Mouse example <examples.html#USB-Mouse-example>`_).
         """
-        temp = [] # placeholder for data reception
+        temp = []  # placeholder for data reception
         return_vals = None
         if self.dr_pin.value:
-            if self._feed_config1 & 2: # if absolute mode
+            if self._feed_config1 & 2:  # if absolute mode
                 temp = self._rap_read_bytes(PINNACLE_PACKET_BYTE_0, 6)
-                return_vals = [temp[0] & 0x3F, # buttons
-                               ((temp[4] & 0x0F) << 8) | temp[2], # x
-                               ((temp[4] & 0xF0) << 4) | temp[3], # y
-                               temp[5] & 0x3F] # z
-            else: # if in relative mode
+                return_vals = [temp[0] & 0x3F,  # buttons
+                               ((temp[4] & 0x0F) << 8) | temp[2],  # x
+                               ((temp[4] & 0xF0) << 4) | temp[3],  # y
+                               temp[5] & 0x3F]  # z
+            else:  # if in relative mode
                 is_intellimouse = self._feed_config2 & 1
                 # get relative data packets
-                temp = self._rap_read_bytes(PINNACLE_PACKET_BYTE_0, 3 + is_intellimouse)
+                temp = self._rap_read_bytes(
+                    PINNACLE_PACKET_BYTE_0, 3 + is_intellimouse)
                 return_vals = bytearray([temp[0] & 7, temp[1], temp[2]])
-                if is_intellimouse: # scroll wheel data is captured
+                if is_intellimouse:  # scroll wheel data is captured
                     return_vals += bytes([temp[3]])
-                else: # append empty byte to suite mouse HID reports
+                else:  # append empty byte to suite mouse HID reports
                     return_vals += b'\x00'
             self.clear_flags()
         return return_vals
@@ -304,11 +296,11 @@ class PinnacleTouch:
         """
         if 0 <= sensitivity < 4:
             prev_feed_state = self.feed_enable
-            self.feed_enable = False # accessing raw memory, so do this
+            self.feed_enable = False  # accessing raw memory, so do this
             val = self._era_read(0x0187) & 0x3F
             val |= sensitivity << 6
             self._era_write(0x0187, val)
-            self.feed_enable = prev_feed_state # resume normal operation
+            self.feed_enable = prev_feed_state  # resume normal operation
         else:
             raise ValueError("{} is out of bounds [0,3]".format(sensitivity))
 
@@ -321,7 +313,7 @@ class PinnacleTouch:
         function directly alters values in the Pinnacle ASIC's memory. USE AT YOUR OWN RISK!
         """
         prev_feed_state = self.feed_enable
-        self.feed_enable = False # accessing raw memory, so do this
+        self.feed_enable = False  # accessing raw memory, so do this
         # write x_axis_wide_z_min value
         # self._era_read(0x0149) # this was used for printing unaltered value to serial monitor
         self._era_write(0x0149, x_axis_wide_z_min)
@@ -330,7 +322,7 @@ class PinnacleTouch:
         # self._era_read(0x0168) # this was used for printing unaltered value to serial monitor
         self._era_write(0x0168, y_axis_wide_z_min)
         # ERA_ReadBytes(0x0168) # this was used for printing verified value to serial monitor
-        self.feed_enable = prev_feed_state # resume normal operation
+        self.feed_enable = prev_feed_state  # resume normal operation
 
     @property
     def z_idle_count(self):
@@ -346,7 +338,8 @@ class PinnacleTouch:
     def clear_flags(self):
         """This function clears the "Data Ready" flag which is reflected with the ``dr_pin``."""
         self._rap_write(0x02, 0)  # 0x02 = Status1 register
-        time.sleep(0.00005) # delay 50 microseconds per official example from Cirque
+        # delay 50 microseconds per official example from Cirque
+        time.sleep(0.00005)
 
     def reset_device(self):
         """Resets the touch controller. (write only)
@@ -360,7 +353,7 @@ class PinnacleTouch:
         self._sys_config = (self._sys_config & 0xFE) | 1
         self._rap_write(PINNACLE_SYS_CONFIG, self._sys_config)
         while not self.dr_pin.value:
-            pass # wait for power-on & calibration to be performed
+            pass  # wait for power-on & calibration to be performed
         self._read_reg_values()
         self.clear_flags()
 
@@ -411,40 +404,43 @@ class PinnacleTouch:
 
     def _era_read(self, reg):
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
-        self._rap_write(PINNACLE_ERA_CTRL, 1) # indicate reading only 1 byte
-        while self._rap_read(PINNACLE_ERA_CTRL): # read until reg == 0
-            pass # also sets Command Complete flag in Status register
-        buf = self._rap_read(PINNACLE_ERA_VALUE) # get value
+        self._rap_write(PINNACLE_ERA_CTRL, 1)  # indicate reading only 1 byte
+        while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
+            pass  # also sets Command Complete flag in Status register
+        buf = self._rap_read(PINNACLE_ERA_VALUE)  # get value
         self.clear_flags()
         return buf
 
     def _era_read_bytes(self, reg, numb_bytes):
         buf = []
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
-        self._rap_write(PINNACLE_ERA_CTRL, 5) # indicate reading sequential bytes
+        # indicate reading sequential bytes
+        self._rap_write(PINNACLE_ERA_CTRL, 5)
         for _ in range(numb_bytes):
-            while self._rap_read(PINNACLE_ERA_CTRL): # read until reg == 0
-                pass # also sets Command Complete flag in Status register
-            buf.append(self._rap_read(PINNACLE_ERA_VALUE)) # get value
+            while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
+                pass  # also sets Command Complete flag in Status register
+            buf.append(self._rap_read(PINNACLE_ERA_VALUE))  # get value
             self.clear_flags()
         return buf
 
     def _era_write(self, reg, value):
-        self._rap_write(PINNACLE_ERA_VALUE, value) # write value
+        self._rap_write(PINNACLE_ERA_VALUE, value)  # write value
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
-        self._rap_write(PINNACLE_ERA_CTRL, 2) # indicate writing only 1 byte
-        while self._rap_read(PINNACLE_ERA_CTRL): # read until reg == 0
-            pass # also sets Command Complete flag in Status register
+        self._rap_write(PINNACLE_ERA_CTRL, 2)  # indicate writing only 1 byte
+        while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
+            pass  # also sets Command Complete flag in Status register
         self.clear_flags()
 
     def _era_write_bytes(self, reg, value, numb_bytes):
-        self._rap_write(PINNACLE_ERA_VALUE, value) # write value
+        self._rap_write(PINNACLE_ERA_VALUE, value)  # write value
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
-        self._rap_write(PINNACLE_ERA_CTRL, 0x0A) # indicate writing sequential bytes
+        # indicate writing sequential bytes
+        self._rap_write(PINNACLE_ERA_CTRL, 0x0A)
         for _ in range(numb_bytes):
-            while self._rap_read(PINNACLE_ERA_CTRL): # read until reg == 0
-                pass # also sets Command Complete flag in Status register
+            while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
+                pass  # also sets Command Complete flag in Status register
             self.clear_flags()
+
 
 class PinnacleTouchI2C(PinnacleTouch):
     """
@@ -498,6 +494,7 @@ class PinnacleTouchI2C(PinnacleTouch):
             # need only 1 STOP condition for multiple write operations
             i2c.write(buf)
 
+
 class PinnacleTouchSPI(PinnacleTouch):
     """
     Varaiant of the base class, `PinnacleTouch`, for interfacing with the touch controller via
@@ -513,7 +510,8 @@ class PinnacleTouchSPI(PinnacleTouch):
     def __init__(self, spi, ss_pin, dr_pin, relative=True, invert_x=False, invert_y=False,
                  feed_enable=True, allow_sleep=False, z_idle_count=30):
         # MAX baudrate is up to 13MHz; use 10MHz to be safe
-        self._spi = SPIDevice(spi, chip_select=ss_pin, baudrate=12000000, phase=1)
+        self._spi = SPIDevice(spi, chip_select=ss_pin,
+                              baudrate=12000000, phase=1)
         super(PinnacleTouchSPI, self).__init__(dr_pin, relative=relative, invert_x=invert_x,
                                                invert_y=invert_y, feed_enable=feed_enable,
                                                allow_sleep=allow_sleep, z_idle_count=z_idle_count)
@@ -526,7 +524,8 @@ class PinnacleTouchSPI(PinnacleTouch):
         return buf_in[3]
 
     def _rap_read_bytes(self, reg, numb_bytes):
-        buf_out = bytearray([reg | 0xA0]) + b'\xFC' * (1 + numb_bytes) + b'\xFB'
+        buf_out = bytearray([reg | 0xA0]) + b'\xFC' * \
+            (1 + numb_bytes) + b'\xFB'
         buf_in = bytearray(len(buf_out))
         with self._spi as spi:
             spi.write_readinto(buf_out, buf_in)
