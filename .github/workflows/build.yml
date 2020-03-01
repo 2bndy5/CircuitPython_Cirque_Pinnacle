@@ -41,7 +41,7 @@ jobs:
       run: git describe --dirty --always --tags
     - name: PyLint
       run: |
-        pylint $( find . -path './circuitpython*.py' )
+        pylint --disable=too-many-arguments $( find . -path './circuitpython*.py' )
         ([[ ! -d "examples" ]] || pylint --disable=missing-docstring,invalid-name,bad-whitespace $( find . -path "./examples/*.py" ))
     - name: Build assets
       run: circuitpython-build-bundles --filename_prefix ${{ steps.repo-name.outputs.repo-name }} --library_location .

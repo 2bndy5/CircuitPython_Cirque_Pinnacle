@@ -59,7 +59,6 @@ PINNACLE_ERA_ADDR_HIGH           = 0x1C  # High byte of 16 bit extended register
 PINNACLE_ERA_ADDR_LOW            = 0x1D  # Low byte of 16 bit extended register address
 PINNACLE_ERA_CTRL                = 0x1E  # Control of extended register access
 # pylint: enable=bad-whitespace
-# pylint: disable=too-many-arguments
 
 class PinnacleTouch:
     """
@@ -441,7 +440,8 @@ class PinnacleTouch:
                 pass  # also sets Command Complete flag in Status register
             self.clear_flags()
 
-
+# due to use adafruit_bus_device, pylint can't find bus-specific functions
+# pylint: disable=no-member
 class PinnacleTouchI2C(PinnacleTouch):
     """
     Varaiant of the base class, `PinnacleTouch`, for interfacing with the touch controller via
