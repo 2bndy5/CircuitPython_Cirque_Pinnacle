@@ -5,21 +5,23 @@ import board
 from digitalio import DigitalInOut
 import circuitpython_cirque_pinnacle as pinnacle
 
-SPI = board.SPI()
+spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
 dr_pin = DigitalInOut(board.D2)
+dr_pin.switch_to_input()
 
-trackpad = pinnacle.PinnacleTouchSPI(SPI, ss_pin, dr_pin, z_idle_count=1)
+trackpad = pinnacle.PinnacleTouchSPI(spi, ss_pin)
 trackpad.set_adc_gain(1) # for curved overlay type
-trackpad.set_data_mode() # ensure mouse mode is enabled
+trackpad.z_idle_count = 1  # set idle empty packet count to 1
+trackpad.data_mode = pinnacle.REL_MODE # ensure mouse mode is enabled
 
 def print_data(timeout=10):
     """Print available data reports from the Pinnacle touch controller
     for a period of ``timeout`` seconds.
     """
-    print("using {} mode".format("Relative" if trackpad.mouse_mode else "Absolute"))
+    print("using {} mode".format("Relative" if not trackpad.data_mode else "Absolute"))
     start = time.monotonic()
     while time.monotonic() - start < timeout:
+        is_new = dr_pin.value
         data = trackpad.report()
-        if data:
-            print(unpack('Bbbb', data) if trackpad.mouse_mode else data)
+        print("new:", is_new, unpack('Bbbb', data) if not trackpad.data_mode else data)

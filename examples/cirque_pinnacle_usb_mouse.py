@@ -18,19 +18,20 @@ for dev in usb_hid.devices:
 #   byte2 = delta y-axis
 #   byte3 = delta scroll wheel
 
-SPI = board.SPI()
+spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
 dr_pin = DigitalInOut(board.D2)
 
-trackpad = pinnacle.PinnacleTouchSPI(SPI, ss_pin, dr_pin)
+trackpad = pinnacle.PinnacleTouchSPI(spi, ss_pin, dr_pin)
 trackpad.set_adc_gain(1)  # for curved overlay type
-trackpad.set_data_mode()  # ensure mouse mode is enabled
-
+trackpad.data_mode = pinnacle.REL_MODE # ensure mouse mode is enabled
 
 def move(timeout=10):
     """Send mouse X & Y reported data from the Pinnacle touch controller
     for a period of ``timeout`` seconds.
     """
+    if mouse is None:
+        raise OSError("mouse HID device not available.")
     start = time.monotonic()
     while time.monotonic() - start < timeout:
         data = trackpad.report()

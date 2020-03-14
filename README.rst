@@ -13,6 +13,23 @@ Introduction
 A CircuitPython driver library that implements the Adafruit_BusDevice library
 for interfacing with the Cirque Pinnacle (1CA027) touch controller used in Cirque Circle Trackpads.
 
+Supported Features
+------------------
+
+* Relative mode data reporting (AKA Mouse mode)
+* Absolute mode data reporting (exact x & y positions)
+* Hardware input buttons included in data reports (there are only 3 on the Cirque circle trackpads -- see picture in `Pinout`_)
+
+Unsupported Features
+--------------------
+
+* AnyMeas mode data reporting. This mode exposes the ADC (Analog to Digital Converter) values and is not well documented in the
+  numerous datasheets about the Pinnacle (1CA027) provided Cirque corporation. However there is an `example in C++ designed for
+  use with a teensy3.2 MCU
+  <https://github.com/cirque-corp/Cirque_Pinnacle_1CA027/blob/master/Additional_Examples/AnyMeas_Example/>`_ that shows the basic
+  usage of AnyMeas mode
+
+
 Pinout
 ========
 
