@@ -37,7 +37,7 @@ vectors.append(MeasVector(0x00FF00FF, 0x000000FF))
 compensation = [0] * len(vectors)
 for i, v in enumerate(vectors):
     for _ in range(5):  # take 5 measurements, then average them together
-        compensation[i] += trackpad.measure_adc(v.toggle, v.polarity)
+        compensation[i] += unpack('H', trackpad.measure_adc(v.toggle, v.polarity))
     compensation[i] /= 5
 
 def take_measurements(timeout=10):
@@ -47,4 +47,4 @@ def take_measurements(timeout=10):
     while time.monotonic() - start < timeout:
         for j, vect in enumerate(vectors):
             result = unpack('H', trackpad.measure_adc(vect.toggle, vect.polarity))
-            print("measure {}: {}".format(j, result))
+            print("measure {}: {}".format(j, result - compensation[j]))
