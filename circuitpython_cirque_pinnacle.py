@@ -67,7 +67,7 @@ class DataModes:
     reporting/measurements."""
     RELATIVE = 0x00 #: Alias symbol for specifying Relative mode (AKA Mouse mode).
     ABSOLUTE = 0x02 #: Alias symbol for specifying Absolute mode (axis positions)
-    ANYMEAS  = 0x10 #: Alias symbol for specifying "AnyMeas" mode (raw ADC measirement)
+    ANYMEAS  = 0x10 #: Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
 
 class AnyMeasGain:
     """Allowed ADC gain configurations of AnyMeas mode. The percentages defined here are
@@ -386,7 +386,7 @@ class PinnacleTouch:
 
             .. important:: The axis and scroll data reported in Relative/Mouse mode is in two's
                 comliment form. Use Python's :py:func:`struct.unpack()` to convert the
-                data into integer form (see `Simple Test example <examples.html#Simple-Test>`_
+                data into integer form (see `Simple Test example <examples.html#simple-test>`_
                 for how to use this function).
 
                 The axis data reported in Absolute mode is always positive as the
@@ -406,7 +406,7 @@ class PinnacleTouch:
             ``intellimouse`` parameter is passed as `True` to `relative_mode_config()`.
             Otherwise this is an empty byte as the returned `bytearray` follows the
             buffer structure of a mouse HID report
-            (see `USB Mouse example <examples.html#USB-Mouse-example>`_).
+            (see `USB Mouse example <examples.html#usb-mouse-example>`_).
         """
         if self._mode == DataModes.ANYMEAS:
             return None
@@ -458,7 +458,7 @@ class PinnacleTouch:
                 "bit position",15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
                 "representation",X15,X14,X13,X12,X11,X10,X9,X8,X7,X6,X5,X4,X3,X2,X1,X0
 
-            See `AnyMeas mode example <examples.html#AnyMeas-mode-example>`_
+            See `AnyMeas mode example <examples.html#anymeas-mode-example>`_
 
             .. note:: Bits 29 and 28 represent the optional implementation of reference capacitors
                 built into the Pinnacle touch controller. To use these capacitors, the
