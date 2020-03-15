@@ -4,7 +4,7 @@ import time
 import board
 from digitalio import DigitalInOut
 import usb_hid
-import circuitpython_cirque_pinnacle as pinnacle
+from circuitpython_cirque_pinnacle import PinnacleTouchSPI, DataModes
 
 mouse = None
 for dev in usb_hid.devices:
@@ -22,9 +22,9 @@ spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
 dr_pin = DigitalInOut(board.D2)
 
-trackpad = pinnacle.PinnacleTouchSPI(spi, ss_pin, dr_pin)
+trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin)
 trackpad.set_adc_gain(1)  # for curved overlay type
-trackpad.data_mode = pinnacle.REL_MODE # ensure mouse mode is enabled
+trackpad.data_mode = DataModes.RELATIVE # ensure mouse mode is enabled
 
 def move(timeout=10):
     """Send mouse X & Y reported data from the Pinnacle touch controller
