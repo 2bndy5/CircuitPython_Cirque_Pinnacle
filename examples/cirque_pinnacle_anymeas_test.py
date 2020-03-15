@@ -47,4 +47,4 @@ def take_measurements(timeout=10):
     while time.monotonic() - start < timeout:
         for j, vect in enumerate(vectors):
             result = unpack('H', trackpad.measure_adc(vect.toggle, vect.polarity))
-            print("measure {}: {}".format(i, result))
+            print("measure {}: {}".format(j, result))
