@@ -468,7 +468,7 @@ class PinnacleTouch:
                 built into the Pinnacle touch controller. To use these capacitors, the
                 corresponding constants (
                 :attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_REF0` and/or
-                :attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_REF1) must be passed to
+                :attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_REF1`) must be passed to
                 `anymeas_mode_config()` in the ``mux_ctrl`` parameter, and their representative
                 bits must be flagged in both ``bits_to_toggle`` & ``toggle_polarity`` parameters.
         """
