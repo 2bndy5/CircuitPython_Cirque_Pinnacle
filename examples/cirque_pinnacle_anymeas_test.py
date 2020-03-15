@@ -45,6 +45,6 @@ def take_measurements(timeout=10):
     ``timeout`` number of seconds."""
     start = time.monotonic()
     while time.monotonic() - start < timeout:
-        for i, v in enumerate(vectors):
-            result = unpack('H', trackpad.measure_adc(v.toggle, v.polarity))
+        for j, vect in enumerate(vectors):
+            result = unpack('H', trackpad.measure_adc(vect.toggle, vect.polarity))
             print("measure {}: {}".format(i, result))
