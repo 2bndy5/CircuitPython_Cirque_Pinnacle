@@ -440,7 +440,7 @@ class PinnacleTouch:
 
     def measure_adc(self, bits_to_toggle, toggle_polarity):
         """This function instigates and returns the measurements from the Pinnacle touch
-        controller's ADC (Analog to Digital Converter) matrix.
+        controller's ADC (Analog to Digital Converter) matrix (only applies to AnyMeas mode).
 
         :param int bits_to_toggle: This 4-byte integer specifies which bits the Pinnacle touch
             controller should toggle. A bit of ``1`` flags that bit for toggling, and a bit of
@@ -473,6 +473,8 @@ class PinnacleTouch:
                 bits must be flagged in both ``bits_to_toggle`` & ``toggle_polarity`` parameters.
         """
         # assemble list of register buffers
+        if self._mode != DataModes.ANYMEAS:
+            return None
         tog_pol = []
         for i in range(3, -1, -1):
             tog_pol.append((bits_to_toggle >> (i * 8)) & 0xFF)
