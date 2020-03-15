@@ -455,8 +455,8 @@ class PinnacleTouch:
 
                 "bit position",31,30,29,28,27,26,25,24
                 "representation",N/A,N/A,Ref1,Ref0,Y11,Y10,Y9,Y8
-                "bit position",Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0
-                "representation",23,22,21,20,19,18,17,16
+                "bit position",23,22,21,20,19,18,17,16
+                "representation",Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0
                 "bit position",15,14,13,12,11,10,9,8
                 "representation",X15,X14,X13,X12,X11,X10,X9,X8
                 "bit position",7,6,5,4,3,2,1,0
