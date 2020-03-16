@@ -12,7 +12,7 @@ dr_pin = DigitalInOut(board.D2)
 dr_pin.switch_to_input()
 
 # NOTE The dr_pin is a required arg to use AnyMeas mode
-trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin)
+trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # this will raise an AttributeError exception if dr_pin was not specified upon instantiation.
 trackpad.data_mode = DataModes.ANYMEAS
 

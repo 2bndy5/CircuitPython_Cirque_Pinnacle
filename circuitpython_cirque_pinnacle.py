@@ -191,11 +191,11 @@ class PinnacleTouch:
                 prev_state1 = [self._sys_config & 0xE7, self._feed_config1, self._feed_config2]
                 prev_state2 = [self._cal_config, self._sample_rate, self._z_idle_count]
                 self.reset_device()
-                self._rap_write_bytes(PINNACLE_SYS_CONFIG, prev_state1)
-                self._rap_write(PINNACLE_CALIBRATE_CONFIG, prev_state2[0])
-                self._rap_write_bytes(PINNACLE_SAMPLE_RATE, prev_state2[1:])
                 self._sys_config, self._feed_config1, self._feed_config2 = prev_state1
-                self._cal_config, self._sample_rate, self._z_idle_count = prev_state2
+                self._rap_write_bytes(PINNACLE_SYS_CONFIG, prev_state1)
+                self._cal_config, self.sample_rate, self._z_idle_count = prev_state2
+                self._rap_write(PINNACLE_CALIBRATE_CONFIG, self._cal_config)
+                self._rap_write(PINNACLE_Z_IDLE, self._z_idle_count)
             # now write appropriate mode
             self._mode = mode
             self._feed_config1 = (self._feed_config1 & 0xFD) | mode
@@ -421,8 +421,13 @@ class PinnacleTouch:
     def sample_rate(self):
         """This attribute controls how many samples (of data) per second are reported. Valid values
         are ``100``, ``80``, ``60``, ``40``, ``20``, ``10``. Any other input values automatically
-        set the sample rate to 100 sps (samples per second). This function only
-        applies to Relative or Absolute mode, otherwise if `data_mode` is set to
+        set the sample rate to 100 sps (samples per second). Optionally, ``200`` and ``300`` sps
+        can be specified, but using these values automatically disables palm (referred to as "NERD"
+        in the specification sheet) and noise compensations. These higher values are meant for
+        using a stylus with a 2mm diameter tip, while the values less than 200 are meant for a
+        finger or stylus with a 5.25mm diameter tip.
+
+        This function only applies to Relative or Absolute mode, otherwise if `data_mode` is set to
         :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function will take no
         affect until `data_mode` is set to
         :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` or
@@ -432,9 +437,42 @@ class PinnacleTouch:
 
     @sample_rate.setter
     def sample_rate(self, val):
-        self._sample_rate = val if val in (100, 80, 60, 40, 20, 10) else 100
+        if val in (200, 300):
+            # disable palm & noise compensations
+            self._rap_write(PINNACLE_FEED_CONFIG2 + 1, 10)
+            reload_timer = 6 if val == 300 else 0x09
+            self._era_write_bytes(0x019E, reload_timer, 2)
+            self._sample_rate = val
+            val = 0
+        else:
+            # enable palm & noise compensations
+            self._rap_write(PINNACLE_FEED_CONFIG2 + 1, 0)
+            self._era_write_bytes(0x019E, 0x13, 2)
+            val = val if val in (100, 80, 60, 40, 20, 10) else 100
+            self._sample_rate = val
         if self.data_mode != DataModes.ANYMEAS:
-            self._rap_write(PINNACLE_SAMPLE_RATE, self._sample_rate)
+            self._rap_write(PINNACLE_SAMPLE_RATE, val)
+
+    def detect_finger_stylus(self, enable_finger=True, enable_stylus=True, sample_rate=100):
+        """This function will configure the Pinnacle touch controller to detect either finger,
+        stylus, or both.
+
+        :param bool enable_finger: `True` enables the Pinnacle touch controller's measurements to
+            detect if the touch event was caused by a finger or 5.25mm stylus. `False` disables
+            this feature. Default is `True` (which also occurs using `reset_device()`).
+        :param bool enable_stylus: `True` enables the Pinnacle touch controller's measurements to
+            detect if the touch event was caused by a 2mm stylus. `False` disables this
+            feature. Default is `True` (which also occurs using `reset_device()`).
+        :param int sample_rate: See the `sample_rate` attribute as this parameter manipulates that
+            attribute.
+
+        .. tip:: Consider adjusting the ADC matrix's gain to enhance performance/results using
+            `set_adc_gain()`
+        """
+        val = self._era_read(0x00EB)
+        val |= enable_stylus << 2 | enable_finger
+        self._era_write(0x00EB, val)
+        self.sample_rate = sample_rate
 
     def calibrate(self, run, tap=True, track_error=True, nerd=True, background=True):
         """Set calibration parameters when the Pinnacle ASIC calibrates itself. This function only
@@ -466,6 +504,23 @@ class PinnacleTouch:
             if run:
                 self.clear_flags()
 
+    @property
+    def calibration_matrix(self):
+        """This attribute returns the 92 signed 16-bit values stored in the Pinnacle touch
+        controller's memory that is used for taking measurements. This matrix is not applicable in
+        AnyMeas mode. Use this attribute to compare a prior compensation matrix with a new matrix
+        that was either loaded manually by setting this attribute to a 92-byte long buffer or
+        created internally by calling `calibrate()` with the ``run`` parameter as `True`."""
+        return self._era_read_bytes(0x01DF, 92)
+
+    @calibration_matrix.setter
+    def calibration_matrix(self, matrix):
+        for _ in range(92 - len(matrix)):  # padd short matrices w/ 0s
+            matrix.append(0)
+        for i, byte in enumerate(matrix): # write each byte
+            if i < 92:  # be sure to not write more than allowed
+                self._era_write(0x01DF + i, byte)
+
     def set_adc_gain(self, sensitivity):
         """Sets the ADC gain in range [0,3] to enhance performance based on the overlay type (does
         not apply to AnyMeas mode). (write-only)
@@ -477,12 +532,9 @@ class PinnacleTouch:
         .. tip:: The official example code from Cirque for a curved overlay uses a value of ``1``.
         """
         if 0 <= sensitivity < 4:
-            prev_feed_state = self.feed_enable
-            self.feed_enable = False  # accessing raw memory, so do this
             val = self._era_read(0x0187) & 0x3F
             val |= sensitivity << 6
             self._era_write(0x0187, val)
-            self.feed_enable = prev_feed_state  # resume normal operation
         else:
             raise ValueError("{} is out of bounds [0,3]".format(sensitivity))
 
@@ -494,17 +546,8 @@ class PinnacleTouch:
         documentation. I'm having trouble finding a memory map of the Pinnacle ASIC as this
         function directly alters values in the Pinnacle ASIC's memory. USE AT YOUR OWN RISK!
         """
-        prev_feed_state = self.feed_enable
-        self.feed_enable = False  # accessing raw memory, so do this
-        # write x_axis_wide_z_min value
-        # self._era_read(0x0149) # this was used for printing unaltered value to serial monitor
         self._era_write(0x0149, x_axis_wide_z_min)
-        # ERA_ReadBytes(0x0149) # this was used for printing verified value to serial monitor
-        # write y_axis_wide_z_min value
-        # self._era_read(0x0168) # this was used for printing unaltered value to serial monitor
         self._era_write(0x0168, y_axis_wide_z_min)
-        # ERA_ReadBytes(0x0168) # this was used for printing verified value to serial monitor
-        self.feed_enable = prev_feed_state  # resume normal operation
 
     def anymeas_mode_config(self, gain=AnyMeasGain.GAIN_200, frequency=AnyMeasFreq.FREQ_0,
                             sample_length=512, mux_ctrl=AnyMeasMux.MUX_PNP, apperture_width=500,
@@ -647,16 +690,21 @@ class PinnacleTouch:
         raise NotImplementedError()
 
     def _era_read(self, reg):
+        prev_feed_state = self.feed_enable
+        self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
         self._rap_write(PINNACLE_ERA_CTRL, 1)  # indicate reading only 1 byte
         while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
             pass  # also sets Command Complete flag in Status register
         buf = self._rap_read(PINNACLE_ERA_VALUE)  # get value
         self.clear_flags()
+        self.feed_enable = prev_feed_state # resume previous feed state
         return buf
 
     def _era_read_bytes(self, reg, numb_bytes):
         buf = []
+        prev_feed_state = self.feed_enable
+        self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
         # indicate reading sequential bytes
         self._rap_write(PINNACLE_ERA_CTRL, 5)
@@ -665,17 +713,23 @@ class PinnacleTouch:
                 pass  # also sets Command Complete flag in Status register
             buf.append(self._rap_read(PINNACLE_ERA_VALUE))  # get value
             self.clear_flags()
+        self.feed_enable = prev_feed_state # resume previous feed state
         return buf
 
     def _era_write(self, reg, value):
+        prev_feed_state = self.feed_enable
+        self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write(PINNACLE_ERA_VALUE, value)  # write value
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
         self._rap_write(PINNACLE_ERA_CTRL, 2)  # indicate writing only 1 byte
         while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
             pass  # also sets Command Complete flag in Status register
         self.clear_flags()
+        self.feed_enable = prev_feed_state # resume previous feed state
 
     def _era_write_bytes(self, reg, value, numb_bytes):
+        prev_feed_state = self.feed_enable
+        self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write(PINNACLE_ERA_VALUE, value)  # write value
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
         # indicate writing sequential bytes
@@ -684,6 +738,7 @@ class PinnacleTouch:
             while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
                 pass  # also sets Command Complete flag in Status register
             self.clear_flags()
+        self.feed_enable = prev_feed_state # resume previous feed state
 
 # due to use adafruit_bus_device, pylint can't find bus-specific functions
 # pylint: disable=no-member
