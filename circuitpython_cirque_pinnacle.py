@@ -66,8 +66,8 @@ class DataModes:
     """Allowed symbols for configuring the Pinanacle touch controller's data
     reporting/measurements."""
     RELATIVE = 0x00 #: Alias symbol for specifying Relative mode (AKA Mouse mode).
+    ANYMEAS  = 0x01 #: Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
     ABSOLUTE = 0x02 #: Alias symbol for specifying Absolute mode (axis positions)
-    ANYMEAS  = 0x10 #: Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
 
 class AnyMeasGain:
     """Allowed ADC gain configurations of AnyMeas mode. The percentages defined here are
@@ -118,6 +118,11 @@ class PinnacleTouch:
     :param ~microcontroller.Pin dr_pin: The input pin connected to the touch controller's "Data
         Ready" pin. If this parameter is not specified, then the SW_DR (software data ready) flag
         of the STATUS register is used to detirmine if the data being reported is new.
+
+        .. important:: This parameter must be specified if you're application is going to use the
+            Pinnacle touch controller's :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`
+            mode (a rather experimental measuring of raw ADC values).
+
     :param bool feed_enable: Specifies if data reporting is enabled (`True`) or not (`False`).
         Default is `True`.
     :param bool allowed_sleep: `True` will let the Pinnacle touch controller automatically enter
@@ -140,6 +145,7 @@ class PinnacleTouch:
         self._sample_rate = 0
         self._sys_config = 0
         self._z_idle_count = 0
+        self._cal_config = 0
         self._mode = 0 # 0 means relative mode which is factory default after power-on-reset
         # reset device on init in case Pinnacle is configured for AnyMeas mode
         self.reset_device()  # also reads reg values for internal attributes
@@ -158,7 +164,8 @@ class PinnacleTouch:
     @property
     def feed_enable(self):
         """This `bool` attribute controls if the touch data is reported (`True`) or not
-        (`False`)."""
+        (`False`). This attribute does not apply to AnyMeas mode (only Relative & Absolute modes).
+        """
         return bool(self._feed_config1 & 1)
 
     @feed_enable.setter
@@ -180,8 +187,8 @@ class PinnacleTouch:
         :Returns:
 
             - ``0`` for Relative mode (AKA mouse mode)
+            - ``1`` for AnyMeas mode (raw ADC measurements)
             - ``2`` for Absolute mode (X & Y axis positions)
-            - ``16`` for AnyMeas mode (raw ADC measurements)
         """
         if self._mode & DataModes.ANYMEAS:
             return DataModes.ANYMEAS
@@ -192,28 +199,329 @@ class PinnacleTouch:
     @data_mode.setter
     def data_mode(self, mode):
         if mode not in (DataModes.ANYMEAS, DataModes.RELATIVE, DataModes.ABSOLUTE):
-            raise ValueError("unrecognised parameter value for mode. Use 0 for Relative mode, "
-                             "2 for Absolute mode, or 16 for AnyMeas mode.")
-        if mode < DataModes.ANYMEAS:  # for relative/mouse or absolute mode
-            if self._mode == DataModes.ANYMEAS:
+            raise ValueError("unrecognised input value for data mode. Use 0 for Relative mode, "
+                             "1 for AnyMeas mode, or 2 for Absolute mode.")
+        if mode in (DataModes.RELATIVE, DataModes.ABSOLUTE):  # for relative/absolute mode
+            if self._mode == DataModes.ANYMEAS:  # if leaving AnyMeas mode
                 # best to reset device and then reload user configuration, but be sure to clear
                 # flags specific to enabled AnyMeas mode
                 prev_state1 = [self._sys_config & 0xE7, self._feed_config1, self._feed_config2]
-                prev_state2 = [self._sample_rate, self._z_idle_count]
+                prev_state2 = [self._cal_config, self._sample_rate, self._z_idle_count]
                 self.reset_device()
                 self._rap_write_bytes(PINNACLE_SYS_CONFIG, prev_state1)
-                self._rap_write_bytes(PINNACLE_SAMPLE_RATE, prev_state2)
+                self._rap_write(PINNACLE_CALIBRATE_CONFIG, prev_state2[0])
+                self._rap_write_bytes(PINNACLE_SAMPLE_RATE, prev_state2[1:])
+                self._sys_config, self._feed_config1, self._feed_config2 = prev_state1
+                self._cal_config, self._sample_rate, self._z_idle_count = prev_state2
             # now write appropriate mode
+            self._mode = mode
             self._feed_config1 = (self._feed_config1 & 0xFD) | mode
             self._rap_write(PINNACLE_FEED_CONFIG1, self._feed_config1)
         else:  # for AnyMeas mode
+            if self.dr_pin is None:  # this mode requires the use of DR IRQ pin
+                raise AttributeError("Data Ready digital input (interupt) pin is None, "
+                                     "please specify the dr_pin attribute for AnyMeas mode")
+            self._mode = mode  # allow for anymeas_mode_config() to do something
             # disable tracking computations for AnyMeas mode
             self._sys_config = (self._sys_config & 0xE7) | 0x08
             self._rap_write(PINNACLE_SYS_CONFIG, self._sys_config)
             time.sleep(0.01) # wait 10 ms for tracking measurements to expire
             # now configure the AnyMeas mode to default values
             self.anymeas_mode_config()
-        self._mode = mode
+
+    def relative_mode_config(self, rotate90=False, glide_extend=True, scroll_disable=False,
+                             secondary_tap=True, disable_taps=True, intellimouse=False):
+        """Set the configuration register for features specific to relative mode (AKA mouse mode)
+        data reporting. (write only)
+
+        This function only applies to Absolute mode, otherwise if `data_mode` is set to
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS` or
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`, then this function will take
+        no affect until `data_mode` is set to
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE`.
+
+        :param bool rotate90: Specifies if the axis data is altered for 90 degree rotation before
+            reporting it. Default is `False`.
+        :param bool glide_extend: A patended feature that allows the user to glide their finger off
+            the edge of the sensor and continue gesture with the touch event. Default is `True`.
+            This feature is only implemented on the AG variant of the Pinnacle touch controller
+            ASIC.
+        :param bool scroll_disable: Specifies if the scrolling data is enabled (`True`) or
+            disabled (`False`). Default is `False`. This feature is only implemented on the AG
+            variant of the Pinnacle touch controller ASIC.
+        :param bool secondary_tap: Specifies if tapping in the top-left corner (depending on
+            orientation) triggers the secondary button data. Defaults to `True`. This feature is
+            only implemented on the AG variant of the Pinnacle touch controller ASIC.
+        :param bool disable_taps: Specifies if all taps should be reported (`True`) or not
+            (`False`). Default is `True`. This affects ``secondary_tap`` option as well. Only the
+            primary button (left mouse button) is emulated with a tap on the non-AG variant of the
+            Pinnacle touch controller ASIC.
+        :param bool intellimouse: Specifies if the data reported includes a byte about scroll data.
+            Default is `False`. Because this flag is specific to scroll data, this feature is only
+            implemented on the AG variant of the Pinnacle touch controller ASIC.
+        """
+        self._feed_config2 = rotate90 << 7 | (not glide_extend) << 4 | scroll_disable << 3 | (
+            not secondary_tap) << 2 | (not disable_taps) << 1 | intellimouse
+        if self.data_mode == DataModes.RELATIVE:
+            self._rap_write(PINNACLE_FEED_CONFIG2, self._feed_config2)
+
+    def absolute_mode_config(self, z_idle_count=30, invert_x=False, invert_y=False):
+        """Set the configuration settings specific to Absolute mode (reports axis positions).
+        (write only)
+
+        This function only applies to Absolute mode, otherwise if `data_mode` is set to
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS` or
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE`, then this function will take
+        no affect until `data_mode` is set to
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`.
+
+        :param int z_idle_count: Specifies the number of empty packets (x-axis, y-axis, and z-axis
+             are ``0``) reported (every 10 milliseconds) when there is no touch detected. Defaults
+             to 30. This number is clamped to range [0, 255].
+        :param bool invert_x: Specifies if the x-axis data is to be inverted before reporting it.
+            Default is `False`.
+        :param bool invert_y: Specifies if the y-axis data is to be inverted before reporting it.
+            Default is `False`.
+        """
+        self._z_idle_count = max(0, min(z_idle_count, 255))
+        self._rap_write(PINNACLE_Z_IDLE, self._z_idle_count)
+        self._feed_config1 = (self._feed_config1 & 0x3D) | invert_y << 7 | invert_x << 6
+        self._rap_write(PINNACLE_FEED_CONFIG1, self._feed_config1)
+
+    def report(self, only_new=True):
+        """This function will return touch event data from the touch controller (including empty
+        packets on ending of a touch event). This function only applies to Relative or Absolute
+        mode, otherwise if `data_mode` is set to
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function returns
+        `None` and does nothing.
+
+        :param bool only_new: This parameter can be used to ensure the data reported is only new
+            data. Otherwise the data returned can be either old data or new data. If the ``dr_pin``
+            parameter is specified upon instantiation, then the specified input pin is used to
+            detect if the data is new. Otherwise the SW_DR flag in the STATUS register is used to
+            detirmine if the data is new.
+
+        :Returns: `None` if  the ``only_new`` parameter is set `True` and there is no new data to
+            report. Otherwise, a `list` or `bytearray` of parameters that describe the (touch or
+            button) event. The structure is as follows:
+
+            +-------+------------------------+-----------------+
+            | Index |  Relative (Mouse) mode |  Absolute Mode  |
+            |       |  as a `bytearray`      |  as a `list`    |
+            +=======+========================+=================+
+            |   0   |      Button Data       |   Button Data   |
+            +-------+------------------------+-----------------+
+            |   1   |   change in x-axis     | x-axis Position |
+            +-------+------------------------+-----------------+
+            |   2   |   change in y-axis     | y-axis Position |
+            +-------+------------------------+-----------------+
+            |   3   | change in scroll wheel | z-axis Position |
+            +-------+------------------------+-----------------+
+
+            .. important:: The axis and scroll data reported in Relative/Mouse mode is in two's
+                comliment form. Use Python's :py:func:`struct.unpack()` to convert the
+                data into integer form (see `Simple Test example <examples.html#simple-test>`_
+                for how to use this function).
+
+                The axis data reported in Absolute mode is always positive as the
+                xy-plane's origin is located to the top-left, unless ``invert_x`` or ``invert_y``
+                parameters to `absolute_mode_config()` are manipulated to change the perspective
+                location of the origin.
+
+        :Button Data: The returned button data is a byte in which each bit represents a button
+            The bit to button order is as follows:
+
+                0. [LSB] Button 1 (thought of as Left Button in Relative/Mouse mode).
+                   If taps are enabled in Relative/Mouse mode, a single tap will be reflected here.
+                1. Button 2 (thought of as Right Button in Relative/Mouse mode)
+                2. Button 3 (thought of as Middle or scroll wheel Button in Relative/Mouse mode)
+
+        .. note:: In Relative/Mouse mode the scroll wheel data is only reported if the
+            ``intellimouse`` parameter is passed as `True` to `relative_mode_config()`.
+            Otherwise this is an empty byte as the returned `bytearray` follows the
+            buffer structure of a mouse HID report
+            (see `USB Mouse example <examples.html#usb-mouse-example>`_).
+        """
+        if self._mode == DataModes.ANYMEAS:
+            return None
+        temp = []  # placeholder for data reception
+        return_vals = None
+        data_ready = False
+        if only_new:
+            if self.dr_pin is None:
+                data_ready = (self._rap_read(PINNACLE_STATUS) & 4) >> 2
+            else:
+                data_ready = self.dr_pin.value
+        if (only_new and data_ready) or not only_new:
+            if self.data_mode == DataModes.ABSOLUTE:  # if absolute mode
+                temp = self._rap_read_bytes(PINNACLE_PACKET_BYTE_0, 6)
+                return_vals = [temp[0] & 0x3F,  # buttons
+                               ((temp[4] & 0x0F) << 8) | temp[2],  # x
+                               ((temp[4] & 0xF0) << 4) | temp[3],  # y
+                               temp[5] & 0x3F]  # z
+            elif self.data_mode == DataModes.RELATIVE:  # if in relative mode
+                is_intellimouse = self._feed_config2 & 1
+                # get relative data packets
+                temp = self._rap_read_bytes(
+                    PINNACLE_PACKET_BYTE_0, 3 + is_intellimouse)
+                return_vals = bytearray([temp[0] & 7, temp[1], temp[2]])
+                if is_intellimouse:  # scroll wheel data is captured
+                    return_vals += bytes([temp[3]])
+                else:  # append empty byte to suite mouse HID reports
+                    return_vals += b'\x00'
+            self.clear_flags()
+        return return_vals
+
+    def clear_flags(self):
+        """This function clears the "Data Ready" flag which is reflected with the ``dr_pin``."""
+        self._rap_write(0x02, 0)  # 0x02 = Status1 register
+        # delay 50 microseconds per official example from Cirque
+        time.sleep(0.00005)
+
+    def reset_device(self):
+        """Resets the touch controller. (write only)
+
+        .. warning:: Resetting the touch controller will change all register configurations to
+            their default values which will be reflected in the `PinnacleTouch` object's
+            attributes. Calibration is also automatically performed as it part of the touch
+            controller's start-up sequence.
+        """
+        self._rap_write(PINNACLE_SYS_CONFIG, (self._rap_read(PINNACLE_SYS_CONFIG) & 0xFE) | 1)
+        if self.dr_pin is not None:  # is dr_pin specified
+            while not self.dr_pin.value:
+                pass  # Pinnacle is still computing
+        else:  # use SW_DR flag of STATUS register
+            while not self._rap_read(PINNACLE_STATUS) & 10:
+                pass  # Pinnacle is still computing
+
+        # read register values after reset operation completes
+        self._sys_config, self._feed_config1, self._feed_config2 = self._rap_read_bytes(
+            PINNACLE_SYS_CONFIG, 3)
+        self._sample_rate, self._z_idle_count = self._rap_read_bytes(
+            PINNACLE_SAMPLE_RATE, 2)
+        self._cal_config = self._rap_read(PINNACLE_CALIBRATE_CONFIG)
+        self.clear_flags()
+        # ensure data mode is properly set
+        self._mode = (self._feed_config1 & 2) | (self._sys_config & 8) >> 3
+
+    @property
+    def allow_sleep(self):
+        """Set this attribute to `True` if you want the touch controller to enter sleep (low power)
+        mode after about 5 seconds of inactivity (does not apply to AnyMeas mode). While the touch
+        controller is in sleep mode, if a touch event or button press is detected, the Pinnacle
+        ASIC will take about 300 milliseconds to wake up (does not include handling the touch event
+        or button press data)."""
+        return bool(self._sys_config & 4)
+
+    @allow_sleep.setter
+    def allow_sleep(self, is_enabled):
+        self._sys_config = (self._sys_config & 0xFB) | is_enabled << 2
+        self._rap_write(PINNACLE_SYS_CONFIG, self._sys_config)
+
+    @property
+    def shutdown(self):
+        """This attribute controls power of the touch controller. `True` means powered down (AKA
+        standby mode), and `False` means not powered down (Active, Idle, or Sleep mode).
+
+        .. note:: The touch controller will take about 300 milliseconds to complete the transition
+            from powered down mode to active mode. No touch events or button presses will be
+            monitored while powered down.
+        """
+        return bool(self._sys_config & 2)
+
+    @shutdown.setter
+    def shutdown(self, is_off):
+        self._sys_config = (self._sys_config & 0xFD) | is_off << 1
+        self._rap_write(PINNACLE_SYS_CONFIG, self._sys_config)
+
+    @property
+    def sample_rate(self):
+        """This attribute controls how many samples (of data) per second are reported. Valid values
+        are ``100``, ``80``, ``60``, ``40``, ``20``, ``10``. Any other input values automatically
+        set the sample rate to 100 sps (samples per second). This function only
+        applies to Relative or Absolute mode, otherwise if `data_mode` is set to
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function will take no
+        affect until `data_mode` is set to
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` or
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`.
+        """
+        return self._sample_rate
+
+    @sample_rate.setter
+    def sample_rate(self, val):
+        self._sample_rate = val if val in (100, 80, 60, 40, 20, 10) else 100
+        if self.data_mode != DataModes.ANYMEAS:
+            self._rap_write(PINNACLE_SAMPLE_RATE, self._sample_rate)
+
+    def calibrate(self, run, tap=True, track_error=True, nerd=True, background=True):
+        """Set calibration parameters when the Pinnacle ASIC calibrates itself. This function only
+        applies to Relative or Absolute mode, otherwise if `data_mode` is set to
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function will take no
+        affect until `data_mode` is set to
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` or
+        :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`.
+
+        :param bool run: If `True`, this function forces a calibration of the sensor. If `False`,
+            this function just writes the following parameters to the Pinnacle ASIC's "CalConfig1"
+            register. This parameter is required while the rest are optional keyword parameters.
+        :param bool tap: Enable dynamic tap compensation? Default is `True`.
+        :param bool track_error: Enable dynamic track error compensation? Default is `True`.
+        :param bool nerd: Enable dynamic NERD compensation? Default is `True`. This parameter has
+            something to do with palm detection/compensation.
+        :param bool background: Enable dynamic background compensation? Default is `True`.
+
+        .. note:: According to the datasheet, calibration of the sensor takes about 100
+            milliseconds. This function will block until calibration is complete (if ``run`` is
+            `True`). It is recommended for typical applications to leave all optional parameters
+            in their default states.
+        """
+        self._cal_config = tap << 4 | track_error << 3 | nerd << 2 | background << 1
+        if self.data_mode != DataModes.ANYMEAS:
+            self._rap_write(PINNACLE_CALIBRATE_CONFIG, self._cal_config | run)
+            while self._rap_read(PINNACLE_CALIBRATE_CONFIG) & 1:
+                pass  # calibration is running
+            if run:
+                self.clear_flags()
+
+    def set_adc_gain(self, sensitivity):
+        """Sets the ADC gain in range [0,3] to enhance performance based on the overlay type (does
+        not apply to AnyMeas mode). (write-only)
+
+        :param int sensitivity: This int specifies how sensitive the ADC (Analog to Digital
+            Converter) component is. ``0`` means most sensitive, and ``3`` means least sensitive.
+            A value outside this range will raise a `ValueError` exception.
+
+        .. tip:: The official example code from Cirque for a curved overlay uses a value of ``1``.
+        """
+        if 0 <= sensitivity < 4:
+            prev_feed_state = self.feed_enable
+            self.feed_enable = False  # accessing raw memory, so do this
+            val = self._era_read(0x0187) & 0x3F
+            val |= sensitivity << 6
+            self._era_write(0x0187, val)
+            self.feed_enable = prev_feed_state  # resume normal operation
+        else:
+            raise ValueError("{} is out of bounds [0,3]".format(sensitivity))
+
+    def tune_edge_sensitivity(self, x_axis_wide_z_min=0x04, y_axis_wide_z_min=0x03):
+        """According to the official exmaple code from Cirque,
+        this function "Changes thresholds to improve detection of fingers."
+
+        This function was ported from Cirque's example code and doesn't seem to have corresponding
+        documentation. I'm having trouble finding a memory map of the Pinnacle ASIC as this
+        function directly alters values in the Pinnacle ASIC's memory. USE AT YOUR OWN RISK!
+        """
+        prev_feed_state = self.feed_enable
+        self.feed_enable = False  # accessing raw memory, so do this
+        # write x_axis_wide_z_min value
+        # self._era_read(0x0149) # this was used for printing unaltered value to serial monitor
+        self._era_write(0x0149, x_axis_wide_z_min)
+        # ERA_ReadBytes(0x0149) # this was used for printing verified value to serial monitor
+        # write y_axis_wide_z_min value
+        # self._era_read(0x0168) # this was used for printing unaltered value to serial monitor
+        self._era_write(0x0168, y_axis_wide_z_min)
+        # ERA_ReadBytes(0x0168) # this was used for printing verified value to serial monitor
+        self.feed_enable = prev_feed_state  # resume normal operation
 
     def anymeas_mode_config(self, gain=AnyMeasGain.GAIN_200, frequency=AnyMeasFreq.FREQ_0,
                             sample_length=512, mux_ctrl=AnyMeasMux.MUX_PNP, apperture_width=500,
@@ -268,6 +576,7 @@ class PinnacleTouch:
             init_vals.append(max(1, min(int(sample_length / 128), 3)))
             # enable ADC gate polarity
             init_vals.append(mux_ctrl)  # (PNP can be combined w/ NPN or only NPN or only PNP)
+            init_vals.append(0) # gets written to ADCconfig2 reg (mostly internal firmware flags)
             # apperture widths 125 or less don't work; default to 250 if 125 or less is specified
             init_vals.append(max(2, min(int(apperture_width / 125), 15)))
             # clear some "test-only" registers w/ 0, specify the register to use as
@@ -275,172 +584,13 @@ class PinnacleTouch:
             init_vals += [0, PINNACLE_PACKET_BYTE_0 + 1, 0, 0]
             init_vals.append(ctrl_pwr_cnt)
             self._rap_write_bytes(PINNACLE_FEED_CONFIG2, init_vals)
-            # clear these other registers according to example code
+            # clear these other registers (as they're used for toggle & polarity manipulations)
             self._rap_write_bytes(PINNACLE_PACKET_BYTE_0 + 1, [0] * 8)
             self.clear_flags()
 
-    def relative_mode_config(self, rotate90=False, glide_extend=True, scroll_disable=False,
-                             secondary_tap=True, disable_taps=True, intellimouse=False):
-        """Set the configuration register for features specific to relative mode (AKA mouse mode)
-        data reporting.
-
-        :param bool rotate90: Specifies if the axis data is altered for 90 degree rotation before
-            reporting it. Default is `False`.
-        :param bool glide_extend: A patended feature that allows the user to glide their finger off
-            the edge of the sensor and continue gesture with the touch event. Default is `True`.
-            This feature is only implemented on the AG variant of the Pinnacle touch controller
-            ASIC.
-        :param bool scroll_disable: Specifies if the scrolling data is enabled (`True`) or
-            disabled (`False`). Default is `False`. This feature is only implemented on the AG
-            variant of the Pinnacle touch controller ASIC.
-        :param bool secondary_tap: Specifies if tapping in the top-left corner (depending on
-            orientation) triggers the secondary button data. Defaults to `True`. This feature is
-            only implemented on the AG variant of the Pinnacle touch controller ASIC.
-        :param bool disable_taps: Specifies if all taps should be reported (`True`) or not
-            (`False`). Default is `True`. This affects ``secondary_tap`` option as well. Only the
-            primary button (left mouse button) is emulated with a tap on the non-AG variant of the
-            Pinnacle touch controller ASIC.
-        :param bool intellimouse: Specifies if the data reported includes a byte about scroll data.
-            Default is `False`. Because this flag is specific to scroll data, this feature is only
-            implemented on the AG variant of the Pinnacle touch controller ASIC.
-        """
-        self._feed_config2 = rotate90 << 7 | (not glide_extend) << 4 | scroll_disable << 3 | (
-            not secondary_tap) << 2 | (not disable_taps) << 1 | intellimouse
-        self._rap_write(PINNACLE_FEED_CONFIG2, self._feed_config2)
-
-    def invert_axis(self, invert_x=False, invert_y=False):
-        """ Set the mode in which the data is reported. (write only)
-
-        :param bool invert_x: Specifies if the x-axis data is to be inverted before reporting it.
-            Default is `False`.
-        :param bool invert_y: Specifies if the y-axis data is to be inverted before reporting it.
-            Default is `False`.
-        """
-        self._feed_config1 = (self._feed_config1 & 0x3D) | invert_y << 7 | invert_x << 6
-        self._rap_write(PINNACLE_FEED_CONFIG1, self._feed_config1)
-
-    @property
-    def sample_rate(self):
-        """This attribute controls how many samples (of data) per second are reported. Valid values
-        are ``100``, ``80``, ``60``, ``40``, ``20``, ``10``. Any other input values automatically
-        set the sample rate to 100 sps (samples per second).
-        """
-        return self._sample_rate
-
-    @sample_rate.setter
-    def sample_rate(self, val):
-        self._rap_write(PINNACLE_SAMPLE_RATE, val)
-        self._sample_rate = self._rap_read(PINNACLE_SAMPLE_RATE)
-
-    def calibrate(self, run, tap=True, track_error=True, nerd=True, background=True):
-        """Set calibration parameters when the Pinnacle ASIC calibrates itself.
-
-        :param bool run: If `True`, this function forces a calibration of the sensor. If `False`,
-            this function just writes the following parameters to the Pinnacle ASIC's "CalConfig1"
-            register. This parameter is required while the rest are optional keyword parameters.
-        :param bool tap: Enable dynamic tap compensation? Default is `True`.
-        :param bool track_error: Enable dynamic track error compensation? Default is `True`.
-        :param bool nerd: Enable dynamic NERD compensation? Default is `True`. This parameter has
-            something to do with palm detection/compensation.
-        :param bool background: Enable dynamic background compensation? Default is `True`.
-
-        .. note:: According to the datasheet, calibration of the sensor takes about 100
-            milliseconds. This function will block until calibration is complete (if ``run`` is
-            `True`). It is recommended for typical applications to leave all optional parameters
-            in their default states.
-        """
-        self._rap_write(PINNACLE_CALIBRATE_CONFIG,
-                        tap << 4 | track_error << 3 | nerd << 2 | background << 1 | run)
-        while self._rap_read(PINNACLE_CALIBRATE_CONFIG) & 1:
-            pass  # calibration is running
-        if run:
-            self.clear_flags()
-
-    def report(self, only_new=True):
-        """This function will return touch event data from the touch controller (including empty
-        packets on ending of a touch event). This function only applies to Relative or Absolute
-        mode, otherwise it does nothing and returns `None`.
-
-        :param bool only_new: This parameter can be used to ensure the data reported is only new
-            data. Otherwise the data returned can be either old data or new data. If the ``dr_pin``
-            parameter is specified upon instantiation, then the specified input pin is used to
-            detect if the data is new. Otherwise the SW_DR flag in the STATUS register is used to
-            detirmine if the data is new.
-
-        :Returns: `None` if  the ``only_new`` parameter is set `True` and there is no new data to
-            report. Otherwise, a `list` or `bytearray` of parameters that describe the (touch or
-            button) event. The structure is as follows:
-
-            +-------+------------------------+-----------------+
-            | Index |  Relative (Mouse) mode |  Absolute Mode  |
-            |       |  as a `bytearray`      |  as a `list`    |
-            +=======+========================+=================+
-            |   0   |      Button Data       |   Button Data   |
-            +-------+------------------------+-----------------+
-            |   1   |   change in x-axis     | x-axis Position |
-            +-------+------------------------+-----------------+
-            |   2   |   change in y-axis     | y-axis Position |
-            +-------+------------------------+-----------------+
-            |   3   | change in scroll wheel | z-axis Position |
-            +-------+------------------------+-----------------+
-
-            .. important:: The axis and scroll data reported in Relative/Mouse mode is in two's
-                comliment form. Use Python's :py:func:`struct.unpack()` to convert the
-                data into integer form (see `Simple Test example <examples.html#simple-test>`_
-                for how to use this function).
-
-                The axis data reported in Absolute mode is always positive as the
-                xy-plane's origin is located to the top-left, unless ``invert_x`` or ``invert_y``
-                parameters to `invert_axis()` are manipulated to change the perspective location
-                of the origin.
-
-        :Button Data: The returned button data is a byte in which each bit represents a button
-            The bit to button order is as follows:
-
-                0. [LSB] Button 1 (thought of as Left Button in Relative/Mouse mode).
-                   If taps are enabled in Relative/Mouse mode, a single tap will be reflected here.
-                1. Button 2 (thought of as Right Button in Relative/Mouse mode)
-                2. Button 3 (thought of as Middle or scroll wheel Button in Relative/Mouse mode)
-
-        .. note:: In Relative/Mouse mode the scroll wheel data is only reported if the
-            ``intellimouse`` parameter is passed as `True` to `relative_mode_config()`.
-            Otherwise this is an empty byte as the returned `bytearray` follows the
-            buffer structure of a mouse HID report
-            (see `USB Mouse example <examples.html#usb-mouse-example>`_).
-        """
-        if self._mode == DataModes.ANYMEAS:
-            return None
-        temp = []  # placeholder for data reception
-        return_vals = None
-        data_ready = False
-        if only_new:
-            if self.dr_pin is None:
-                data_ready = (self._rap_read(PINNACLE_STATUS) & 4) >> 2
-            else:
-                data_ready = self.dr_pin.value
-        if (only_new and data_ready) or not only_new:
-            if self.data_mode == DataModes.ABSOLUTE:  # if absolute mode
-                temp = self._rap_read_bytes(PINNACLE_PACKET_BYTE_0, 6)
-                return_vals = [temp[0] & 0x3F,  # buttons
-                               ((temp[4] & 0x0F) << 8) | temp[2],  # x
-                               ((temp[4] & 0xF0) << 4) | temp[3],  # y
-                               temp[5] & 0x3F]  # z
-            elif self.data_mode == DataModes.RELATIVE:  # if in relative mode
-                is_intellimouse = self._feed_config2 & 1
-                # get relative data packets
-                temp = self._rap_read_bytes(
-                    PINNACLE_PACKET_BYTE_0, 3 + is_intellimouse)
-                return_vals = bytearray([temp[0] & 7, temp[1], temp[2]])
-                if is_intellimouse:  # scroll wheel data is captured
-                    return_vals += bytes([temp[3]])
-                else:  # append empty byte to suite mouse HID reports
-                    return_vals += b'\x00'
-            self.clear_flags()
-        return return_vals
-
     def measure_adc(self, bits_to_toggle, toggle_polarity):
-        """This function instigates and returns the measurements from the Pinnacle touch
-        controller's ADC (Analog to Digital Converter) matrix (only applies to AnyMeas mode).
+        """This function instigates and returns the measurements (a signed short) from the Pinnacle
+        touch controller's ADC (Analog to Digital Converter) matrix (only applies to AnyMeas mode).
 
         :param int bits_to_toggle: This 4-byte integer specifies which bits the Pinnacle touch
             controller should toggle. A bit of ``1`` flags that bit for toggling, and a bit of
@@ -471,6 +621,11 @@ class PinnacleTouch:
                 :attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_REF1`) must be passed to
                 `anymeas_mode_config()` in the ``mux_ctrl`` parameter, and their representative
                 bits must be flagged in both ``bits_to_toggle`` & ``toggle_polarity`` parameters.
+
+        :Returns:
+            A 2-byte `bytearray` that represents a signed short integer. If `data_mode` is not set
+            to :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function returns
+            `None` and does nothing.
         """
         # assemble list of register buffers
         if self._mode != DataModes.ANYMEAS:
@@ -486,122 +641,11 @@ class PinnacleTouch:
         # initiate measurements
         self._rap_write(PINNACLE_SYS_CONFIG, self._sys_config | 0x18)
         # wait till measurements are complete
-        if self.dr_pin is not None:  # is dr_pin specified
-            while not self.dr_pin.value:
-                pass  # Pinnacle is stil computing
-        else:  # use SW_DR flag of STATUS register
-            while not self._rap_read(PINNACLE_STATUS) & 4:
-                pass  # Pinnacle is still computing
+        while not self.dr_pin.value:
+            pass  # Pinnacle is still computing
         result = self._rap_read_bytes(PINNACLE_PACKET_BYTE_0 - 1, 2)
         self.clear_flags()
-        return result[0] << 8 | result[1]
-
-    def set_adc_gain(self, sensitivity):
-        """Sets the ADC gain in range [0,3] to enhance performance based on the overlay type (does
-        not apply to AnyMeas mode). (write-only)
-
-        :param int sensitivity: This int specifies how sensitive the ADC (Analog to Digital
-            Converter) component is. ``0`` means most sensitive, and ``3`` means least sensitive.
-            A value outside this range will raise a `ValueError` exception.
-
-        .. tip:: The official example code from Cirque for a curved overlay uses a value of ``1``.
-        """
-        if 0 <= sensitivity < 4:
-            prev_feed_state = self.feed_enable
-            self.feed_enable = False  # accessing raw memory, so do this
-            val = self._era_read(0x0187) & 0x3F
-            val |= sensitivity << 6
-            self._era_write(0x0187, val)
-            self.feed_enable = prev_feed_state  # resume normal operation
-        else:
-            raise ValueError("{} is out of bounds [0,3]".format(sensitivity))
-
-    def tune_edge_sensitivity(self, x_axis_wide_z_min=0x04, y_axis_wide_z_min=0x03):
-        """According to the official exmaple code from Cirque,
-        this function "Changes thresholds to improve detection of fingers."
-
-        This function was ported from Cirque's example code and doesn't seem to have corresponding
-        documentation. I'm having trouble finding a memory map of the Pinnacle ASIC as this
-        function directly alters values in the Pinnacle ASIC's memory. USE AT YOUR OWN RISK!
-        """
-        prev_feed_state = self.feed_enable
-        self.feed_enable = False  # accessing raw memory, so do this
-        # write x_axis_wide_z_min value
-        # self._era_read(0x0149) # this was used for printing unaltered value to serial monitor
-        self._era_write(0x0149, x_axis_wide_z_min)
-        # ERA_ReadBytes(0x0149) # this was used for printing verified value to serial monitor
-        # write y_axis_wide_z_min value
-        # self._era_read(0x0168) # this was used for printing unaltered value to serial monitor
-        self._era_write(0x0168, y_axis_wide_z_min)
-        # ERA_ReadBytes(0x0168) # this was used for printing verified value to serial monitor
-        self.feed_enable = prev_feed_state  # resume normal operation
-
-    @property
-    def z_idle_count(self):
-        """The number of empty packets (x-axis & y-axis both are ``0``) reported (every 10
-        milliseconds) when there is no touch detected. Defaults to 30 and does not apply to AnyMeas
-        mode."""
-        return self._z_idle_count
-
-    @z_idle_count.setter
-    def z_idle_count(self, val):
-        self._z_idle_count = val
-        self._rap_write(PINNACLE_Z_IDLE, self._z_idle_count)
-
-    def clear_flags(self):
-        """This function clears the "Data Ready" flag which is reflected with the ``dr_pin``."""
-        self._rap_write(0x02, 0)  # 0x02 = Status1 register
-        # delay 50 microseconds per official example from Cirque
-        time.sleep(0.00005)
-
-    def reset_device(self):
-        """Resets the touch controller. (write only)
-
-        .. warning:: Resetting the touch controller will change all register configurations to
-            their default values which will be reflected in the `PinnacleTouch` object's
-            attributes. Calibration is also automatically performed as it part of the touch
-            controller's start-up sequence.
-        """
-        self._rap_write(PINNACLE_SYS_CONFIG, (self._rap_read(PINNACLE_SYS_CONFIG) & 0xFE) | 1)
-        while not self.dr_pin.value:
-            pass  # wait for power-on & calibration to be performed
-
-        # read register values after reset operation completes
-        self._sys_config, self._feed_config1, self._feed_config2 = self._rap_read_bytes(
-            PINNACLE_SYS_CONFIG, 3)
-        self._sample_rate, self._z_idle_count = self._rap_read_bytes(
-            PINNACLE_SAMPLE_RATE, 2)
-        self.clear_flags()
-
-    @property
-    def allow_sleep(self):
-        """Set this attribute to `True` if you want the touch controller to enter sleep (low power)
-        mode after about 5 seconds of inactivity (does not apply to AnyMeas mode). While the touch
-        controller is in sleep mode, if a touch event or button press is detected, the Pinnacle
-        ASIC will take about 300 milliseconds to wake up (does not include handling the touch event
-        or button press data)."""
-        return bool(self._sys_config & 4)
-
-    @allow_sleep.setter
-    def allow_sleep(self, is_enabled):
-        self._sys_config = (self._sys_config & 0xFB) | is_enabled << 2
-        self._rap_write(PINNACLE_SYS_CONFIG, self._sys_config)
-
-    @property
-    def shutdown(self):
-        """This attribute controls power of the touch controller. `True` means powered down (AKA
-        standby mode), and `False` means not powered down (Active, Idle, or Sleep mode).
-
-        .. note:: The touch controller will take about 300 milliseconds to complete the transition
-            from powered down mode to active mode. No touch events or button presses will be
-            monitored while powered down.
-        """
-        return bool(self._sys_config & 2)
-
-    @shutdown.setter
-    def shutdown(self, is_off):
-        self._sys_config = (self._sys_config & 0xFD) | is_off << 1
-        self._rap_write(PINNACLE_SYS_CONFIG, self._sys_config)
+        return bytearray(result)
 
     def _rap_read(self, reg):
         """This function is overridden by the appropriate parent class based on interface type."""

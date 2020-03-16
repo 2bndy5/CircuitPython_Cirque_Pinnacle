@@ -11,7 +11,9 @@ ss_pin = DigitalInOut(board.D7)
 dr_pin = DigitalInOut(board.D2)
 dr_pin.switch_to_input()
 
-trackpad = PinnacleTouchSPI(spi, ss_pin)
+# NOTE The dr_pin is a required arg to use AnyMeas mode
+trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin)
+# this will raise an AttributeError exception if dr_pin was not specified upon instantiation.
 trackpad.data_mode = DataModes.ANYMEAS
 
 # setup toggle and polarity bits for measuring with PNP gate muxing
@@ -33,18 +35,24 @@ vectors.append(MeasVector(0x00008000, 0x00000000))
 # This toggles Y0-Y7 negative and X0-X7 positive
 vectors.append(MeasVector(0x00FF00FF, 0x000000FF))
 
-# Calculate base compensation on startup
+# inform pylint that this example script should be able to print results without compensation
+# pylint: disable=redefined-outer-name
 compensation = [0] * len(vectors)
-for i, v in enumerate(vectors):
-    for _ in range(5):  # take 5 measurements, then average them together
-        compensation[i] += unpack('H', trackpad.measure_adc(v.toggle, v.polarity))
-    compensation[i] /= 5
+def compensate(count=5):
+    """take ``count`` measurements, then average them together  """
+    compensation = [0] * len(vectors)
+    for i, v in enumerate(vectors):
+        for _ in range(count):  #
+            compensation[i] += unpack('h', trackpad.measure_adc(v.toggle, v.polarity))[0]
+        compensation[i] /= count
+        print("compensation {}: {}".format(i, compensation[i]))
 
 def take_measurements(timeout=10):
     """read ``len(vectors)`` number of measurements and print results for
     ``timeout`` number of seconds."""
     start = time.monotonic()
     while time.monotonic() - start < timeout:
-        for j, vect in enumerate(vectors):
-            result = unpack('H', trackpad.measure_adc(vect.toggle, vect.polarity))
-            print("measure {}: {}".format(j, result - compensation[j]))
+        for i, v in enumerate(vectors):
+            result = unpack('h', trackpad.measure_adc(v.toggle, v.polarity))[0]
+            print("vector{}: {}".format(i, result - compensation[i]), end='\t')
+        print()
