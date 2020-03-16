@@ -79,7 +79,7 @@ class AnyMeasGain:
 
 class AnyMeasFreq:
     """Allowed frequency configurations of AnyMeas mode. The frequencies defined here are
-    approximated based on an aperature width of 500 nanoseconds. If the ``aperture_width``
+    approximated based on an aperture width of 500 nanoseconds. If the ``aperture_width``
     parameter to `anymeas_mode_config()` specified is less than 500 nanoseconds, then the
     frequency will be larger than what is described here (& vice versa).
     """
@@ -119,17 +119,11 @@ class PinnacleTouch:
         Ready" pin. If this parameter is not specified, then the SW_DR (software data ready) flag
         of the STATUS register is used to detirmine if the data being reported is new.
 
-        .. important:: This parameter must be specified if you're application is going to use the
+        .. important:: This parameter must be specified if your application is going to use the
             Pinnacle touch controller's :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`
             mode (a rather experimental measuring of raw ADC values).
-
-    :param bool feed_enable: Specifies if data reporting is enabled (`True`) or not (`False`).
-        Default is `True`.
-    :param bool allowed_sleep: `True` will let the Pinnacle touch controller automatically enter
-        sleep (low power) mode after about 5 seconds of no button/touch events. See also the
-        notes for the `allow_sleep` attribute. Defaults to `False`.
     """
-    def __init__(self, dr_pin=None, feed_enable=True, allow_sleep=False):
+    def __init__(self, dr_pin=None):
         self.dr_pin = dr_pin
         if dr_pin is not None:
             self.dr_pin.switch_to_input()
@@ -148,18 +142,7 @@ class PinnacleTouch:
         self._cal_config = 0
         self._mode = 0 # 0 means relative mode which is factory default after power-on-reset
         # reset device on init in case Pinnacle is configured for AnyMeas mode
-        self.reset_device()  # also reads reg values for internal attributes
-
-        # set user defined values
-        self._feed_config1 = feed_enable
-        self._sys_config = allow_sleep << 2
-
-        # write user config settings into Pinnacle registers
-        self._rap_write_bytes(PINNACLE_SYS_CONFIG, [
-            self._sys_config, self._feed_config1, self._feed_config2])
-        self._rap_write(PINNACLE_SAMPLE_RATE, self._sample_rate)
-        # clear any "Command Complete" and "Data Ready" flags (just to be sure)
-        self.clear_flags()  # this is also done by reset_device()
+        self.reset_device()  # also reads reg values for internal attributes & clears flags
 
     @property
     def feed_enable(self):
@@ -716,10 +699,9 @@ class PinnacleTouchI2C(PinnacleTouch):
     See the base class for other instantiating parameters.
     """
 
-    def __init__(self, i2c, dr_pin=None, address=0x2A, feed_enable=True, allow_sleep=False):
+    def __init__(self, i2c, address=0x2A, dr_pin=None):
         self._i2c = I2CDevice(i2c, (address << 1))
-        super(PinnacleTouchI2C, self).__init__(dr_pin=dr_pin, feed_enable=feed_enable,
-                                               allow_sleep=allow_sleep)
+        super(PinnacleTouchI2C, self).__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
         return self._rap_read_bytes(reg)
@@ -766,12 +748,11 @@ class PinnacleTouchSPI(PinnacleTouch):
     See the base class for other instantiating parameters.
     """
 
-    def __init__(self, spi, ss_pin, dr_pin=None, feed_enable=True, allow_sleep=False):
+    def __init__(self, spi, ss_pin, dr_pin=None):
         # MAX baudrate is up to 13MHz; use 10MHz to be safe
         self._spi = SPIDevice(spi, chip_select=ss_pin,
                               baudrate=12000000, phase=1)
-        super(PinnacleTouchSPI, self).__init__(dr_pin=dr_pin, feed_enable=feed_enable,
-                                               allow_sleep=allow_sleep)
+        super(PinnacleTouchSPI, self).__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
         buf_out = bytearray([reg | 0xA0]) + b'\xFB' * 3
