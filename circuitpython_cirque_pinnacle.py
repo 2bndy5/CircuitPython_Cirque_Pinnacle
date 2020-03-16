@@ -507,7 +507,7 @@ class PinnacleTouch:
     @property
     def calibration_matrix(self):
         """This attribute returns the 92 signed 16-bit values stored in the Pinnacle touch
-        controller's memory that is used for taking measurements. This matrix is not applicable in
+        controller's memory that is used for taking measurements. This matrix is applicable in
         AnyMeas mode. Use this attribute to compare a prior compensation matrix with a new matrix
         that was either loaded manually by setting this attribute to a 92-byte long buffer or
         created internally by calling `calibrate()` with the ``run`` parameter as `True`.
