@@ -510,7 +510,22 @@ class PinnacleTouch:
         controller's memory that is used for taking measurements. This matrix is not applicable in
         AnyMeas mode. Use this attribute to compare a prior compensation matrix with a new matrix
         that was either loaded manually by setting this attribute to a 92-byte long buffer or
-        created internally by calling `calibrate()` with the ``run`` parameter as `True`."""
+        created internally by calling `calibrate()` with the ``run`` parameter as `True`.
+
+        .. note:: A paraphrased note from Cirque's Application Note on Comparing compensation
+            matrices:
+
+            If any 16-bit values are above 20K (absolute), it generally indicates a problem with
+            the sensor. If no values exceed 20K, proceed with the data comparison. Compare each
+            16-bit value in one matrix to the corresponding 16-bit value in the other matrix. If
+            the difference between the two values is greater than 500 (absolute), it indicates a
+            change in the environment. Either an object was on the sensor during calibration, or
+            the surrounding conditions (temperature, humidity, or noise level) have changed. One
+            strategy is to force another calibration and compare again, if the values continue to
+            differ by 500, determine whether to use the new data or a previous set of stored data.
+            Another strategy is to average any two values that differ by more than 500 and write
+            this new matrix, with the average values, back into Pinnacle.
+        """
         return self._era_read_bytes(0x01DF, 92)
 
     @calibration_matrix.setter
