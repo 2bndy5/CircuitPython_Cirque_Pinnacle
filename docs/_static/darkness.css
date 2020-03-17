@@ -88,12 +88,23 @@
 }
 
 /* ----------------------table sections---------------------------------------- */
+.wy-table caption,
+.rst-content table.docutils caption,
+.rst-content table.field-list caption {
+  color:#fff;
+  text-align:left
+}
+
 .wy-table thead,
 .rst-content table.docutils thead,
 .rst-content table.field-list thead {
- color:#fcfcfc;
- text-align:center;
- background-color: #1a4228;
+  color:#fcfcfc;
+  text-align:center;
+  background-color: #1a4228;
+}
+
+.rst-content table.docutils th {
+  background-color: #1a4228;
 }
 
 .wy-table-odd td,

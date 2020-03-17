@@ -16,50 +16,81 @@ for interfacing with the Cirque Pinnacle (1CA027) touch controller used in Cirqu
 Supported Features
 ------------------
 
-* Relative mode data reporting (AKA Mouse mode)
-* Absolute mode data reporting (exact x & y positions)
-* Hardware input buttons included in data reports (there are only 3 on the Cirque circle trackpads -- see picture in `Pinout`_)
+* Use SPI or I2C bus protocols to interface with the Pinnacle touch controller ASIC (Application
+  Specific Integrated Circuit).
+* Relative mode data reporting (AKA Mouse mode) with optional tap detection.
+* Absolute mode data reporting (x, y, & z axis positions).
+* AnyMeas mode data reporting. This mode exposes the ADC (Analog to Digital Converter) values and is
+  not well documented in the numerous datasheets provided by the Cirque corporation about the
+  Pinnacle (1CA027), thus this is a rather experimental mode.
+* Hardware input buttons' states included in data reports. There are 3 button input lines on
+  the Cirque circle trackpads -- see `Pinout`_ section.
+* Ability to identify finger & stylus or only stylus or only finger touch events. The Cirque circle
+  trackpads are natively capable of measuring only 1 touch point per event.
+* Download/upload the underlying compensation matrix for ADC measurements.
+* Adjust the ADC matrix gain (sensitivity).
+* compliant with use of context manager (using `with` block) for ease of switching
+  between different configurations of various data mode selections.
+
+.. tip:: The SPI protocol is the preferred method for interfacing with more than 1 Cirque circle
+    trackpad from the same MCU (microcontroller). The Cirque Pinnacle does not allow
+    changing the I2C slave device address (via software); this means only 1 Cirque circle trackpad
+    can be accessed over the I2C bus at a time.
 
 Unsupported Features
 --------------------
 
-* AnyMeas mode data reporting. This mode exposes the ADC (Analog to Digital Converter) values and is not well documented in the
-  numerous datasheets about the Pinnacle (1CA027) provided Cirque corporation. However there is an `example in C++ designed for
-  use with a teensy3.2 MCU
-  <https://github.com/cirque-corp/Cirque_Pinnacle_1CA027/blob/master/Additional_Examples/AnyMeas_Example/>`_ that shows the basic
-  usage of AnyMeas mode
-
+* The legacy PS\\2 interface is pretty limited and not accessible by some CircuitPython MCUs.
+  Therefore, it has been neglected in this library.
+* Cirque's circle trackpads ship with the newer non-AG (Advanced Gestures) variant of the
+  Pinnacle touch controller ASIC. Thus, this library focuses on the the non-AG variant's
+  functionality via testing, and it does not provide access to the older AG variant's features
+  (register addresses slightly differ which breaks compatibility).
 
 Pinout
-========
+======
 
 .. image:: https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/raw/master/docs/_static/Cirque_GlidePoint-Circle-Trackpad.png
     :target: https://www.mouser.com/new/cirque/glidepoint-circle-trackpads/
 
 The above picture is a example of the Cirque GlidePoint circle trackpad. This picture
 is chosen as the test pads (larger copper circular pads) are clearly labeled. The test pads
-are extended to the 12-pin J1 ribbon cable connector (the white block near the bottom) for which
-you should refer to the `datasheet <https://www.mouser.com/pdfdocs/
-TM040040_SPI-I2C-PINNTrackpad_SPEC1-21.pdf#page=8>`_ for more detail. The Cirque
-circle trackpad models use the following labeling scheme:
+are extended to the 12-pin J1 ribbon cable connector (the white block near the bottom). The
+following table shows how the pins are connected in the `examples <examples.html>`_ (tested
+on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_)
 
-``TMyyyxxx-202i-30o``
----------------------
+.. csv-table:: pinout (ordered the same as the 12-pin ribbon cable connector)
+    :header: Label,"MCU pin",Description
+    :widths: 5,5,13
+
+    SCK,SCK,"SPI clock line"
+    SO,MISO,"Master Input Slave Output"
+    SS,D7,"Slave Select (AKA Chip Select)"
+    DR,D2,"""data ready"" interrupt"
+    SI,MOSI,"SPI Master Output Slave Input"
+    B2,N/A,"Hardware input button #2"
+    B3,N/A,"Hardware input button #3"
+    B1,N/A,"Hardware input button #1"
+    SCL,SCL,"I2C clock line"
+    SDA,SDA,"I2C data line"
+    GND,GND,"Ground"
+    VDD,3V,"3V power supply"
+
+.. tip:: Of course, you can capture button data manually (if your application utilizes more
+    than 3 buttons), but if you connect the pins B1, B2, B3 to momentary push buttons that
+    (when pressed) provide a path to ground, the Pinnacle touch controller will report all 3
+    buttons' states for each touch (or even button only) events.
+
+The Cirque circle trackpad models use the following labeling scheme:
+
+:TMyyyxxx-202i-30o:
+
     - ``yyy`` stands for the horizontal width of the trackpad
     - ``xxx`` stands for the vertical width of the trackpad
-    - ``i`` stands for the hardwired interface protocol (3 = I2C, 4 = SPI). Notice if there is a
-      resistor populated at the R1 (470K ohm) junction (just above the Pinnacle ASIC touch
-      controller), it is configured for SPI, otherwise it is configured for I2C.
+    - ``i`` stands for the hardwired interface protocol (3 = I2C, 4 = SPI). Notice, if there is a
+      resistor populated at the R1 (470K ohm) junction (located just above the Pinnacle ASIC), it
+      is configured for SPI, otherwise it is configured for I2C.
     - ``o`` stands for the overlay type (0 = none, 1 = adhesive, 2 = flat, 3 = curved)
-
-.. tip:: The SPI protocol is the preferred method for interfacing with more than 1 Cirque circle
-    trackpad from the same MCU (microcontroller). The Cirque Pinnacle does not seem to allow
-    changing the I2C slave device address; this means only 1 Cirque circle trackpad can be accessed over
-    the I2C bus at a time (unless I missed something in the many datasheets provided for this device).
-
-.. note:: Cirque's circle trackpads ship with the non-AG (Advanced Gestures) variant of the Pinnacle
-    touch controller ASIC (Application Specific Integrated Circuit). Thus, library focuses on the the non-AG
-    variant's functionality via testing, but it does provide access to the AG vaiant's features (though untested).
 
 Dependencies
 =============
@@ -69,8 +100,8 @@ This driver depends on:
 * `Bus Device <https://github.com/adafruit/Adafruit_CircuitPython_BusDevice>`_
 
 Please ensure all dependencies are available on the CircuitPython filesystem.
-This is easily achieved by downloading
-`the Adafruit library and driver bundle <https://github.com/adafruit/Adafruit_CircuitPython_Bundle>`_.
+This is easily achieved by downloading `the Adafruit library and driver bundle
+<https://github.com/adafruit/Adafruit_CircuitPython_Bundle>`_.
 
 How to Install
 =====================
@@ -87,7 +118,8 @@ To install globally, prefix the last command with ``sudo``.
 Usage Example
 =============
 
-Ensure you've connected the TMyyyxxx correctly by running the simple test located in the `examples folder of this library <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/tree/master/examples>`_. See also the `examples/` section.
+Ensure you've connected the TMyyyxxx correctly by running the `examples/` located in the `examples
+folder of this library <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/tree/master/examples>`_.
 
 Contributing
 ============

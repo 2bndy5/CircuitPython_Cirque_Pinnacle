@@ -9,12 +9,11 @@ from circuitpython_cirque_pinnacle import PinnacleTouchSPI, DataModes
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
 dr_pin = DigitalInOut(board.D2)
-dr_pin.switch_to_input()
 
 # NOTE The dr_pin is a required arg to use AnyMeas mode
-trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+tpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # this will raise an AttributeError exception if dr_pin was not specified upon instantiation.
-trackpad.data_mode = DataModes.ANYMEAS
+tpad.data_mode = DataModes.ANYMEAS
 
 # setup toggle and polarity bits for measuring with PNP gate muxing
 class MeasVector:
@@ -43,7 +42,7 @@ def compensate(count=5):
     compensation = [0] * len(vectors)
     for i, v in enumerate(vectors):
         for _ in range(count):  #
-            compensation[i] += unpack('h', trackpad.measure_adc(v.toggle, v.polarity))[0]
+            compensation[i] += unpack('h', tpad.measure_adc(v.toggle, v.polarity))[0]
         compensation[i] /= count
         print("compensation {}: {}".format(i, compensation[i]))
 
@@ -53,6 +52,6 @@ def take_measurements(timeout=10):
     start = time.monotonic()
     while time.monotonic() - start < timeout:
         for i, v in enumerate(vectors):
-            result = unpack('h', trackpad.measure_adc(v.toggle, v.polarity))[0]
+            result = unpack('h', tpad.measure_adc(v.toggle, v.polarity))[0]
             print("vector{}: {}".format(i, result - compensation[i]), end='\t')
         print()

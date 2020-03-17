@@ -22,10 +22,10 @@ spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
 dr_pin = DigitalInOut(board.D2)
 
-trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+tpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # NOTE we passed the dr_pin for slightly faster data reporting
-trackpad.set_adc_gain(1)  # for curved overlay type
-trackpad.data_mode = DataModes.RELATIVE  # ensure mouse mode is enabled
+tpad.set_adc_gain(1)  # for curved overlay type
+tpad.data_mode = DataModes.RELATIVE  # ensure mouse mode is enabled
 
 def move(timeout=10):
     """Send mouse X & Y reported data from the Pinnacle touch controller
@@ -35,7 +35,7 @@ def move(timeout=10):
         raise OSError("mouse HID device not available.")
     start = time.monotonic()
     while time.monotonic() - start < timeout:
-        data = trackpad.report()  # only returns fresh data (if any)
+        data = tpad.report()  # only returns fresh data (if any)
         if data:  # is there fresh data?
-            mouse.send_report(data)  # not using scroll wheel
+            mouse.send_report(data)  # not using scroll wheel; nor back/forward butons
     mouse.send_report(b'\x00' * 4)  # release buttons (just in case)
