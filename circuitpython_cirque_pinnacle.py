@@ -34,40 +34,34 @@ from adafruit_bus_device.i2c_device import I2CDevice
 
 # internal registers
 # pylint: disable=bad-whitespace,too-few-public-methods
-PINNACLE_STATUS = 0x02  # Contains status flags about the state of Pinnacle
-PINNACLE_SYS_CONFIG = 0x03  # Contains system operation and configuration bits
-PINNACLE_FEED_CONFIG1 = 0x04  # Contains feed operation and configuration bits
-PINNACLE_FEED_CONFIG2 = 0x05  # Contains feed operation and configuration bits
+PINNACLE_STATUS           = 0x02  # Contains status flags about the state of Pinnacle
+PINNACLE_SYS_CONFIG       = 0x03  # Contains system operation and configuration bits
+PINNACLE_FEED_CONFIG1     = 0x04  # Contains feed operation and configuration bits
+PINNACLE_FEED_CONFIG2     = 0x05  # Contains feed operation and configuration bits
 PINNACLE_CALIBRATE_CONFIG = 0x07  # Contains calibration configuration bits
-PINNACLE_SAMPLE_RATE = 0x09  # Number of samples generated per second
-PINNACLE_Z_IDLE = 0x0A  # Number of Z=0 packets sent when Z goes from >0 to 0
-PINNACLE_PACKET_BYTE_0 = 0x12  # trackpad Data
-PINNACLE_ERA_VALUE = 0x1B  # Value for extended register access
-PINNACLE_ERA_ADDR_HIGH = 0x1C  # High byte of 16 bit extended register address
-PINNACLE_ERA_ADDR_LOW = 0x1D  # Low byte of 16 bit extended register address
-PINNACLE_ERA_CTRL = 0x1E  # Control of extended register access
+PINNACLE_SAMPLE_RATE      = 0x09  # Number of samples generated per second
+PINNACLE_Z_IDLE           = 0x0A  # Number of Z=0 packets sent when Z goes from >0 to 0
+PINNACLE_PACKET_BYTE_0    = 0x12  # trackpad Data
+PINNACLE_ERA_VALUE        = 0x1B  # Value for extended register access
+PINNACLE_ERA_ADDR_HIGH    = 0x1C  # High byte of 16 bit extended register address
+PINNACLE_ERA_ADDR_LOW     = 0x1D  # Low byte of 16 bit extended register address
+PINNACLE_ERA_CTRL         = 0x1E  # Control of extended register access
 
 # constants used for bitwise configuration
-
-
 class DataModes:
     """Allowed symbols for configuring the Pinanacle ASIC's data
     reporting/measurements."""
-    RELATIVE = 0x00  # : Alias symbol for specifying Relative mode (AKA Mouse mode).
-    # : Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
-    ANYMEAS = 0x01
-    # : Alias symbol for specifying Absolute mode (axis positions)
-    ABSOLUTE = 0x02
-
+    RELATIVE = 0x00  #: Alias symbol for specifying Relative mode (AKA Mouse mode).
+    ANYMEAS  = 0x01  #: Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
+    ABSOLUTE = 0x02  #: Alias symbol for specifying Absolute mode (axis positions)
 
 class AnyMeasGain:
     """Allowed ADC gain configurations of AnyMeas mode. The percentages defined here are
     approximate values."""
-    GAIN_100 = 0xC0  # : around 100% gain
-    GAIN_133 = 0x80  # : around 133% gain
-    GAIN_166 = 0x40  # : around 166% gain
-    GAIN_200 = 0x00  # : around 200% gain
-
+    GAIN_100 = 0xC0  #: around 100% gain
+    GAIN_133 = 0x80  #: around 133% gain
+    GAIN_166 = 0x40  #: around 166% gain
+    GAIN_200 = 0x00  #: around 200% gain
 
 class AnyMeasFreq:
     """Allowed frequency configurations of AnyMeas mode. The frequencies defined here are
@@ -75,15 +69,14 @@ class AnyMeasFreq:
     parameter to `anymeas_mode_config()` specified is less than 500 nanoseconds, then the
     frequency will be larger than what is described here (& vice versa).
     """
-    FREQ_0 = 0x02  # : frequency around 500,000Hz
-    FREQ_1 = 0x03  # : frequency around 444,444Hz
-    FREQ_2 = 0x04  # : frequency around 400,000Hz
-    FREQ_3 = 0x05  # : frequency around 363,636Hz
-    FREQ_4 = 0x06  # : frequency around 333,333Hz
-    FREQ_5 = 0x07  # : frequency around 307,692Hz
-    FREQ_6 = 0x09  # : frequency around 267,000Hz
-    FREQ_7 = 0x0B  # : frequency around 235,000Hz
-
+    FREQ_0 = 0x02  #: frequency around 500,000Hz
+    FREQ_1 = 0x03  #: frequency around 444,444Hz
+    FREQ_2 = 0x04  #: frequency around 400,000Hz
+    FREQ_3 = 0x05  #: frequency around 363,636Hz
+    FREQ_4 = 0x06  #: frequency around 333,333Hz
+    FREQ_5 = 0x07  #: frequency around 307,692Hz
+    FREQ_6 = 0x09  #: frequency around 267,000Hz
+    FREQ_7 = 0x0B  #: frequency around 235,000Hz
 
 class AnyMeasMux:
     """Allowed muxing gate polarity and reference capacitor configurations of AnyMeas mode.
@@ -92,21 +85,17 @@ class AnyMeasMux:
     .. note:: The sign of the measurements taken in AnyMeas mode is inverted depending on which
         muxing gate is specified (when specifying an individual gate polarity).
     """
-    MUX_REF1 = 0x10  # : enables a builtin capacitor (~0.5pF). See note in `measure_adc()`
-    # : enables a builtin capacitor (~0.25pF). See note in `measure_adc()`
-    MUX_REF0 = 0x08
-    MUX_PNP = 0x04  # : enable PNP sense line
-    MUX_NPN = 0x01  # : enable NPN sense line
-
+    MUX_REF1 = 0x10  #: enables a builtin capacitor (~0.5pF). See note in `measure_adc()`
+    MUX_REF0 = 0x08  #: enables a builtin capacitor (~0.25pF). See note in `measure_adc()`
+    MUX_PNP  = 0x04  #: enable PNP sense line
+    MUX_NPN  = 0x01  #: enable NPN sense line
 
 class AnyMeasCrtl:
     """These constants control the number of measurements performed on a single call to
     `measure_adc()`. The number of measurements can range [0, 63]."""
-    CRTL_REPEAT = 0x80  # : required for more than 1 measurement
-    # : triggers low power mode (sleep) after completing measurements
-    CRTL_PWR_IDLE = 0x40
+    CRTL_REPEAT = 0x80  #: required for more than 1 measurement
+    CRTL_PWR_IDLE = 0x40  #: triggers low power mode (sleep) after completing measurements
 # pylint: enable=bad-whitespace,too-few-public-methods
-
 
 class PinnacleTouch:
     """

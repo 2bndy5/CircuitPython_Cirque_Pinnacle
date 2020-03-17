@@ -25,6 +25,6 @@ def print_data(timeout=10):
         if dr_pin.value: # is there new data?
             data = tpad.report(only_new=False)
             # Because we did not specify the dr_pin when instantiating the tpad variable,
-            # only_new=False skips the extra SPI transaction to check the SW_DR flag in the
-            # STATUS register which is reflected on the dr_pin (that we checked already)
+            # only_new=False skips the extra SPI transaction to check the SW_DR flag in
+            # the STATUS register which is reflected on the dr_pin
             print(unpack('Bbbb', data) if not tpad.data_mode else data)

@@ -12,7 +12,8 @@ dr_pin = DigitalInOut(board.D2)
 
 # NOTE The dr_pin is a required arg to use AnyMeas mode
 tpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
-# this will raise an AttributeError exception if dr_pin was not specified upon instantiation.
+# if dr_pin was not specified upon instantiation.
+# this command will raise an AttributeError exception
 tpad.data_mode = DataModes.ANYMEAS
 
 # setup toggle and polarity bits for measuring with PNP gate muxing
@@ -34,17 +35,17 @@ vectors.append(MeasVector(0x00008000, 0x00000000))
 # This toggles Y0-Y7 negative and X0-X7 positive
 vectors.append(MeasVector(0x00FF00FF, 0x000000FF))
 
-# inform pylint that this example script should be able to print results without compensation
+# tell pylint this example script is able to print results without compensation
 # pylint: disable=redefined-outer-name
-compensation = [0] * len(vectors)
+idle_vectors = [0] * len(vectors)
 def compensate(count=5):
     """take ``count`` measurements, then average them together  """
-    compensation = [0] * len(vectors)
+    idle_vectors = [0] * len(vectors)
     for i, v in enumerate(vectors):
         for _ in range(count):  #
-            compensation[i] += unpack('h', tpad.measure_adc(v.toggle, v.polarity))[0]
-        compensation[i] /= count
-        print("compensation {}: {}".format(i, compensation[i]))
+            idle_vectors[i] += unpack('h', tpad.measure_adc(v.toggle, v.polarity))[0]
+        idle_vectors[i] /= count
+        print("compensation {}: {}".format(i, idle_vectors[i]))
 
 def take_measurements(timeout=10):
     """read ``len(vectors)`` number of measurements and print results for
@@ -53,5 +54,5 @@ def take_measurements(timeout=10):
     while time.monotonic() - start < timeout:
         for i, v in enumerate(vectors):
             result = unpack('h', tpad.measure_adc(v.toggle, v.polarity))[0]
-            print("vector{}: {}".format(i, result - compensation[i]), end='\t')
+            print("vector{}: {}".format(i, result - idle_vectors[i]), end='\t')
         print()
