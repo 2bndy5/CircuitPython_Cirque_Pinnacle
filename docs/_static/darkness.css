@@ -102,11 +102,7 @@
   text-align:center;
   background-color: #1a4228;
 }
-/*
-.rst-content table.docutils th {
-  background-color: #1a4228;
-}
- */
+
 .wy-table-odd td,
 .wy-table-striped tr:nth-child(2n-1) td,
 .rst-content table.docutils:not(.field-list) tr:nth-child(2n-1) td {

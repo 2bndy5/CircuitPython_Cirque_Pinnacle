@@ -29,6 +29,7 @@ based circular trackpads.
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
 import time
+import struct
 from adafruit_bus_device.spi_device import SPIDevice
 from adafruit_bus_device.i2c_device import I2CDevice
 
@@ -489,11 +490,12 @@ class PinnacleTouch:
 
     @property
     def calibration_matrix(self):
-        """This attribute returns the 92 signed 16-bit values stored in the Pinnacle ASIC's
-        memory that is used for taking measurements. This matrix is not applicable in
-        AnyMeas mode. Use this attribute to compare a prior compensation matrix with a new matrix
-        that was either loaded manually by setting this attribute to a 92-byte long buffer or
-        created internally by calling `calibrate()` with the ``run`` parameter as `True`.
+        """This attribute returns a `list` of the 92 signed 16-bit (short) values stored in the
+        Pinnacle ASIC's memory that is used for taking measurements. This matrix is not applicable
+        in AnyMeas mode. Use this attribute to compare a prior compensation matrix with a new
+        matrix that was either loaded manually by setting this attribute to a `list` of 92 signed
+        16-bit (short) integers or created internally by calling `calibrate()` with the ``run``
+        parameter as `True`.
 
         .. note:: A paraphrased note from Cirque's Application Note on Comparing compensation
             matrices:
@@ -509,15 +511,23 @@ class PinnacleTouch:
             Another strategy is to average any two values that differ by more than 500 and write
             this new matrix, with the average values, back into Pinnacle ASIC.
         """
-        return self._era_read_bytes(0x01DF, 92)
+        # combine every 2 bytes from resulting buffer to form a list of signed 16-bits integers
+        return list(struct.unpack('92h', self._era_read_bytes(0x01DF, 92 * 2)))
+
 
     @calibration_matrix.setter
     def calibration_matrix(self, matrix):
         for _ in range(92 - len(matrix)):  # padd short matrices w/ 0s
             matrix.append(0)
-        for i, byte in enumerate(matrix):  # write each byte
-            if i < 92:  # be sure to not write more than allowed
-                self._era_write(0x01DF + i, byte)
+        # save time on bus interactions by pausing feed now
+        prev_feed_state = self.feed_enable
+        self.feed_enable = False # required for ERA functions anyway
+        # be sure to not write more than allowed
+        for index in range(0, 92, 2):  # write 2 bytes at a time
+            buf = struct.unpack('h', matrix[index:index + 2])
+            self._era_write(0x01DF + index, buf[0])
+            self._era_write(0x01DF + index, buf[1])
+        self.feed_enable = prev_feed_state  # resume previous feed state
 
     def set_adc_gain(self, sensitivity):
         """Sets the ADC gain in range [0,3] to enhance performance based on the overlay type (does
@@ -586,7 +596,7 @@ class PinnacleTouch:
             :attr:`~circuitpython_cirque_pinnacle.AnyMeasCrtl.CRTL_REPEAT`) if number of
             measurements is more than 1.
 
-            .. important:: There is no bounds checking on the number of measurements specified
+            .. warning:: There is no bounds checking on the number of measurements specified
                 here. Specifying more than 63 will trigger sleep mode after performing
                 measuements.
 
@@ -703,7 +713,7 @@ class PinnacleTouch:
         """This function is overridden by the appropriate parent class based on interface type."""
         raise NotImplementedError()
 
-    def _rap_write_bytes(self, reg, value):
+    def _rap_write_bytes(self, reg, values):
         """This function is overridden by the appropriate parent class based on interface type."""
         raise NotImplementedError()
 
@@ -724,8 +734,7 @@ class PinnacleTouch:
         prev_feed_state = self.feed_enable
         self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
-        # indicate reading sequential bytes
-        self._rap_write(PINNACLE_ERA_CTRL, 5)
+        self._rap_write(PINNACLE_ERA_CTRL, 5)  # indicate reading sequential bytes
         for _ in range(numb_bytes):
             while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
                 pass  # also sets Command Complete flag in Status register
@@ -746,12 +755,12 @@ class PinnacleTouch:
         self.feed_enable = prev_feed_state  # resume previous feed state
 
     def _era_write_bytes(self, reg, value, numb_bytes):
+        # NOTE this is rarely used as it only writes 1 value to multiple registers
         prev_feed_state = self.feed_enable
         self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write(PINNACLE_ERA_VALUE, value)  # write value
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
-        # indicate writing sequential bytes
-        self._rap_write(PINNACLE_ERA_CTRL, 0x0A)
+        self._rap_write(PINNACLE_ERA_CTRL, 0x0A)  # indicate writing sequential bytes
         for _ in range(numb_bytes):
             while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
                 pass  # also sets Command Complete flag in Status register
@@ -760,8 +769,6 @@ class PinnacleTouch:
 
 # due to use adafruit_bus_device, pylint can't find bus-specific functions
 # pylint: disable=no-member
-
-
 class PinnacleTouchI2C(PinnacleTouch):
     """
     Varaiant of the base class, `PinnacleTouch`, for interfacing with the Pinnacle ASIC via
@@ -775,42 +782,36 @@ class PinnacleTouchI2C(PinnacleTouch):
     """
 
     def __init__(self, i2c, address=0x2A, dr_pin=None):
-        self._i2c = I2CDevice(i2c, (address << 1))
+        self._i2c = I2CDevice(i2c, (address << 1))  # per datasheet
         super(PinnacleTouchI2C, self).__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
         return self._rap_read_bytes(reg)
 
     def _rap_read_bytes(self, reg, numb_bytes=1):
-        self._i2c.device_address &= 0  # set write flag
+        self._i2c.device_address &= 0xFE  # set write flag
         buf = bytearray([reg | 0xA0])  # per datasheet
         with self._i2c as i2c:
             i2c.write(buf)  # includes a STOP condition
-        self._i2c.device_address &= 1  # set read flag
-        return_buf = b''  # for accumulating response(s)
-        buf = bytearray(1)
+        self._i2c.device_address |= 1  # set read flag
+        buf = bytearray(numb_bytes)  # for accumulating response(s)
         with self._i2c as i2c:
-            # need to send the ((address << 1) & read flag) for each byte read
-            for _ in range(numb_bytes):  # increments register for each read command
-                i2c.readinto(buf)  # I assume this includes a STOP condition
-                return_buf += buf  # save response
-        return list(return_buf)
+            # auto-increments register for each byte read
+            i2c.readinto(buf)
+        return buf
 
     def _rap_write(self, reg, value):
-        self._i2c.device_address &= 0  # set write flag
-        buf = bytearray([reg | 0x80, value & 0xFF])  # assumes value is an int
-        with self._i2c as i2c:
-            i2c.write(buf)  # includes STOP condition
+        self._rap_write_bytes(reg, [value])
 
-    def _rap_write_bytes(self, reg, value):
-        self._i2c.device_address &= 0  # set write flag
+    def _rap_write_bytes(self, reg, values):
+        self._i2c.device_address &= 0xFE  # set write flag
         buf = b''
-        for byte in value:  # works for bytearrays/lists/tuples
-            buf += bytearray([reg | 0x80, byte])
+        for index, byte in enumerate(values):  # works for bytearrays/lists/tuples
+            # Pinnacle doesn't auto-increment register addresses for I2C write operations
+            # Also truncate int elements of a list/tuple
+            buf += bytearray([(reg + index) | 0x80, byte & 0xFF])
         with self._i2c as i2c:
-            # need only 1 STOP condition for multiple write operations
             i2c.write(buf)
-
 
 class PinnacleTouchSPI(PinnacleTouch):
     """
@@ -838,19 +839,19 @@ class PinnacleTouchSPI(PinnacleTouch):
         return buf_in[3]
 
     def _rap_read_bytes(self, reg, numb_bytes):
+        # using auto-increment method
         buf_out = bytearray([reg | 0xA0]) + b'\xFC' * \
             (1 + numb_bytes) + b'\xFB'
         buf_in = bytearray(len(buf_out))
         with self._spi as spi:
             spi.write_readinto(buf_out, buf_in)
-        return list(buf_in[3:])
+        return buf_in[3:]
 
     def _rap_write(self, reg, value):
         buf = bytearray([(reg | 0x80), value])
         with self._spi as spi:
             spi.write(buf)
 
-    def _rap_write_bytes(self, reg, value):
-        for i, val in enumerate(value):
+    def _rap_write_bytes(self, reg, values):
+        for i, val in enumerate(values):
             self._rap_write(reg + i, val)
-# pylint: enable=no-member
