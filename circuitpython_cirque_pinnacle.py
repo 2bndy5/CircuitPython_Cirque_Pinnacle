@@ -490,10 +490,10 @@ class PinnacleTouch:
 
     @property
     def calibration_matrix(self):
-        """This attribute returns a `list` of the 92 signed 16-bit (short) values stored in the
+        """This attribute returns a `list` of the 46 signed 16-bit (short) values stored in the
         Pinnacle ASIC's memory that is used for taking measurements. This matrix is not applicable
         in AnyMeas mode. Use this attribute to compare a prior compensation matrix with a new
-        matrix that was either loaded manually by setting this attribute to a `list` of 92 signed
+        matrix that was either loaded manually by setting this attribute to a `list` of 46 signed
         16-bit (short) integers or created internally by calling `calibrate()` with the ``run``
         parameter as `True`.
 
@@ -512,21 +512,22 @@ class PinnacleTouch:
             this new matrix, with the average values, back into Pinnacle ASIC.
         """
         # combine every 2 bytes from resulting buffer to form a list of signed 16-bits integers
-        return list(struct.unpack('92h', self._era_read_bytes(0x01DF, 92 * 2)))
+        return list(struct.unpack('46h', self._era_read_bytes(0x01DF, 46 * 2)))
 
 
     @calibration_matrix.setter
     def calibration_matrix(self, matrix):
-        for _ in range(92 - len(matrix)):  # padd short matrices w/ 0s
-            matrix.append(0)
+        if len(matrix) < 46:  # padd short matrices w/ 0s
+            matrix += [0] * (46 - len(matrix))
         # save time on bus interactions by pausing feed now
         prev_feed_state = self.feed_enable
         self.feed_enable = False # required for ERA functions anyway
         # be sure to not write more than allowed
-        for index in range(0, 92, 2):  # write 2 bytes at a time
-            buf = struct.unpack('h', matrix[index:index + 2])
-            self._era_write(0x01DF + index, buf[0])
-            self._era_write(0x01DF + index, buf[1])
+        for index in range(46):
+            # write 2 bytes at a time
+            buf = struct.pack('h', matrix[index])
+            self._era_write(0x01DF + index * 2, buf[0])
+            self._era_write(0x01DF + index * 2 + 1, buf[1])
         self.feed_enable = prev_feed_state  # resume previous feed state
 
     def set_adc_gain(self, sensitivity):
@@ -730,15 +731,15 @@ class PinnacleTouch:
         return buf
 
     def _era_read_bytes(self, reg, numb_bytes):
-        buf = []
+        buf = b''
         prev_feed_state = self.feed_enable
         self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write_bytes(PINNACLE_ERA_ADDR_HIGH, [reg >> 8, reg & 0xff])
-        self._rap_write(PINNACLE_ERA_CTRL, 5)  # indicate reading sequential bytes
         for _ in range(numb_bytes):
+            self._rap_write(PINNACLE_ERA_CTRL, 5)  # indicate reading sequential bytes
             while self._rap_read(PINNACLE_ERA_CTRL):  # read until reg == 0
                 pass  # also sets Command Complete flag in Status register
-            buf.append(self._rap_read(PINNACLE_ERA_VALUE))  # get value
+            buf += bytes([self._rap_read(PINNACLE_ERA_VALUE)])  # get value
             self.clear_flags()
         self.feed_enable = prev_feed_state  # resume previous feed state
         return buf
