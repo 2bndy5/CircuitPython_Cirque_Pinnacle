@@ -188,6 +188,26 @@ body {
  background:#242424;
 }
 
+/* -------------------------------------footnote sections------------------------------------------------ */
+.rst-content table.docutils.citation td,
+.rst-content table.docutils.citation tr,
+.rst-content table.docutils.footnote td,
+.rst-content table.docutils.footnote tr {
+ text-align: left;
+}
+
+.rst-content table.docutils.citation,
+.rst-content table.docutils.footnote {
+ color:#fcfcfc;
+}
+
+.rst-content table.docutils.citation tt,
+.rst-content table.docutils.citation code,
+.rst-content table.docutils.footnote tt,
+.rst-content table.docutils.footnote code {
+ color:#16ff00;
+}
+
 /* -------------------------------------sidebar sections------------------------------------------------ */
 .wy-side-nav-search {
  background-color:#006B09;
