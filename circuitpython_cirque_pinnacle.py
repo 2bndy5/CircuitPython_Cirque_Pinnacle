@@ -122,6 +122,7 @@ class PinnacleTouch:
             raise OSError("Cirque Pinnacle ASIC not responding")
 
         # init internal attributes w/ factory defaults after power-on-reset
+        self._hco = bool(self._rap_read(0x1F))  # is hardware custom configured?
         self._sys_config = 0  # ignoring read-only reset flag (bit 0)
         self._feed_config1 = 1  # enables feed & sets to relative mode
         self._feed_config2 = 2  # disables taps in relative mode
@@ -237,25 +238,36 @@ class PinnacleTouch:
             # now configure the AnyMeas mode to default values
             self.anymeas_mode_config()
 
-    def relative_mode_config(self, rotate90=False, disable_taps=True):
-        """Set the configuration register for features specific to relative mode (AKA mouse mode)
-        data reporting. (write only)
+    @property
+    def hard_configured(self):
+        """This `bool` attribute provides insight to applications about factory
+        customized hardware configuration. see note about product labeling in
+        `Model Labeling Scheme <index.html#model-labeling-scheme>`_. (read only)"""
+        return self._hco
 
-        This function only applies to Relative mode, otherwise if `data_mode` is set to
-        :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS` or
-        :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`, then this function will take
-        no affect until `data_mode` is set to
-        :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE`.
+    def relative_mode_config(self, rotate90=False, glide_extend=True,
+                             secondary_tap=True, taps=False, intellimouse=False):
+        """Set the configuration register for features specific to relative mode (AKA mouse mode)
+        data reporting.
 
         :param bool rotate90: Specifies if the axis data is altered for 90 degree rotation before
-            reporting it. Default is `False`.
-        :param bool disable_taps: Specifies if all taps should be reported (`False`) or not
-            (`True`). Default is `True`. Only button 1 (left mouse button) is emulated with a tap
-            and will be reflected in the button data portion of the data reports.
+            reporting it (essentially swaps the axis data). Default is `False`.
+        :param bool glide_extend: A patended feature that allows the user to glide their finger off
+            the edge of the sensor and continue gesture with the touch event. Default is `True`.
+            This feature is only available if `hard_configured` is `False`.
+        :param bool secondary_tap: Specifies if tapping in the top-left corner (depending on
+            orientation) triggers the secondary button data. Defaults to `True`. This feature is
+            only available if `hard_configured` is `False`.
+        :param bool taps: Specifies if all taps should be reported (`True`) or not
+            (`False`). Default is `True`. This affects ``secondary_tap`` option as well. The
+            primary button (left mouse button) is emulated with a tap.
+        :param bool intellimouse: Specifies if the data reported includes a byte about scroll data.
+            Default is `False`. Because this flag is specific to scroll data, this feature is only
+            available if `hard_configured` is `False`.
         """
-        self._feed_config2 = rotate90 << 7 | disable_taps << 1
-        if self.data_mode == DataModes.RELATIVE:
-            self._rap_write(PINNACLE_FEED_CONFIG2, self._feed_config2)
+        self._feed_config2 = rotate90 << 7 | (not glide_extend) << 4 | (
+            not secondary_tap) << 2 | (not taps) << 1 | intellimouse
+        self._rap_write(PINNACLE_FEED_CONFIG2, self._feed_config2)
 
     def absolute_mode_config(self, z_idle_count=30, invert_x=False, invert_y=False):
         """Set the configuration settings specific to Absolute mode (reports axis positions).
@@ -300,45 +312,64 @@ class PinnacleTouch:
 
             .. list-table::
                 :header-rows: 1
-                :widths: 2, 8, 8
+                :widths: 1, 5, 5
 
                 * - Index
-                  - Relative (Mouse) mode as a `bytearray`
-                  - Absolute Mode as a `list`
+                  - Relative (Mouse) mode
+
+                    as a `bytearray`
+                  - Absolute Mode
+
+                    as a `list`
                 * - 0
-                  - "Button Data"
-                  - "Button Data"
+                  - Button Data [1]_
+
+                    one unsigned byte
+                  - Button Data [1]_
+
+                    one unsigned byte
                 * - 1
-                  - "change in x-axis"
-                  - "x-axis Position"
+                  - change in x-axis [2]_
+
+                    -128 |LessEq| X |LessEq| 127
+                  - x-axis Position
+
+                    128 |LessEq| X |LessEq| 1920
                 * - 2
-                  - "change in y-axis"
-                  - "y-axis Position"
+                  - change in y-axis [2]_
+
+                    -128 |LessEq| Y |LessEq| 127
+                  - y-axis Position
+
+                    64 |LessEq| Y |LessEq| 1472
                 * - 3
-                  - "change in scroll wheel"
-                  - "z-axis Position"
+                  - change in scroll wheel
 
-            .. important:: The axis data reported in Relative/Mouse mode is in two's
-                comliment form. Use Python's :py:func:`struct.unpack()` to convert the
-                data into integer form (see `Simple Test example <examples.html#simple-test>`_
-                for how to use this function).
+                    -128 |LessEq| Y |LessEq| 127 [3]_
+                  - z-axis Position
 
-                The axis data reported in Absolute mode is always positive as the
-                xy-plane's origin is located to the top-left, unless ``invert_x`` or ``invert_y``
-                parameters to `absolute_mode_config()` are manipulated to change the perspective
-                location of the origin.
-
-        :Button Data: The returned button data is a byte in which each bit represents a button
+        .. [1] The returned button data is a byte in which each bit represents a button.
             The bit to button order is as follows:
 
-                0. [LSB] Button 1 (thought of as Left button in Relative/Mouse mode).
-                   If taps are enabled in Relative/Mouse mode, a single tap will be reflected here
-                1. Button 2 (thought of as Right button in Relative/Mouse mode)
-                2. Button 3 (thought of as Middle or scroll wheel button in Relative/Mouse mode)
+            0. [LSB] Button 1 (thought of as Left button in Relative/Mouse mode). If taps
+               are enabled using `relative_mode_config()`, a single tap will be reflected here.
+            1. Button 2 (thought of as Right button in Relative/Mouse mode)
+            2. Button 3 (thought of as Middle or scroll wheel button in Relative/Mouse mode)
+        .. [2] The axis data reported in Relative/Mouse mode is in two's
+            comliment form. Use Python's :py:func:`struct.unpack()` to convert the
+            data into integer form (see `Simple Test example <examples.html#simple-test>`_
+            for how to use this function).
 
-        .. note:: In Relative/Mouse mode, the scroll wheel data is a zero-value byte as the
+            The axis data reported in Absolute mode is always positive as the
+            xy-plane's origin is located to the top-left, unless ``invert_x`` or ``invert_y``
+            parameters to `absolute_mode_config()` are manipulated to change the perspective
+            location of the origin.
+        .. [3] In Relative/Mouse mode the scroll wheel data is only reported if the
+            ``intellimouse`` parameter is passed as `True` to `relative_mode_config()`.
+            Otherwise this is an empty byte as the
             returned `bytearray` follows the buffer structure of a mouse HID report (see
             `USB Mouse example <examples.html#usb-mouse-example>`_).
+        .. |LessEq| unicode:: U+2264
         """
         if self._mode == DataModes.ANYMEAS:
             return None
@@ -356,11 +387,19 @@ class PinnacleTouch:
                                ((temp[4] & 0x0F) << 8) | temp[2],  # x
                                ((temp[4] & 0xF0) << 4) | temp[3],  # y
                                temp[5] & 0x3F]  # z
+                # datasheet recommends clipping for reliability
+                return_vals[1] = min(128, max(1920, return_vals[1]))
+                return_vals[2] = min(64, max(1472, return_vals[2]))
             elif self.data_mode == DataModes.RELATIVE:  # if in relative mode
+                is_intellimouse = self._feed_config2 & 1
                 # get relative data packets
-                temp = self._rap_read_bytes(PINNACLE_PACKET_BYTE_0, 3)
-                # convrert to bytearray & append empty byte to suite mouse HID reports
-                return_vals = bytearray([temp[0] & 7, temp[1], temp[2], 0])
+                temp = self._rap_read_bytes(
+                    PINNACLE_PACKET_BYTE_0, 3 + is_intellimouse)
+                return_vals = bytearray([temp[0] & 7, temp[1], temp[2]])
+                if is_intellimouse:  # scroll wheel data is captured
+                    return_vals += bytes([temp[3]])
+                else:  # append empty byte to suite mouse HID reports
+                    return_vals += b'\x00'
             # clear flags despite if data is fresh or not (faster & reliable)
             self.clear_flags()
         return return_vals

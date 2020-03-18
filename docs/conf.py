@@ -24,7 +24,6 @@ extensions = [
 autodoc_mock_imports = ["digitalio", "busio"]
 autodoc_member_order = 'bysource'
 
-
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.7', None),
     'BusDevice': ('https://circuitpython.readthedocs.io/projects/busdevice/en/latest/', None),
@@ -156,7 +155,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'CircuitPythonCirquePinnaclelibrary', u'CircuitPython Cirque Pinnacle Library Documentation',
+    (master_doc, 'CircuitPythonCirquePinnacleLibrary', u'CircuitPython Cirque Pinnacle Library Documentation',
      [author], 1)
 ]
 

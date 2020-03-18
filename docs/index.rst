@@ -24,8 +24,7 @@ Table of Contents
 .. toctree::
     :caption: Related Products
 
-.. todo:: Add any product links here. If there are none, then simply delete this todo and leave
-    the toctree above for use later.
+    Cirque Glidepoint circle trackpads <https://www.mouser.com/Search/Refine?Ntk=P_MarCom&Ntt=118816186>
 
 .. toctree::
     :caption: Other Links

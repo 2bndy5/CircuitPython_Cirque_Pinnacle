@@ -81,16 +81,23 @@ on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_)
     (when pressed) provide a path to ground, the Pinnacle touch controller will report all 3
     buttons' states for each touch (or even button only) events.
 
-The Cirque circle trackpad models use the following labeling scheme:
+Model Labeling Scheme
+---------------------
 
-:TMyyyxxx-202i-30o:
+  TM\ [yyyxxx]_\ -202\ [i]_\ -\ [cc]_\ [o]_
 
-    - ``yyy`` stands for the horizontal width of the trackpad
-    - ``xxx`` stands for the vertical width of the trackpad
-    - ``i`` stands for the hardwired interface protocol (3 = I2C, 4 = SPI). Notice, if there is a
-      resistor populated at the R1 (470K ohm) junction (located just above the Pinnacle ASIC), it
-      is configured for SPI, otherwise it is configured for I2C.
-    - ``o`` stands for the overlay type (0 = none, 1 = adhesive, 2 = flat, 3 = curved)
+  .. [yyyxxx] stands for the vertical & horizontal width of the trackpad, respectively.
+  .. [i] stands for the hardwired interface protocol (3 = I2C, 4 = SPI). Notice, if there is a
+    resistor populated at the R1 (470K ohm) junction (located just above the Pinnacle ASIC), it
+    is configured for SPI, otherwise it is configured for I2C.
+  .. [cc] stands for Custom Configuration. "30" means that the hardware is configured to disable
+    certain features despite what this library does. "00" means that the hardware is configured
+    to allow certain features to manipulated by this library. These features include "secondary
+    tap" (thought of as "right mouse button" in relative data mode), Intellimouse scrolling
+    (Microsoft patented scroll wheel behavior -- a throw back to when scroll wheels were
+    first introduced), and 180 degree orientation (your application can invert the axis
+    data anyway).
+  .. [o] stands for the overlay type (0 = none, 1 = adhesive, 2 = flat, 3 = curved)
 
 Dependencies
 =============
