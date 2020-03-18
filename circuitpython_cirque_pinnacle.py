@@ -160,13 +160,14 @@ class PinnacleTouch:
             # write to all internal attributes to registers
             self._rap_write_bytes(PINNACLE_SYS_CONFIG, [
                 self._sys_config, self._feed_config1, self._feed_config2])
-            self.set_adc_gain(self._sensitivity)
+            self._era_write(0x0187, self._sensitivity)
             self.detect_finger_stylus(
                 self._finger_stylus & 4, self._finger_stylus & 1, self._sample_rate)
             self._rap_write(PINNACLE_CALIBRATE_CONFIG, self._cal_config)
             self._rap_write(PINNACLE_Z_IDLE, self._z_idle_count)
             self.feed_enable = True
         self.clear_flags() # just to be sure
+        return self
 
     def __exit__(self, *exc):
         self.shutdown = True

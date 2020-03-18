@@ -26,3 +26,12 @@ This example uses the Pinnacle touch controller's AnyMeas mode to fetch raw ADC 
 .. literalinclude:: ../examples/cirque_pinnacle_anymeas_test.py
     :caption: examples/cirque_pinnacle_anymeas_test.py
     :linenos:
+
+Context Manager example
+-----------------------
+
+This example displays the difference in the Pinnacle ASIC's configuration registers.
+
+.. literalinclude:: ../examples/cirque_pinnacle_context_test.py
+    :caption: examples/cirque_pinnacle_context_test.py
+    :linenos:
