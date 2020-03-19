@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; Circuitpython Cirque Pinnacle Library 1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/darkness.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Simple Test" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> Circuitpython Cirque Pinnacle Library
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Simple Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#usb-mouse-example">USB Mouse example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#anymeas-mode-example">AnyMeas mode example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#context-manager-example">Context Manager example</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">PinnacleTouch API</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Related Products</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://www.mouser.com/Search/Refine?Ntk=P_MarCom&amp;Ntt=118816186">Cirque Glidepoint circle trackpads</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.mouser.com/Connectors/FFC-FPC/FFC-FPC-Jumper-Cables/_/N-axro3?P=1yc8ojpZ1z0wxjx">12-pin FPC cable (0.5mm pitch)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Other Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/2bndy5/CircuitPython_Pinnacle_1ca027/releases/latest">Download</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://circuitpython.readthedocs.io">CircuitPython Reference Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://forums.adafruit.com/viewforum.php?f=60">CircuitPython Support Forum</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://adafru.it/discord">Discord Chat</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://learn.adafruit.com">Adafruit Learning System</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://blog.adafruit.com">Adafruit Blog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.adafruit.com">Adafruit Store</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Circuitpython Cirque Pinnacle Library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <a class="reference external image-reference" href="https://circuitpython-cirque-pinnacle.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/circuitpython-cirque-pinnacle/badge/?version=latest" /></a>
+<a class="reference external image-reference" href="https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/actions/"><img alt="Build Status" src="https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/workflows/Build%20CI/badge.svg" /></a>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>A CircuitPython driver library that implements the Adafruit_BusDevice library
+for interfacing with the Cirque Pinnacle (1CA027) touch controller used in Cirque Circle Trackpads.</p>
+<div class="section" id="supported-features">
+<h2>Supported Features<a class="headerlink" href="#supported-features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Use SPI or I2C bus protocols to interface with the Pinnacle touch controller ASIC (Application
+Specific Integrated Circuit).</p></li>
+<li><p>Relative mode data reporting (AKA Mouse mode) with optional tap detection.</p></li>
+<li><p>Absolute mode data reporting (x, y, &amp; z axis positions).</p></li>
+<li><p>AnyMeas mode data reporting. This mode exposes the ADC (Analog to Digital Converter) values and is
+not well documented in the numerous datasheets provided by the Cirque corporation about the
+Pinnacle (1CA027), thus this is a rather experimental mode.</p></li>
+<li><p>Hardware input buttons’ states included in data reports. There are 3 button input lines on
+the Cirque circle trackpads – see <a class="reference internal" href="#pinout">Pinout</a> section.</p></li>
+<li><p>Ability to identify finger &amp; stylus or only stylus or only finger touch events. The Cirque circle
+trackpads are natively capable of measuring only 1 touch point per event.</p></li>
+<li><p>Download/upload the underlying compensation matrix for ADC measurements.</p></li>
+<li><p>Adjust the ADC matrix gain (sensitivity).</p></li>
+<li><p>compliant with use of context manager (using <a class="reference external" href="https://docs.python.org/3.7/reference/compound_stmts.html#with" title="(in Python v3.7)"><code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">with</span> <span class="pre">statement</span></code></a> block) for ease of switching
+between different configurations of various data mode selections.</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The SPI protocol is the preferred method for interfacing with more than 1 Cirque circle
+trackpad from the same MCU (microcontroller). The Cirque Pinnacle does not allow
+changing the I2C slave device address (via software); this means only 1 Cirque circle trackpad
+can be accessed over the I2C bus at a time.</p>
+</div>
+</div>
+<div class="section" id="unsupported-features">
+<h2>Unsupported Features<a class="headerlink" href="#unsupported-features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>The legacy PS\2 interface is pretty limited and not accessible by some CircuitPython MCUs.
+Therefore, it has been neglected in this library.</p></li>
+<li><p>Cirque’s circle trackpads ship with the newer non-AG (Advanced Gestures) variant of the
+Pinnacle touch controller ASIC. Thus, this library focuses on the the non-AG variant’s
+functionality via testing, and it does not provide access to the older AG variant’s features
+(register addresses slightly differ which breaks compatibility).</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="pinout">
+<h1>Pinout<a class="headerlink" href="#pinout" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="https://www.mouser.com/new/cirque/glidepoint-circle-trackpads/"><img alt="https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/raw/master/docs/_static/Cirque_GlidePoint-Circle-Trackpad.png" src="https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/raw/master/docs/_static/Cirque_GlidePoint-Circle-Trackpad.png" /></a>
+<p>The above picture is a example of the Cirque GlidePoint circle trackpad. This picture
+is chosen as the test pads (larger copper circular pads) are clearly labeled. The test pads
+are extended to the 12-pin J1 ribbon cable connector (the white block near the bottom). The
+following table shows how the pins are connected in the <a class="reference external" href="examples.html">examples</a> (tested
+on an <a class="reference external" href="https://www.adafruit.com/product/3800">ItsyBitys M4</a>)</p>
+<table class="colwidths-given docutils align-default" id="id5">
+<caption><span class="caption-text">pinout (ordered the same as the 12-pin ribbon cable connector)</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 22%" />
+<col style="width: 57%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Label</p></th>
+<th class="head"><p>MCU pin</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SCK</p></td>
+<td><p>SCK</p></td>
+<td><p>SPI clock line</p></td>
+</tr>
+<tr class="row-odd"><td><p>SO</p></td>
+<td><p>MISO</p></td>
+<td><p>Master Input Slave Output</p></td>
+</tr>
+<tr class="row-even"><td><p>SS</p></td>
+<td><p>D7</p></td>
+<td><p>Slave Select (AKA Chip Select)</p></td>
+</tr>
+<tr class="row-odd"><td><p>DR</p></td>
+<td><p>D2</p></td>
+<td><p>“data ready” interrupt</p></td>
+</tr>
+<tr class="row-even"><td><p>SI</p></td>
+<td><p>MOSI</p></td>
+<td><p>SPI Master Output Slave Input</p></td>
+</tr>
+<tr class="row-odd"><td><p>B2</p></td>
+<td><p>N/A</p></td>
+<td><p>Hardware input button #2</p></td>
+</tr>
+<tr class="row-even"><td><p>B3</p></td>
+<td><p>N/A</p></td>
+<td><p>Hardware input button #3</p></td>
+</tr>
+<tr class="row-odd"><td><p>B1</p></td>
+<td><p>N/A</p></td>
+<td><p>Hardware input button #1</p></td>
+</tr>
+<tr class="row-even"><td><p>SCL</p></td>
+<td><p>SCL</p></td>
+<td><p>I2C clock line</p></td>
+</tr>
+<tr class="row-odd"><td><p>SDA</p></td>
+<td><p>SDA</p></td>
+<td><p>I2C data line</p></td>
+</tr>
+<tr class="row-even"><td><p>GND</p></td>
+<td><p>GND</p></td>
+<td><p>Ground</p></td>
+</tr>
+<tr class="row-odd"><td><p>VDD</p></td>
+<td><p>3V</p></td>
+<td><p>3V power supply</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Of course, you can capture button data manually (if your application utilizes more
+than 3 buttons), but if you connect the pins B1, B2, B3 to momentary push buttons that
+(when pressed) provide a path to ground, the Pinnacle touch controller will report all 3
+buttons’ states for each touch (or even button only) events.</p>
+</div>
+<div class="section" id="model-labeling-scheme">
+<h2>Model Labeling Scheme<a class="headerlink" href="#model-labeling-scheme" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>TM<a class="reference internal" href="#yyyxxx" id="id1"><span>[yyyxxx]</span></a>-202<a class="reference internal" href="#i" id="id2"><span>[i]</span></a>-<a class="reference internal" href="#cc" id="id3"><span>[cc]</span></a><a class="reference internal" href="#o" id="id4"><span>[o]</span></a></p>
+<dl class="citation">
+<dt class="label" id="yyyxxx"><span class="brackets"><a class="fn-backref" href="#id1">yyyxxx</a></span></dt>
+<dd><p>stands for the vertical &amp; horizontal width of the trackpad, respectively.</p>
+</dd>
+<dt class="label" id="i"><span class="brackets"><a class="fn-backref" href="#id2">i</a></span></dt>
+<dd><p>stands for the hardwired interface protocol (3 = I2C, 4 = SPI). Notice, if there is a
+resistor populated at the R1 (470K ohm) junction (located just above the Pinnacle ASIC), it
+is configured for SPI, otherwise it is configured for I2C.</p>
+</dd>
+<dt class="label" id="cc"><span class="brackets"><a class="fn-backref" href="#id3">cc</a></span></dt>
+<dd><p>stands for Custom Configuration. “30” means that the hardware is configured to disable
+certain features despite what this library does. “00” means that the hardware is configured
+to allow certain features to manipulated by this library. These features include “secondary
+tap” (thought of as “right mouse button” in relative data mode), Intellimouse scrolling
+(Microsoft patented scroll wheel behavior – a throw back to when scroll wheels were
+first introduced), and 180 degree orientation (your application can invert the axis
+data anyway).</p>
+</dd>
+<dt class="label" id="o"><span class="brackets"><a class="fn-backref" href="#id4">o</a></span></dt>
+<dd><p>stands for the overlay type (0 = none, 1 = adhesive, 2 = flat, 3 = curved)</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="dependencies">
+<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
+<p>This driver depends on:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/adafruit/circuitpython">Adafruit CircuitPython</a></p></li>
+<li><p><a class="reference external" href="https://github.com/adafruit/Adafruit_CircuitPython_BusDevice">Bus Device</a></p></li>
+</ul>
+<p>Please ensure all dependencies are available on the CircuitPython filesystem.
+This is easily achieved by downloading <a class="reference external" href="https://github.com/adafruit/Adafruit_CircuitPython_Bundle">the Adafruit library and driver bundle</a>.</p>
+</div>
+<div class="section" id="how-to-install">
+<h1>How to Install<a class="headerlink" href="#how-to-install" title="Permalink to this headline">¶</a></h1>
+<p>This library isn’t getting deployed to pypi.org yet. Use the following commands to install this library:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git
+<span class="nb">cd</span> CircuitPython_Cirque_Pinnacle
+python3 setup.py install
+</pre></div>
+</div>
+<p>To install globally, prefix the last command with <code class="docutils literal notranslate"><span class="pre">sudo</span></code>.</p>
+</div>
+<div class="section" id="usage-example">
+<h1>Usage Example<a class="headerlink" href="#usage-example" title="Permalink to this headline">¶</a></h1>
+<p>Ensure you’ve connected the TMyyyxxx correctly by running the <a class="reference internal" href="examples.html"><span class="doc">Simple Test</span></a> located in the <a class="reference external" href="https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/tree/master/examples">examples
+folder of this library</a>.</p>
+</div>
+<div class="section" id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<p>Contributions are welcome! Please read our <a class="reference external" href="https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a>
+before contributing to help this project stay welcoming.</p>
+<div class="section" id="sphinx-documentation">
+<h2>Sphinx documentation<a class="headerlink" href="#sphinx-documentation" title="Permalink to this headline">¶</a></h2>
+<p>Sphinx is used to build the documentation based on rST files and comments in the code. First,
+install dependencies (feel free to reuse the virtual environment from above):</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3 -m venv .env
+<span class="nb">source</span> .env/bin/activate
+pip install Sphinx sphinx-rtd-theme
+</pre></div>
+</div>
+<p>Now, once you have the virtual environment activated:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> docs
+sphinx-build -E -W -b html . _build/html
+</pre></div>
+</div>
+<p>This will output the documentation to <code class="docutils literal notranslate"><span class="pre">docs/_build/html</span></code>. Open the index.html in your browser to
+view them. It will also (due to -W) error out on any warning like Travis will. This is a good way to
+locally verify it will pass.</p>
+</div>
+</div>
+<div class="section" id="table-of-contents">
+<h1>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Simple Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#usb-mouse-example">USB Mouse example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#anymeas-mode-example">AnyMeas mode example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#context-manager-example">Context Manager example</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">PinnacleTouch API</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Related Products</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://www.mouser.com/Search/Refine?Ntk=P_MarCom&amp;Ntt=118816186">Cirque Glidepoint circle trackpads</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.mouser.com/Connectors/FFC-FPC/FFC-FPC-Jumper-Cables/_/N-axro3?P=1yc8ojpZ1z0wxjx">12-pin FPC cable (0.5mm pitch)</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Other Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/2bndy5/CircuitPython_Pinnacle_1ca027/releases/latest">Download</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://circuitpython.readthedocs.io">CircuitPython Reference Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://forums.adafruit.com/viewforum.php?f=60">CircuitPython Support Forum</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://adafru.it/discord">Discord Chat</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://learn.adafruit.com">Adafruit Learning System</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://blog.adafruit.com">Adafruit Blog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.adafruit.com">Adafruit Store</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="examples.html" class="btn btn-neutral float-right" title="Simple Test" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020 Brendan Doherty
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

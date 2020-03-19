@@ -1,0 +1,702 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>circuitpython_pinnacle_1ca027 &mdash; Circuitpython Pinnacle-1ca027 Library 1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/darkness.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Circuitpython Pinnacle-1ca027 Library
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Introduction</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">PinnacleTouch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html#pinnacletouchspi">PinnacleTouchSPI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html#pinnacletouchi2c">PinnacleTouchI2C</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Other Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/2bndy5/CircuitPython_Pinnacle_1ca027/releases/latest">Download</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://circuitpython.readthedocs.io">CircuitPython Reference Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://forums.adafruit.com/viewforum.php?f=60">CircuitPython Support Forum</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://adafru.it/discord">Discord Chat</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://learn.adafruit.com">Adafruit Learning System</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://blog.adafruit.com">Adafruit Blog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.adafruit.com">Adafruit Store</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Circuitpython Pinnacle-1ca027 Library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>circuitpython_pinnacle_1ca027</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for circuitpython_pinnacle_1ca027</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The MIT License (MIT)</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2020 Brendan Doherty</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in</span>
+<span class="c1"># all copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN</span>
+<span class="c1"># THE SOFTWARE.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">PinnacleTouch API</span>
+<span class="sd">=================</span>
+
+<span class="sd">A driver class for the Pinnacle touch controller ASIC on the Cirque capacitve touch based circular</span>
+<span class="sd">trackpads.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">adafruit_bus_device.spi_device</span> <span class="k">import</span> <span class="n">SPIDevice</span>
+<span class="kn">from</span> <span class="nn">adafruit_bus_device.i2c_device</span> <span class="k">import</span> <span class="n">I2CDevice</span>
+
+<span class="c1"># internal registers</span>
+<span class="c1"># pylint: disable=bad-whitespace</span>
+<span class="n">PINNACLE_FIRMWARE_ID</span>           <span class="o">=</span> <span class="mh">0x00</span> <span class="c1"># Firmware ASIC ID</span>
+<span class="n">PINNACLE_FIRMWARE_VER</span>          <span class="o">=</span> <span class="mh">0x01</span> <span class="c1"># Firmware revision number</span>
+<span class="n">PINNACLE_STATUS</span>                <span class="o">=</span> <span class="mh">0x02</span> <span class="c1"># Contains status flags about the state of Pinnacle</span>
+<span class="n">PINNACLE_SYS_CONFIG</span>            <span class="o">=</span> <span class="mh">0x03</span> <span class="c1"># Contains system operation and configuration bits</span>
+<span class="n">PINNACLE_FEED_CONFIG1</span>          <span class="o">=</span> <span class="mh">0x04</span> <span class="c1"># Contains feed operation and configuration bits</span>
+<span class="n">PINNACLE_FEED_CONFIG2</span>          <span class="o">=</span> <span class="mh">0x05</span> <span class="c1"># Contains feed operation and configuration bits</span>
+<span class="n">PINNACLE_FEED_CONFIG3</span>          <span class="o">=</span> <span class="mh">0x06</span> <span class="c1"># Contains feed operation and configuration bits</span>
+<span class="n">PINNACLE_CALIBRATE_CONFIG</span>      <span class="o">=</span> <span class="mh">0x07</span> <span class="c1"># Contains calibration configuration bits</span>
+<span class="n">PINNACLE_PS_2_AUX_CTRL</span>         <span class="o">=</span> <span class="mh">0x08</span> <span class="c1"># Contains Data register for PS/2 Aux Control</span>
+<span class="n">PINNACLE_SAMPLE_RATE</span>           <span class="o">=</span> <span class="mh">0x09</span> <span class="c1"># Number of samples generated per second</span>
+<span class="n">PINNACLE_Z_IDLE</span>                <span class="o">=</span> <span class="mh">0x0A</span> <span class="c1"># Number of Z=0 packets sent when Z goes from &gt;0 to 0</span>
+<span class="n">PINNACLE_Z_SCALAR</span>              <span class="o">=</span> <span class="mh">0x0B</span> <span class="c1"># Contains the pen Z_On threshold</span>
+<span class="n">PINNACLE_SLEEP_INTERVAL</span>        <span class="o">=</span> <span class="mh">0x0C</span> <span class="c1"># No description</span>
+<span class="n">PINNACLE_SLEEP_TIMER</span>           <span class="o">=</span> <span class="mh">0x0D</span> <span class="c1"># No description</span>
+<span class="n">PINNACLE_EMI_THRESHOLD</span>         <span class="o">=</span> <span class="mh">0x0E</span> <span class="c1"># Threshold to adjust EMI settings</span>
+<span class="n">PINNACLE_PACKET_BYTE_0</span>         <span class="o">=</span> <span class="mh">0x12</span> <span class="c1"># trackpad Data</span>
+<span class="n">PINNACLE_PACKET_BYTE_1</span>         <span class="o">=</span> <span class="mh">0x13</span> <span class="c1"># trackpad Data</span>
+<span class="n">PINNACLE_PACKET_BYTE_2</span>         <span class="o">=</span> <span class="mh">0x14</span> <span class="c1"># trackpad Data</span>
+<span class="n">PINNACLE_PACKET_BYTE_3</span>         <span class="o">=</span> <span class="mh">0x15</span> <span class="c1"># trackpad Data</span>
+<span class="n">PINNACLE_PACKET_BYTE_4</span>         <span class="o">=</span> <span class="mh">0x16</span> <span class="c1"># trackpad Data</span>
+<span class="n">PINNACLE_PACKET_BYTE_5</span>         <span class="o">=</span> <span class="mh">0x17</span> <span class="c1"># trackpad Data</span>
+<span class="n">PINNACLE_PORTA_GPIO_CTRL</span>       <span class="o">=</span> <span class="mh">0x18</span> <span class="c1"># Control of Port A GPIOs</span>
+<span class="n">PINNACLE_PORTA_GPIO_DATA</span>       <span class="o">=</span> <span class="mh">0x19</span> <span class="c1"># Data of Port A GPIOs</span>
+<span class="n">PINNACLE_PORTB_GPIO_CTRL_DATA</span>  <span class="o">=</span> <span class="mh">0x1A</span> <span class="c1"># Control and Data of PortB GPIOs</span>
+<span class="n">PINNACLE_ERA_VALUE</span>             <span class="o">=</span> <span class="mh">0x1B</span> <span class="c1"># Value for extended register access</span>
+<span class="n">PINNACLE_ERA_ADDR_HIGH</span>         <span class="o">=</span> <span class="mh">0x1C</span> <span class="c1"># High byte of 16 bit extended register address</span>
+<span class="n">PINNACLE_ERA_ADDR_LOW</span>          <span class="o">=</span> <span class="mh">0x1D</span> <span class="c1"># Low byte of 16 bit extended register address</span>
+<span class="n">PINNACLE_ERA_CTRL</span>              <span class="o">=</span> <span class="mh">0x1E</span> <span class="c1"># Control of extended register access</span>
+<span class="n">PINNACLE_PRODUCT_ID</span>            <span class="o">=</span> <span class="mh">0x1F</span> <span class="c1"># Product ID</span>
+<span class="c1"># pylint: enable=bad-whitespace</span>
+<span class="c1"># pylint: disable=too-many-arguments</span>
+
+<span class="k">def</span> <span class="nf">twos_comp</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;return integer representation of ``data`` in 2&#39;s compliment form using a</span>
+<span class="sd">    specified number of ``bits`` &quot;&quot;&quot;</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span> <span class="o">&amp;</span> <span class="n">mask</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">mask</span> <span class="o">+</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">mask</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="PinnacleTouch"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouch">[docs]</a><span class="k">class</span> <span class="nc">PinnacleTouch</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The abstract base class for driving the Pinnacle touch controller.</span>
+
+<span class="sd">    :param ~microcontroller.Pin dr_pin: The input pin connected to the touch controller&#39;s &quot;Data</span>
+<span class="sd">        Ready&quot; pin.</span>
+<span class="sd">    :param int z_idle_count: The number of empty packets to report (every 10 milliseconds) when</span>
+<span class="sd">        z-axis is idle (no touch detected). Default is 5.</span>
+<span class="sd">    :param bool relative: Specifies if the data reported is relative (`True` -- change since</span>
+<span class="sd">        last event) or absolute (`False` -- exact position on sensor) modes. Default is `True`.</span>
+
+<span class="sd">        .. note:: Relative data mode is also referred to as &quot;Mouse Mode&quot; in the datasheet.</span>
+<span class="sd">    :param bool invert_x: Specifies if the x-axis data is to be inverted before reporting it.</span>
+<span class="sd">        Default is `False`.</span>
+<span class="sd">    :param bool invert_y: Specifies if the y-axis data is to be inverted before reporting it.</span>
+<span class="sd">        Default is `False`.</span>
+<span class="sd">    :param bool feed_enable: Specifies if data reporting is enabled (`True`) or not (`False`).</span>
+<span class="sd">        Default is `True`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dr_pin</span><span class="p">,</span> <span class="n">z_idle_count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">invert_x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">invert_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">feed_enable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_sleep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dr_pin</span> <span class="o">=</span> <span class="n">dr_pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dr_pin</span><span class="o">.</span><span class="n">switch_to_input</span><span class="p">()</span>
+        <span class="c1"># init internal attribute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_z_idle_count</span> <span class="o">=</span> <span class="n">z_idle_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config2</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_init_values</span><span class="p">()</span> <span class="c1"># reads default values from Pinnacle registers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">&amp;</span> <span class="mh">0xFE</span><span class="p">)</span> <span class="o">|</span> <span class="n">invert_y</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="n">invert_x</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span> <span class="o">|</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">relative</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span> <span class="o">|</span> <span class="n">feed_enable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">&amp;</span> <span class="mh">0xFB</span><span class="p">)</span> <span class="o">|</span> <span class="n">allow_sleep</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_flags</span><span class="p">()</span> <span class="c1"># clear any &quot;Command Complete&quot; and &quot;Data Ready&quot; flags</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write_bytes</span><span class="p">(</span><span class="n">PINNACLE_FEED_CONFIG1</span><span class="p">,</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config2</span>
+        <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_SAMPLE_RATE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_Z_IDLE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z_idle_count</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_SYS_CONFIG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_read_init_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># this is called on init() and reset()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read_bytes</span><span class="p">(</span><span class="n">PINNACLE_FEED_CONFIG1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_SAMPLE_RATE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_SYS_CONFIG</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PinnacleTouch.set_data_mode"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouch.set_data_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_data_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">invert_x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">invert_y</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the mode in which the data is reported. (write only)</span>
+
+<span class="sd">        :param bool relative: Specifies if the data reported is relative (`True` -- change since</span>
+<span class="sd">            last event) or absolute (`False` -- exact position on sensor). Default is `True`.</span>
+
+<span class="sd">            .. note:: Relative mode is also referred to as &quot;Mouse Mode&quot; in the datasheet.</span>
+<span class="sd">        :param bool invert_x: Specifies if the x-axis data is to be inverted before reporting it.</span>
+<span class="sd">            Default is `False`.</span>
+<span class="sd">        :param bool invert_y: Specifies if the y-axis data is to be inverted before reporting it.</span>
+<span class="sd">            Default is `False`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">&amp;</span> <span class="mh">0xFE</span><span class="p">)</span> <span class="o">|</span> <span class="n">invert_y</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="n">invert_x</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span> <span class="o">|</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">relative</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_FEED_CONFIG1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PinnacleTouch.relative_mode_config"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouch.relative_mode_config">[docs]</a>    <span class="k">def</span> <span class="nf">relative_mode_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rotate90</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">glide_extend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">scroll_disable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                             <span class="n">secondary_tap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">disable_taps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">intellimouse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;set the configuration register for features specific to relative mode data reporting.</span>
+
+<span class="sd">        :param bool rotate90: Specifies if the axis data is altered for 90 degree rotation before</span>
+<span class="sd">            reporting it. Default is `False`.</span>
+<span class="sd">        :param bool glide_extend: A patended feature that allows the user to lift their finger off</span>
+<span class="sd">            the edge of the sensor and continue the touch event quickly. Default is `True`</span>
+<span class="sd">        :param bool scroll_disable: Specifies if the scrolling data is enabled (`True`) or</span>
+<span class="sd">            disabled (`False`). Default is `False`.</span>
+<span class="sd">        :param bool secondary_tap: Specifies if tapping in the top-left corner (depending on</span>
+<span class="sd">            orientation) triggers the secondary button data. Defaults to `True`.</span>
+<span class="sd">        :param bool disable_taps: Specifies if all taps should be reported (`True`) or not</span>
+<span class="sd">            (`False`). Default is `True`. This affects secondary tap option as well.</span>
+<span class="sd">        :param bool intellimouse: Specifies if the data reported includes a byte about scroll data.</span>
+<span class="sd">            Default is `False`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config2</span> <span class="o">=</span> <span class="n">rotate90</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="ow">not</span> <span class="n">glide_extend</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span> <span class="o">|</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">scroll_disable</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span> <span class="o">|</span> <span class="p">(</span><span class="ow">not</span> <span class="n">secondary_tap</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span> <span class="o">|</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">disable_taps</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span> <span class="o">|</span> <span class="n">intellimouse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_FEED_CONFIG2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config2</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">feed_enable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This `bool` attribute controls if the touch data is reported (`True`) or not</span>
+<span class="sd">        (`False`).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="nd">@feed_enable</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">feed_enable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_on</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed_enable</span> <span class="o">!=</span> <span class="n">is_on</span><span class="p">:</span> <span class="c1"># save ourselves the unnecessary transaction</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_FEED_CONFIG1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">&amp;</span> <span class="mh">0xFE</span><span class="p">)</span> <span class="o">|</span> <span class="n">is_on</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_FEED_CONFIG1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sample_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This attribute controls how many samples (of data) per second are reported. Valid values</span>
+<span class="sd">        are ``100``, ``80``, ``60``, ``40``, ``20``, ``10``. Any other input values automatically</span>
+<span class="sd">        set the sample rate to 100 sps (samples per second).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span>
+
+    <span class="nd">@sample_rate</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">sample_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_SAMPLE_RATE</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_SAMPLE_RATE</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PinnacleTouch.calibrate"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouch.calibrate">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">tap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">track_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nerd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set calibration parameters when the Pinnacle ASIC calibrates itself.</span>
+
+<span class="sd">        :param bool run: If `True`, this function forces a calibration of the sensor. If `False`,</span>
+<span class="sd">            this function just writes the following parameters to the Pinnacle ASIC&#39;s &quot;CalConfig1&quot;</span>
+<span class="sd">            register. This parameter is required while the rest are optional keyword parameters.</span>
+<span class="sd">        :param bool tap: Enable dynamic tap compensation? Default is `True`.</span>
+<span class="sd">        :param bool track_error: Enable dynamic track error compensation? Default is `True`.</span>
+<span class="sd">        :param bool nerd: Enable dynamic NERD compensation? Default is `True`. This parameter has</span>
+<span class="sd">            something to do with palm detection/compensation.</span>
+<span class="sd">        :param bool background: Enable dynamic background compensation? Default is `True`.</span>
+
+<span class="sd">        .. note:: According to the datasheet, calibration of the sensor takes about 100</span>
+<span class="sd">            milliseconds. This function will block until calibration is complete (if ``run`` is</span>
+<span class="sd">            `True`). It is recommended for typical applications to leave all optional parameters</span>
+<span class="sd">            in their default states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_CALIBRATE_CONFIG</span><span class="p">,</span>
+                        <span class="n">tap</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span> <span class="o">|</span> <span class="n">track_error</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span> <span class="o">|</span> <span class="n">nerd</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span> <span class="o">|</span> <span class="n">background</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span> <span class="o">|</span> <span class="n">run</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_CALIBRATE_CONFIG</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span> <span class="c1"># calibration is running</span>
+        <span class="k">if</span> <span class="n">run</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_flags</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PinnacleTouch.report"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouch.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function will return touch event data from the touch controller (if there is any</span>
+<span class="sd">        new data ready to report -- including empty packets on ending of a touch event).</span>
+
+<span class="sd">        :Returns: A `list` of parameters that describe the touch event. The list indices are as</span>
+<span class="sd">            follows:</span>
+
+<span class="sd">            #. value of x-axis (signed if using relative mode data reports)</span>
+<span class="sd">            #. value of y-axis (signed if using relative mode data reports)</span>
+<span class="sd">            #. value of z-axis (signed and only available in absolute mode data reports)</span>
+<span class="sd">            #. value of scroll wheel ()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># placeholder for data reception</span>
+        <span class="n">return_vals</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dr_pin</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config1</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">:</span> <span class="c1"># if absolute mode</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read_bytes</span><span class="p">(</span><span class="n">PINNACLE_PACKET_BYTE_0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+                <span class="n">return_vals</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">((</span><span class="n">temp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                               <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">((</span><span class="n">temp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0xF0</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">|</span> <span class="n">temp</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                               <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">temp</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x3F</span><span class="p">,</span>
+                               <span class="s1">&#39;buttons&#39;</span><span class="p">:</span> <span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x3F</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span> <span class="c1"># if in relative mode</span>
+                <span class="n">is_intellimouse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_config2</span> <span class="o">&amp;</span> <span class="mi">1</span>
+                <span class="c1"># get relative data packets</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read_bytes</span><span class="p">(</span><span class="n">PINNACLE_PACKET_BYTE_0</span><span class="p">,</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">is_intellimouse</span><span class="p">)</span>
+                <span class="n">return_vals</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">twos_comp</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">|</span> <span class="p">((</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">9</span><span class="p">),</span>
+                               <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">twos_comp</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">|</span> <span class="p">((</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">32</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">9</span><span class="p">),</span>
+                               <span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">),</span>
+                               <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">),</span>
+                               <span class="s1">&#39;middle&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">4</span><span class="p">),}</span>
+                <span class="k">if</span> <span class="n">is_intellimouse</span><span class="p">:</span> <span class="c1"># scroll wheel data is captured</span>
+                    <span class="n">return_vals</span><span class="p">[</span><span class="s1">&#39;wheel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">twos_comp</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="mi">8</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_flags</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">return_vals</span></div>
+
+<div class="viewcode-block" id="PinnacleTouch.set_adc_gain"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouch.set_adc_gain">[docs]</a>    <span class="k">def</span> <span class="nf">set_adc_gain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensitivity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the ADC gain in range [0,3] to enhance performance based on the overlay type.</span>
+<span class="sd">        (write-only)</span>
+
+<span class="sd">        :param int sensitivity: This int specifies how sensitive the ADC (Analog to Digital</span>
+<span class="sd">            Converter) component is. ``0`` means most sensitive, and ``3`` means least sensitive.</span>
+<span class="sd">            A value outside this range will raise a `ValueError` exception.</span>
+
+<span class="sd">        .. tip:: The official example code from Cirque for a curved overlay uses a value of ``1``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">sensitivity</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">prev_feed_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed_enable</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feed_enable</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># accessing raw memory, so do this</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_era_read</span><span class="p">(</span><span class="mh">0x0187</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x3F</span>
+            <span class="n">val</span> <span class="o">|=</span> <span class="n">sensitivity</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_era_write</span><span class="p">(</span><span class="mh">0x0187</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feed_enable</span> <span class="o">=</span> <span class="n">prev_feed_state</span> <span class="c1"># resume normal operation</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is out of bounds [0,3]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sensitivity</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PinnacleTouch.tune_edge_sensitivity"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouch.tune_edge_sensitivity">[docs]</a>    <span class="k">def</span> <span class="nf">tune_edge_sensitivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_axis_wide_z_min</span><span class="o">=</span><span class="mh">0x04</span><span class="p">,</span> <span class="n">y_axis_wide_z_min</span><span class="o">=</span><span class="mh">0x03</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;According to the official exmaple code from Cirque,</span>
+<span class="sd">        this function &quot;Changes thresholds to improve detection of fingers.&quot;</span>
+
+<span class="sd">        This function was ported from Cirque&#39;s example code and doesn&#39;t seem to have corresponding</span>
+<span class="sd">        documentation. I&#39;m having trouble finding a memory map of the Pinacle ASIC as this</span>
+<span class="sd">        function directly alters values in the Pinnacle ASIC&#39;s memory. USE AT YOUR OWN RISK!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prev_feed_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed_enable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feed_enable</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># accessing raw memory, so do this</span>
+        <span class="c1"># write x_axis_wide_z_min value</span>
+        <span class="c1"># self._era_read(0x0149) # this was used for printing unaltered value to serial monitor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_era_write</span><span class="p">(</span><span class="mh">0x0149</span><span class="p">,</span> <span class="n">x_axis_wide_z_min</span><span class="p">)</span>
+        <span class="c1"># ERA_ReadBytes(0x0149) # this was used for printing verified value to serial monitor</span>
+        <span class="c1"># write y_axis_wide_z_min value</span>
+        <span class="c1"># self._era_read(0x0168) # this was used for printing unaltered value to serial monitor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_era_write</span><span class="p">(</span><span class="mh">0x0168</span><span class="p">,</span> <span class="n">y_axis_wide_z_min</span><span class="p">)</span>
+        <span class="c1"># ERA_ReadBytes(0x0168) # this was used for printing verified value to serial monitor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feed_enable</span> <span class="o">=</span> <span class="n">prev_feed_state</span> <span class="c1"># resume normal operation</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">z_idle_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The number of empty packets (x-axis &amp; y-axis both are ``0``) reported (every 10</span>
+<span class="sd">        milliseconds) when there is no touch detected. Defaults to 5.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z_idle_count</span>
+
+    <span class="nd">@z_idle_count</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">z_idle_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_z_idle_count</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_Z_IDLE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z_idle_count</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PinnacleTouch.clear_flags"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouch.clear_flags">[docs]</a>    <span class="k">def</span> <span class="nf">clear_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function clears the &quot;Data Ready&quot; flag which is reflected with the ``dr_pin``.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="mh">0x02</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># 0x02 = Status1 register</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.00005</span><span class="p">)</span> <span class="c1"># delay 50 microseconds per official example from Cirque</span></div>
+
+<div class="viewcode-block" id="PinnacleTouch.reset_device"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouch.reset_device">[docs]</a>    <span class="k">def</span> <span class="nf">reset_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resets the touch controller. (write only)</span>
+
+<span class="sd">        .. warning:: Resetting the touch controller will change all register configurations to</span>
+<span class="sd">            their default values which will be reflected in the `PinnacleTouch` object&#39;s</span>
+<span class="sd">            attributes. Calibration is also automatically performed as it part of the touch</span>
+<span class="sd">            controller&#39;s start-up sequence (unavoidable).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_SYS_CONFIG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">&amp;</span> <span class="mh">0xFE</span><span class="p">)</span> <span class="o">|</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_SYS_CONFIG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dr_pin</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">pass</span> <span class="c1"># wait for power-on &amp; calibration to be performed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_init_values</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_flags</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">allow_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set this attribute to `True` if you want the touch controller to enter sleep (low power)</span>
+<span class="sd">        mode after about 5 seconds of inactivity. While the touch controller is in sleep mode, if a</span>
+<span class="sd">        touch event or button press is detected, the Pinnacle ASIC will take about 300 milliseconds</span>
+<span class="sd">        to wake up (does not include handling the touch event or button press data).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">&amp;</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="nd">@allow_sleep</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">allow_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_enabled</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">&amp;</span> <span class="mh">0xFB</span><span class="p">)</span> <span class="o">|</span> <span class="n">is_enabled</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_SYS_CONFIG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This attribute controls power of the touch controller. `True` means powered down (AKA</span>
+<span class="sd">        standby mode), and `False` means not powered down (Active, Idle, or Sleep mode).</span>
+
+<span class="sd">        .. note:: The touch controller will take about 300 milliseconds to complete the transition</span>
+<span class="sd">            from powered down mode to active mode. No touch events or button presses will be</span>
+<span class="sd">            monitored while powered down.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="nd">@shutdown</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_off</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span> <span class="o">&amp;</span> <span class="mh">0xFD</span><span class="p">)</span> <span class="o">|</span> <span class="n">is_off</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_SYS_CONFIG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sys_config</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_rap_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function is overridden by the appropriate parent class based on interface type.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_rap_read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">numb_bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function is overridden by the appropriate parent class based on interface type.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_rap_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function is overridden by the appropriate parent class based on interface type.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_rap_write_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function is overridden by the appropriate parent class based on interface type.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_era_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write_bytes</span><span class="p">(</span><span class="n">PINNACLE_ERA_ADDR_HIGH</span><span class="p">,</span> <span class="p">[</span><span class="n">reg</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">,</span> <span class="n">reg</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_ERA_CTRL</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># indicate reading only 1 byte</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_ERA_CTRL</span><span class="p">):</span> <span class="c1"># read until reg == 0</span>
+            <span class="k">pass</span> <span class="c1"># also sets Command Complete flag in Status register</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_ERA_VALUE</span><span class="p">)</span> <span class="c1"># get value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_flags</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">buf</span>
+
+    <span class="k">def</span> <span class="nf">_era_read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">numb_bytes</span><span class="p">):</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write_bytes</span><span class="p">(</span><span class="n">PINNACLE_ERA_ADDR_HIGH</span><span class="p">,</span> <span class="p">[</span><span class="n">reg</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">,</span> <span class="n">reg</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_ERA_CTRL</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1"># indicate reading sequential bytes</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numb_bytes</span><span class="p">):</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_ERA_CTRL</span><span class="p">):</span> <span class="c1"># read until reg == 0</span>
+                <span class="k">pass</span> <span class="c1"># also sets Command Complete flag in Status register</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_ERA_VALUE</span><span class="p">))</span> <span class="c1"># get value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_flags</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">buf</span>
+
+    <span class="k">def</span> <span class="nf">_era_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_ERA_VALUE</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="c1"># write value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write_bytes</span><span class="p">(</span><span class="n">PINNACLE_ERA_ADDR_HIGH</span><span class="p">,</span> <span class="p">[</span><span class="n">reg</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">,</span> <span class="n">reg</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_ERA_CTRL</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># indicate writing only 1 byte</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_ERA_CTRL</span><span class="p">):</span> <span class="c1"># read until reg == 0</span>
+            <span class="k">pass</span> <span class="c1"># also sets Command Complete flag in Status register</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_flags</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_era_write_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">numb_bytes</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_ERA_VALUE</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="c1"># write value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write_bytes</span><span class="p">(</span><span class="n">PINNACLE_ERA_ADDR_HIGH</span><span class="p">,</span> <span class="p">[</span><span class="n">reg</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">,</span> <span class="n">reg</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">PINNACLE_ERA_CTRL</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">)</span> <span class="c1"># indicate writing sequential bytes</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numb_bytes</span><span class="p">):</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read</span><span class="p">(</span><span class="n">PINNACLE_ERA_CTRL</span><span class="p">):</span> <span class="c1"># read until reg == 0</span>
+                <span class="k">pass</span> <span class="c1"># also sets Command Complete flag in Status register</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_flags</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PinnacleTouchI2C"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouchI2C">[docs]</a><span class="k">class</span> <span class="nc">PinnacleTouchI2C</span><span class="p">(</span><span class="n">PinnacleTouch</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Varaiant of the base class, `PinnacleTouch`, for interfacing with the touch controller via</span>
+<span class="sd">    the I2C protocol.</span>
+
+<span class="sd">    :param ~busio.I2C i2c: The object of the I2C bus to use. This object must be shared among</span>
+<span class="sd">        other driver classes that use the same I2C bus (SDA &amp; SCL pins).</span>
+<span class="sd">    :param int address: The slave I2C address of the touch controller. Defaults to ``0x2A``.</span>
+
+<span class="sd">    See the base class for other instantiating parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i2c</span><span class="p">,</span> <span class="n">dr_pin</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="mh">0x2A</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2c</span> <span class="o">=</span> <span class="n">I2CDevice</span><span class="p">(</span><span class="n">i2c</span><span class="p">,</span> <span class="p">(</span><span class="n">address</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PinnacleTouchI2C</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dr_pin</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_rap_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rap_read_bytes</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_rap_read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">numb_bytes</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2c</span><span class="o">.</span><span class="n">device_address</span> <span class="o">&amp;=</span> <span class="mi">0</span>  <span class="c1"># set write flag</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">([</span><span class="n">reg</span> <span class="o">|</span> <span class="mh">0xA0</span><span class="p">])</span>  <span class="c1"># per datasheet</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i2c</span> <span class="k">as</span> <span class="n">i2c</span><span class="p">:</span>
+            <span class="n">i2c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>  <span class="c1"># includes a STOP condition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2c</span><span class="o">.</span><span class="n">device_address</span> <span class="o">&amp;=</span> <span class="mi">1</span>  <span class="c1"># set read flag</span>
+        <span class="n">return_buf</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>  <span class="c1"># for accumulating response(s)</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i2c</span> <span class="k">as</span> <span class="n">i2c</span><span class="p">:</span>
+            <span class="c1"># need to send the ((address &lt;&lt; 1) &amp; read flag) for each byte read</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numb_bytes</span><span class="p">):</span>  <span class="c1"># increments register for each read command</span>
+                <span class="n">i2c</span><span class="o">.</span><span class="n">readinto</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>  <span class="c1"># I assume this includes a STOP condition</span>
+                <span class="n">return_buf</span> <span class="o">+=</span> <span class="n">buf</span>  <span class="c1"># save response</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">return_buf</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_rap_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2c</span><span class="o">.</span><span class="n">device_address</span> <span class="o">&amp;=</span> <span class="mi">0</span>  <span class="c1"># set write flag</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">([</span><span class="n">reg</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">,</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">])</span>  <span class="c1"># assumes value is an int</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i2c</span> <span class="k">as</span> <span class="n">i2c</span><span class="p">:</span>
+            <span class="n">i2c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>  <span class="c1"># includes STOP condition</span>
+
+    <span class="k">def</span> <span class="nf">_rap_write_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2c</span><span class="o">.</span><span class="n">device_address</span> <span class="o">&amp;=</span> <span class="mi">0</span>  <span class="c1"># set write flag</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>  <span class="c1"># works for bytearrays/lists/tuples</span>
+            <span class="n">buf</span> <span class="o">+=</span> <span class="nb">bytearray</span><span class="p">([</span><span class="n">reg</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">,</span> <span class="n">byte</span><span class="p">])</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i2c</span> <span class="k">as</span> <span class="n">i2c</span><span class="p">:</span>
+            <span class="c1"># need only 1 STOP condition for multiple write operations</span>
+            <span class="n">i2c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PinnacleTouchSPI"><a class="viewcode-back" href="../api.html#circuitpython_pinnacle_1ca027.PinnacleTouchSPI">[docs]</a><span class="k">class</span> <span class="nc">PinnacleTouchSPI</span><span class="p">(</span><span class="n">PinnacleTouch</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Varaiant of the base class, `PinnacleTouch`, for interfacing with the touch controller via</span>
+<span class="sd">    the SPI protocol.</span>
+
+<span class="sd">    :param ~busio.SPI spi: The object of the SPI bus to use. This object must be shared among</span>
+<span class="sd">        other driver classes that use the same SPI bus (MOSI, MISO, &amp; SCK pins).</span>
+<span class="sd">    :param ~microcontroller.Pin ss_pin: The &quot;slave select&quot; pin output to the touch controller.</span>
+
+<span class="sd">    See the base class for other instantiating parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spi</span><span class="p">,</span> <span class="n">ss_pin</span><span class="p">,</span> <span class="n">dr_pin</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># MAX baudrate is up to 13MHz; use 10MHz to be safe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span> <span class="o">=</span> <span class="n">SPIDevice</span><span class="p">(</span><span class="n">spi</span><span class="p">,</span> <span class="n">chip_select</span><span class="o">=</span><span class="n">ss_pin</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="mi">12000000</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PinnacleTouchSPI</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dr_pin</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_rap_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
+        <span class="n">buf_out</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">([</span><span class="n">reg</span> <span class="o">|</span> <span class="mh">0xA0</span><span class="p">])</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xFB</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="mi">3</span>
+        <span class="n">buf_in</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">buf_out</span><span class="p">))</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span> <span class="k">as</span> <span class="n">spi</span><span class="p">:</span>
+            <span class="n">spi</span><span class="o">.</span><span class="n">write_readinto</span><span class="p">(</span><span class="n">buf_out</span><span class="p">,</span> <span class="n">buf_in</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">buf_in</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_rap_read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">numb_bytes</span><span class="p">):</span>
+        <span class="n">buf_out</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">([</span><span class="n">reg</span> <span class="o">|</span> <span class="mh">0xA0</span><span class="p">])</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xFC</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">numb_bytes</span><span class="p">)</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xFB</span><span class="s1">&#39;</span>
+        <span class="n">buf_in</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">buf_out</span><span class="p">))</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span> <span class="k">as</span> <span class="n">spi</span><span class="p">:</span>
+            <span class="n">spi</span><span class="o">.</span><span class="n">write_readinto</span><span class="p">(</span><span class="n">buf_out</span><span class="p">,</span> <span class="n">buf_in</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">buf_in</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
+
+    <span class="k">def</span> <span class="nf">_rap_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">([(</span><span class="n">reg</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">),</span> <span class="n">value</span><span class="p">])</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span> <span class="k">as</span> <span class="n">spi</span><span class="p">:</span>
+            <span class="n">spi</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_rap_write_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rap_write</span><span class="p">(</span><span class="n">reg</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020 Brendan Doherty
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
