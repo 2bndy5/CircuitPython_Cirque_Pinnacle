@@ -420,7 +420,11 @@
     <span class="k">def</span> <span class="nf">hard_configured</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This `bool` attribute provides insight to applications about factory</span>
 <span class="sd">        customized hardware configuration. see note about product labeling in</span>
-<span class="sd">        `Model Labeling Scheme &lt;index.html#model-labeling-scheme&gt;`_. (read only)&quot;&quot;&quot;</span>
+<span class="sd">        `Model Labeling Scheme &lt;index.html#cc&gt;`_. (read only)</span>
+
+<span class="sd">        :Returns:</span>
+<span class="sd">            `True` if a 470K ohm resistor is populated at the junction labeled &quot;R4&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hco</span>
 
 <div class="viewcode-block" id="PinnacleTouch.relative_mode_config"><a class="viewcode-back" href="../api.html#circuitpython_cirque_pinnacle.PinnacleTouch.relative_mode_config">[docs]</a>    <span class="k">def</span> <span class="nf">relative_mode_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rotate90</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">glide_extend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>

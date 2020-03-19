@@ -90,13 +90,14 @@ Model Labeling Scheme
   .. [i] stands for the hardwired interface protocol (3 = I2C, 4 = SPI). Notice, if there is a
     resistor populated at the R1 (470K ohm) junction (located just above the Pinnacle ASIC), it
     is configured for SPI, otherwise it is configured for I2C.
-  .. [cc] stands for Custom Configuration. "30" means that the hardware is configured to disable
-    certain features despite what this library does. "00" means that the hardware is configured
-    to allow certain features to manipulated by this library. These features include "secondary
-    tap" (thought of as "right mouse button" in relative data mode), Intellimouse scrolling
-    (Microsoft patented scroll wheel behavior -- a throw back to when scroll wheels were
-    first introduced), and 180 degree orientation (your application can invert the axis
-    data anyway).
+  .. [cc] stands for Custom Configuration (if a 470K ohm resistor is populated at junction R4).
+    "30" (with a resistor at R4) means that the hardware is configured to disable
+    certain features despite what this library does. "00" (no resistor at R4) means that the
+    hardware is configured to allow certain features to manipulated by this library. These
+    features include "secondary tap" (thought of as "right mouse button" in relative data mode),
+    Intellimouse scrolling (Microsoft patented scroll wheel behavior -- a throw back to when
+    scroll wheels were first introduced), and 180 degree orientation (your application can invert
+    the axis data anyway).
   .. [o] stands for the overlay type (0 = none, 1 = adhesive, 2 = flat, 3 = curved)
 
 Dependencies

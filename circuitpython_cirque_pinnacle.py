@@ -242,7 +242,11 @@ class PinnacleTouch:
     def hard_configured(self):
         """This `bool` attribute provides insight to applications about factory
         customized hardware configuration. see note about product labeling in
-        `Model Labeling Scheme <index.html#model-labeling-scheme>`_. (read only)"""
+        `Model Labeling Scheme <index.html#cc>`_. (read only)
+
+        :Returns:
+            `True` if a 470K ohm resistor is populated at the junction labeled "R4"
+        """
         return self._hco
 
     def relative_mode_config(self, rotate90=False, glide_extend=True,
