@@ -558,7 +558,6 @@ class PinnacleTouch:
         # combine every 2 bytes from resulting buffer to form a list of signed 16-bits integers
         return list(struct.unpack('46h', self._era_read_bytes(0x01DF, 46 * 2)))
 
-
     @calibration_matrix.setter
     def calibration_matrix(self, matrix):
         if len(matrix) < 46:  # padd short matrices w/ 0s
