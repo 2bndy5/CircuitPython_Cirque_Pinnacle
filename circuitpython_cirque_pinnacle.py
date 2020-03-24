@@ -87,11 +87,8 @@ class PinnacleTouch:
         self.detect_finger_stylus()
         self._rap_write(7, 14)  # enables all compensations
         self._rap_write(0x0A, 30)  # z-idle packet count
-        self._rap_write_bytes(3, [
-            0,  # ignoring read-only reset flag (bit 0)
-            1,  # enables feed & sets to relative mode
-            2])  # disables taps in relative mode
-        self.set_adc_gain(0) # most sensitive ADC gain fro relative/abs mode
+        self._rap_write_bytes(3, [0, 1, 2]) # configure relative (& absolute mode)
+        self.set_adc_gain(0)
 
     @property
     def feed_enable(self):
@@ -116,11 +113,12 @@ class PinnacleTouch:
         if mode not in (DataModes.ANYMEAS, DataModes.RELATIVE, DataModes.ABSOLUTE):
             raise ValueError("unrecognised input value for data mode. Use 0 for Relative mode, "
                              "1 for AnyMeas mode, or 2 for Absolute mode.")
+        self._mode = mode
         if mode in (DataModes.RELATIVE, DataModes.ABSOLUTE):  # for relative/absolute mode
-            self._mode = mode
+            sys_config = self._rap_read(3) & 0xE7  # clear flags specific to AnyMeas mode
             if self.data_mode == DataModes.ANYMEAS:  # if leaving AnyMeas mode
                 self._rap_write_bytes(3, [
-                    self._rap_read(3) & 0xE7,  # clear flags specific to AnyMeas mode
+                    sys_config,
                     1 | mode,  # set new mode's flag & enables feed
                     2])  # disables taps in Relative mode
                 self.sample_rate = 100
@@ -132,13 +130,10 @@ class PinnacleTouch:
             if self.dr_pin is None:  # this mode requires the use of DR IRQ pin
                 raise AttributeError("Data Ready digital input (interupt) pin is None, "
                                      "please specify the dr_pin attribute for AnyMeas mode")
-            self._mode = mode  # allow for anymeas_mode_config() to do something
             # disable tracking computations for AnyMeas mode
-            self._sys_config = (self._sys_config & 0xE7) | 0x08
-            self._rap_write(3, self._sys_config)
+            self._rap_write(3, sys_config | 0x08)
             time.sleep(0.01)  # wait 10 ms for tracking measurements to expire
-            # now configure the AnyMeas mode to default values
-            self.anymeas_mode_config()
+            self.anymeas_mode_config()  # configure registers for the AnyMeas mode
 
     @property
     def hard_configured(self):
@@ -237,7 +232,7 @@ class PinnacleTouch:
         """This function will configure the Pinnacle ASIC to detect either finger,
         stylus, or both."""
         finger_stylus = self._era_read(0x00EB)
-        finger_stylus |= enable_stylus << 2 | enable_finger
+        finger_stylus |= (enable_stylus << 2) | enable_finger
         self._era_write(0x00EB, finger_stylus)
         self.sample_rate = sample_rate
 
