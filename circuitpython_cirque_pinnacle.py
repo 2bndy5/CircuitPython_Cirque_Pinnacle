@@ -34,6 +34,7 @@ from adafruit_bus_device.spi_device import SPIDevice
 from adafruit_bus_device.i2c_device import I2CDevice
 
 # constants used for bitwise configuration
+# pylint: disable=too-few-public-methods
 class DataModes:
     """Allowed symbols for configuring the Pinanacle ASIC's data reporting/measurements."""
     RELATIVE = 0x00  #: Alias symbol for specifying Relative mode (AKA Mouse mode).
