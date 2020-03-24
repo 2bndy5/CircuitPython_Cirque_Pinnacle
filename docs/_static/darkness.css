@@ -87,20 +87,17 @@
   color: #9ff1c6;
 }
 
-/* ----------------------table sections---------------------------------------- */
-.wy-table caption,
-.rst-content table.docutils caption,
-.rst-content table.field-list caption {
-  color:#fff;
-  text-align:left
-}
+.highlight .go {
+  color: #1afd00;
+ }
 
+/* ----------------------table sections---------------------------------------- */
 .wy-table thead,
 .rst-content table.docutils thead,
 .rst-content table.field-list thead {
-  color:#fcfcfc;
-  text-align:center;
-  background-color: #1a4228;
+ color:#fcfcfc;
+ text-align:center;
+ background-color: #1a4228;
 }
 
 .wy-table-odd td,
@@ -188,26 +185,6 @@ body {
  background:#242424;
 }
 
-/* -------------------------------------footnote sections------------------------------------------------ */
-.rst-content table.docutils.citation td,
-.rst-content table.docutils.citation tr,
-.rst-content table.docutils.footnote td,
-.rst-content table.docutils.footnote tr {
- text-align: left;
-}
-
-.rst-content table.docutils.citation,
-.rst-content table.docutils.footnote {
- color:#fcfcfc;
-}
-
-.rst-content table.docutils.citation tt,
-.rst-content table.docutils.citation code,
-.rst-content table.docutils.footnote tt,
-.rst-content table.docutils.footnote code {
- color:#16ff00;
-}
-
 /* -------------------------------------sidebar sections------------------------------------------------ */
 .wy-side-nav-search {
  background-color:#006B09;
@@ -215,7 +192,7 @@ body {
 }
 
 .wy-side-nav-search input[type=text] {
- background: #313131;
+ background: #3e3e3e;
  color: #fcfcfc;
 }
 
@@ -250,6 +227,40 @@ body {
 
 .wy-nav-top {
  background:#006B09;
+}
+
+.wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.current > a span.toctree-expand {
+  color: #f2f2f2;
+}
+
+.wy-menu-vertical li span.toctree-expand {
+  color: #f2f2f2;
+}
+
+.wy-menu-vertical li.current {
+  background: #034e69;
+}
+
+.wy-menu-vertical li.toctree-l2 a,
+.wy-menu-vertical li.toctree-l3 a,
+.wy-menu-vertical li.toctree-l4 a {
+ color:#f2f2f2;
+}
+
+.wy-menu-vertical li.current a:hover {
+  background:#3e3e3ecf;
+}
+
+.wy-menu-vertical li.toctree-l2.current>a {
+  background:#242424;
+}
+
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3>a {
+  background:#033969;
+}
+
+.wy-menu-vertical li.toctree-l3.current li.toctree-l4>a {
+  background:#092d21;
 }
 
 /* -----------------------------------------API sections-------------------------------------- */

@@ -1,0 +1,499 @@
+
+.. If you created a package, create one automodule per module in the package.
+
+.. If your library file(s) are nested in a directory (e.g. /adafruit_foo/foo.py)
+.. use this format as the module name: "adafruit_foo.foo"
+
+PinnacleTouch API
+==================
+
+Accepted Constants
+------------------
+
+DataModes
+*********
+
+.. autoclass:: circuitpython_cirque_pinnacle.DataModes
+   :members:
+
+AnyMeasGain
+*************
+
+.. autoclass:: circuitpython_cirque_pinnacle.AnyMeasGain
+   :members:
+
+   The percentages defined here are approximate values.
+
+AnyMeasFreq
+*************
+
+.. autoclass:: circuitpython_cirque_pinnacle.AnyMeasFreq
+   :members:
+
+   The frequencies defined here are
+   approximated based on an aperture width of 500 nanoseconds. If the ``aperture_width``
+   parameter to `anymeas_mode_config()` specified is less than 500 nanoseconds, then the
+   frequency will be larger than what is described here (& vice versa).
+
+AnyMeasMux
+*************
+
+.. autoclass:: circuitpython_cirque_pinnacle.AnyMeasMux
+   :members:
+
+   Combining these values (with ``+`` operator) is allowed.
+
+   .. note:: The sign of the measurements taken in AnyMeas mode is inverted depending on which
+      muxing gate is specified (when specifying an individual gate polarity).
+
+AnyMeasCrtl
+*************
+
+.. autoclass:: circuitpython_cirque_pinnacle.AnyMeasCrtl
+   :members:
+
+   The number of measurements can range [0, 63].
+
+PinnacleTouch
+-------------
+
+Constructor
+*************************
+
+.. autoclass:: circuitpython_cirque_pinnacle.PinnacleTouch
+   :no-members:
+
+   :param ~microcontroller.Pin dr_pin: The input pin connected to the Pinnacle ASIC's "Data
+      Ready" pin. If this parameter is not specified, then the SW_DR (software data ready) flag
+      of the STATUS register is used to detirmine if the data being reported is new.
+
+      .. important:: This parameter must be specified if your application is going to use the
+         Pinnacle ASIC's :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`
+         mode (a rather experimental measuring of raw ADC values).
+
+data_mode
+*************************
+
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.data_mode
+
+   Valid input values are :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` for
+   relative/mouse mode, :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE` for
+   absolute positioning mode, or :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`
+   (referred to as "AnyMeas" in specification sheets) mode for reading ADC values.
+
+   :Returns:
+
+      - ``0`` for Relative mode (AKA mouse mode)
+      - ``1`` for AnyMeas mode (raw ADC measurements)
+      - ``2`` for Absolute mode (X & Y axis positions)
+
+   .. important:: When switching from :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS` to
+      :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` or
+      :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE` all configurations are reset, and
+      must be re-configured by using  `absolute_mode_config()` or `relative_mode_config()`.
+
+Relative or Absolute mode
+*************************
+
+feed_enable
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.feed_enable
+
+   This attribute does not apply to AnyMeas mode (only Relative & Absolute modes).
+
+hard_configured
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.hard_configured
+
+   See note about product labeling in `Model Labeling Scheme <index.html#cc>`_. (read only)
+
+   :Returns:
+      `True` if a 470K ohm resistor is populated at the junction labeled "R4"
+
+relative_mode_config()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.relative_mode_config()
+
+   (write only)
+
+   :param bool rotate90: Specifies if the axis data is altered for 90 degree rotation before
+      reporting it (essentially swaps the axis data). Default is `False`.
+   :param bool glide_extend: A patended feature that allows the user to glide their finger off
+      the edge of the sensor and continue gesture with the touch event. Default is `True`.
+      This feature is only available if `hard_configured` is `False`.
+   :param bool secondary_tap: Specifies if tapping in the top-left corner (depending on
+      orientation) triggers the secondary button data. Defaults to `True`. This feature is
+      only available if `hard_configured` is `False`.
+   :param bool taps: Specifies if all taps should be reported (`True`) or not
+      (`False`). Default is `True`. This affects ``secondary_tap`` option as well. The
+      primary button (left mouse button) is emulated with a tap.
+   :param bool intellimouse: Specifies if the data reported includes a byte about scroll data.
+      Default is `False`. Because this flag is specific to scroll data, this feature is only
+      available if `hard_configured` is `False`.
+
+absolute_mode_config()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.absolute_mode_config()
+
+   (write only)
+
+   This function only applies to Absolute mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS` or
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE`, then this function will take
+   no affect until `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`.
+
+   :param int z_idle_count: Specifies the number of empty packets (x-axis, y-axis, and z-axis
+      are ``0``) reported (every 10 milliseconds) when there is no touch detected. Defaults
+      to 30. This number is clamped to range [0, 255].
+   :param bool invert_x: Specifies if the x-axis data is to be inverted before reporting it.
+      Default is `False`.
+   :param bool invert_y: Specifies if the y-axis data is to be inverted before reporting it.
+      Default is `False`.
+
+report()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.report()
+
+   This function only applies to Relative or Absolute
+   mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function returns
+   `None` and does nothing.
+
+   :param bool only_new: This parameter can be used to ensure the data reported is only new
+      data. Otherwise the data returned can be either old data or new data. If the ``dr_pin``
+      parameter is specified upon instantiation, then the specified input pin is used to
+      detect if the data is new. Otherwise the SW_DR flag in the STATUS register is used to
+      detirmine if the data is new.
+
+   :Returns: `None` if  the ``only_new`` parameter is set `True` and there is no new data to
+      report. Otherwise, a `list` or `bytearray` of parameters that describe the (touch or
+      button) event. The structure is as follows:
+
+      .. list-table::
+            :header-rows: 1
+            :widths: 1, 5, 5
+
+            * - Index
+              - Relative (Mouse) mode
+
+                as a `bytearray`
+              - Absolute Mode
+
+                as a `list`
+            * - 0
+              - Button Data [1]_
+
+                one unsigned byte
+              - Button Data [1]_
+
+                one unsigned byte
+            * - 1
+              - change in x-axis [2]_
+
+                -128 |LessEq| X |LessEq| 127
+              - x-axis Position
+
+                128 |LessEq| X |LessEq| 1920
+            * - 2
+              - change in y-axis [2]_
+
+                -128 |LessEq| Y |LessEq| 127
+              - y-axis Position
+
+                64 |LessEq| Y |LessEq| 1472
+            * - 3
+              - change in scroll wheel
+
+                -128 |LessEq| Y |LessEq| 127 [3]_
+              - z-axis Position
+
+   .. [1] The returned button data is a byte in which each bit represents a button.
+      The bit to button order is as follows:
+
+      0. [LSB] Button 1 (thought of as Left button in Relative/Mouse mode). If taps
+         are enabled using `relative_mode_config()`, a single tap will be reflected here.
+      1. Button 2 (thought of as Right button in Relative/Mouse mode)
+      2. Button 3 (thought of as Middle or scroll wheel button in Relative/Mouse mode)
+   .. [2] The axis data reported in Relative/Mouse mode is in two's
+      comliment form. Use Python's :py:func:`struct.unpack()` to convert the
+      data into integer form (see `Simple Test example <examples.html#simple-test>`_
+      for how to use this function).
+
+      The axis data reported in Absolute mode is always positive as the
+      xy-plane's origin is located to the top-left, unless ``invert_x`` or ``invert_y``
+      parameters to `absolute_mode_config()` are manipulated to change the perspective
+      location of the origin.
+   .. [3] In Relative/Mouse mode the scroll wheel data is only reported if the
+      ``intellimouse`` parameter is passed as `True` to `relative_mode_config()`.
+      Otherwise this is an empty byte as the
+      returned `bytearray` follows the buffer structure of a mouse HID report (see
+      `USB Mouse example <examples.html#usb-mouse-example>`_).
+   .. |LessEq| unicode:: U+2264
+
+clear_flags()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.clear_flags()
+
+allow_sleep
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.allow_sleep
+
+   Set this attribute to `True` if you want the Pinnacle ASIC to enter sleep (low power)
+   mode after about 5 seconds of inactivity (does not apply to AnyMeas mode). While the touch
+   controller is in sleep mode, if a touch event or button press is detected, the Pinnacle
+   ASIC will take about 300 milliseconds to wake up (does not include handling the touch event
+   or button press data).
+
+shutdown
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.shutdown
+
+   `True` means powered down (AKA standby mode), and `False` means not powered down
+   (Active, Idle, or Sleep mode).
+
+   .. note:: The ASIC will take about 300 milliseconds to complete the transition
+      from powered down mode to active mode. No touch events or button presses will be
+      monitored while powered down.
+
+sample_rate
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.sample_rate
+
+   Valid values are ``100``, ``80``, ``60``, ``40``, ``20``, ``10``. Any other input values
+   automatically set the sample rate to 100 sps (samples per second). Optionally, ``200`` and
+   ``300`` sps can be specified, but using these values automatically disables palm (referred
+   to as "NERD" in the specification sheet) and noise compensations. These higher values are
+   meant for using a stylus with a 2mm diameter tip, while the values less than 200 are meant
+   for a finger or stylus with a 5.25mm diameter tip.
+
+   This function only applies to Relative or Absolute mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function will take no
+   affect until `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` or
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`.
+
+detect_finger_stylus()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.detect_finger_stylus()
+
+   :param bool enable_finger: `True` enables the Pinnacle ASIC's measurements to
+      detect if the touch event was caused by a finger or 5.25mm stylus. `False` disables
+      this feature. Default is `True`.
+   :param bool enable_stylus: `True` enables the Pinnacle ASIC's measurements to
+      detect if the touch event was caused by a 2mm stylus. `False` disables this
+      feature. Default is `True`.
+   :param int sample_rate: See the `sample_rate` attribute as this parameter manipulates that
+      attribute.
+
+   .. tip:: Consider adjusting the ADC matrix's gain to enhance performance/results using
+      `set_adc_gain()`
+
+calibrate()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.calibrate()
+
+   This function only applies to Relative or Absolute mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function will take no
+   affect until `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` or
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`.
+
+   :param bool run: If `True`, this function forces a calibration of the sensor. If `False`,
+      this function just writes the following parameters to the Pinnacle ASIC's "CalConfig1"
+      register. This parameter is required while the rest are optional keyword parameters.
+   :param bool tap: Enable dynamic tap compensation? Default is `True`.
+   :param bool track_error: Enable dynamic track error compensation? Default is `True`.
+   :param bool nerd: Enable dynamic NERD compensation? Default is `True`. This parameter has
+      something to do with palm detection/compensation.
+   :param bool background: Enable dynamic background compensation? Default is `True`.
+
+   .. note:: According to the datasheet, calibration of the sensor takes about 100
+      milliseconds. This function will block until calibration is complete (if ``run`` is
+      `True`). It is recommended for typical applications to leave all optional parameters
+      in their default states.
+
+calibration_matrix
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.calibration_matrix
+
+   This matrix is not applicable in AnyMeas mode. Use this attribute to compare a prior
+   compensation matrix with a new matrix that was either loaded manually by setting this
+   attribute to a `list` of 46 signed 16-bit (short) integers or created internally by calling
+   `calibrate()` with the ``run`` parameter as `True`.
+
+   .. note:: A paraphrased note from Cirque's Application Note on Comparing compensation
+      matrices:
+
+      If any 16-bit values are above 20K (absolute), it generally indicates a problem with
+      the sensor. If no values exceed 20K, proceed with the data comparison. Compare each
+      16-bit value in one matrix to the corresponding 16-bit value in the other matrix. If
+      the difference between the two values is greater than 500 (absolute), it indicates a
+      change in the environment. Either an object was on the sensor during calibration, or
+      the surrounding conditions (temperature, humidity, or noise level) have changed. One
+      strategy is to force another calibration and compare again, if the values continue to
+      differ by 500, determine whether to use the new data or a previous set of stored data.
+      Another strategy is to average any two values that differ by more than 500 and write
+      this new matrix, with the average values, back into Pinnacle ASIC.
+
+set_adc_gain()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.set_adc_gain()
+
+   (does not apply to AnyMeas mode). (write-only)
+
+   :param int sensitivity: This int specifies how sensitive the ADC (Analog to Digital
+      Converter) component is. ``0`` means most sensitive, and ``3`` means least sensitive.
+      A value outside this range will raise a `ValueError` exception.
+
+   .. tip:: The official example code from Cirque for a curved overlay uses a value of ``1``.
+
+tune_edge_sensitivity()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.tune_edge_sensitivity()
+
+   This function was ported from Cirque's example code and doesn't seem to have corresponding
+   documentation. I'm having trouble finding a memory map of the Pinnacle ASIC as this
+   function directly alters values in the Pinnacle ASIC's memory. USE AT YOUR OWN RISK!
+
+AnyMeas mode
+*************
+
+anymeas_mode_config()
+^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.anymeas_mode_config()
+
+   Be sure to set the `data_mode` attribute to
+   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS` before calling this function
+   otherwise it will do nothing.
+
+   :param int gain: Sets the sensitivity of the ADC matrix. Valid values are the constants
+      defined in :class:`~circuitpython_cirque_pinnacle.AnyMeasGain`. Defaults to
+      :attr:`~circuitpython_cirque_pinnacle.AnyMeasGain.GAIN_200`.
+   :param int frequency: Sets the frequency of measurements made by the ADC matrix. Valid
+      values are the constants defined in
+      :class:`~circuitpython_cirque_pinnacle.AnyMeasFreq`.
+      Defaults :attr:`~circuitpython_cirque_pinnacle.AnyMeasFreq.FREQ_0`.
+   :param int sample_length: Sets the maximum bit length of the measurements made by the ADC
+      matrix. Valid values are ``128``, ``256``, or ``512``. Defaults to ``512``.
+   :param int mux_ctrl: The Pinnacle ASIC can employ different bipolar junctions
+      and/or reference capacitors. Valid values are the constants defined in
+      :class:`~circuitpython_cirque_pinnacle.AnyMeasMux`. Additional combination of
+      these constants is also allowed. Defaults to
+      :attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_PNP`.
+   :param int apperture_width: Sets the window of time (in nanoseconds) to allow for the ADC
+      to take a measurement. Valid values are multiples of 125 in range [``250``, ``1875``].
+      Erroneous values are clamped/truncated to this range.
+
+      .. note:: The ``apperture_width`` parameter has a inverse relationship/affect on the
+            ``frequency`` parameter. The approximated frequencies described in this
+            documentation are based on an aperture width of 500 nanoseconds, and they will
+            shrink as the apperture width grows or grow as the aperture width shrinks.
+
+   :param int ctrl_pwr_cnt: Configure the Pinnacle to perform a number of measurements for
+      each call to `measure_adc()`. Defaults to 1. Constants defined in
+      :class:`~circuitpython_cirque_pinnacle.AnyMeasCrtl` can be used to specify if is sleep
+      is allowed (:attr:`~circuitpython_cirque_pinnacle.AnyMeasCrtl.CRTL_PWR_IDLE` -- this
+      is not default) or if repetive measurements is allowed (
+      :attr:`~circuitpython_cirque_pinnacle.AnyMeasCrtl.CRTL_REPEAT`) if number of
+      measurements is more than 1.
+
+      .. warning:: There is no bounds checking on the number of measurements specified
+            here. Specifying more than 63 will trigger sleep mode after performing
+            measuements.
+
+      .. tip:: Be aware that allowing the Pinnacle to enter sleep mode after taking
+            measurements will slow consecutive calls to `measure_adc()` as the Pinnacle
+            requires about 100 milliseconds to wake up.
+
+measure_adc()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.measure_adc()
+
+   :param int bits_to_toggle: This 4-byte integer specifies which bits the Pinnacle touch
+      controller should toggle. A bit of ``1`` flags that bit for toggling, and a bit of
+      ``0`` signifies that the bit should remain unaffected.
+   :param int toggle_polarity: This 4-byte integer specifies which polarity the specified
+      bits (from ``bits_to_toggle`` parameter) are toggled. A bit of ``1`` toggles that bit
+      positve, and a bit of ``0`` toggles that bit negative.
+
+   :Returns:
+      A 2-byte `bytearray` that represents a signed short integer. If `data_mode` is not set
+      to :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function returns
+      `None` and does nothing.
+
+   :4-byte Integer Format:
+      .. csv-table:: byte 3 (MSByte)
+            :stub-columns: 1
+            :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
+
+            "bit position",31,30,29,28,27,26,25,24
+            "representation",N/A,N/A,Ref1,Ref0,Y11,Y10,Y9,Y8
+      .. csv-table:: byte 2
+            :stub-columns: 1
+            :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
+
+            "bit position",23,22,21,20,19,18,17,16
+            "representation",Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0
+      .. csv-table:: byte 1
+            :stub-columns: 1
+            :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
+
+            "bit position",15,14,13,12,11,10,9,8
+            "representation",X15,X14,X13,X12,X11,X10,X9,X8
+      .. csv-table:: byte 0 (LSByte)
+            :stub-columns: 1
+            :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
+
+            "bit position",7,6,5,4,3,2,1,0
+            "representation",X7,X6,X5,X4,X3,X2,X1,X0
+
+      See `AnyMeas mode example <examples.html#anymeas-mode-example>`_ to understand how to
+      use these 4-byte integer polynomials.
+
+      .. note:: Bits 29 and 28 represent the optional implementation of reference capacitors
+            built into the Pinnacle ASIC. To use these capacitors, the
+            corresponding constants
+            (:attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_REF0` and/or
+            :attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_REF1`) must be passed to
+            `anymeas_mode_config()` in the ``mux_ctrl`` parameter, and their representative
+            bits must be flagged in both ``bits_to_toggle`` & ``toggle_polarity`` parameters.
+
+SPI & I2C Interfaces
+********************
+
+.. autoclass:: circuitpython_cirque_pinnacle.PinnacleTouchSPI
+   :members:
+   :show-inheritance:
+
+   :param ~busio.SPI spi: The object of the SPI bus to use. This object must be shared among
+      other driver classes that use the same SPI bus (MOSI, MISO, & SCK pins).
+   :param ~microcontroller.Pin ss_pin: The "slave select" pin output to the Pinnacle ASIC.
+
+   See the base class for other instantiating parameters.
+
+.. autoclass:: circuitpython_cirque_pinnacle.PinnacleTouchI2C
+   :members:
+   :show-inheritance:
+
+
+   :param ~busio.I2C i2c: The object of the I2C bus to use. This object must be shared among
+      other driver classes that use the same I2C bus (SDA & SCL pins).
+   :param int address: The slave I2C address of the Pinnacle ASIC. Defaults to ``0x2A``.
+
+   See the base class for other instantiating parameters.
