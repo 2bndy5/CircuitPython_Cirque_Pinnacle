@@ -30,10 +30,9 @@ Table of Contents
 .. toctree::
     :caption: Other Links
 
-    Download <https://github.com/2bndy5/CircuitPython_Pinnacle_1ca027/releases/latest>
+    Download <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/releases>
     CircuitPython Reference Documentation <https://circuitpython.readthedocs.io>
     CircuitPython Support Forum <https://forums.adafruit.com/viewforum.php?f=60>
-    Discord Chat <https://adafru.it/discord>
     Adafruit Learning System <https://learn.adafruit.com>
     Adafruit Blog <https://blog.adafruit.com>
     Adafruit Store <https://www.adafruit.com>

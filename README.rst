@@ -120,7 +120,9 @@ This is easily achieved by downloading `the Adafruit library and driver bundle
 
 How to Install
 =====================
-This library isn't getting deployed to pypi.org yet. Use the following commands to install this library:
+This library is deployed to pypi.org, so you can easily install this library
+using ``pip3 install circuitpython-cirque-pinnacle`` or use the following
+commands:
 
 .. code-block:: shell
 
