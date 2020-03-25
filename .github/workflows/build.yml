@@ -37,7 +37,7 @@ jobs:
     - name: Install deps
       run: |
         source actions-ci/install.sh
-    - name: Pip install pylint, & Sphinx
+    - name: Pip install pylint & Sphinx
       run: |
         pip install --force-reinstall pylint==2.4.1 Sphinx sphinx-rtd-theme
     - name: Library version
