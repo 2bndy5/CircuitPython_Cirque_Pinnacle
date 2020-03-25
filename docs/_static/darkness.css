@@ -264,6 +264,13 @@ body {
 }
 
 /* -----------------------------------------API sections-------------------------------------- */
+.wy-table caption,
+.rst-content table.docutils caption,
+.rst-content table.field-list caption {
+ color:#fff;
+ text-align: left;
+}
+
 .rst-content dl:not(.docutils) dl dt {
   background: #343434;
   color: #e5df8e;

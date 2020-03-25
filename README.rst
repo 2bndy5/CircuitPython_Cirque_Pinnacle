@@ -66,7 +66,7 @@ are extended to the `12-pin FFC/FPC cable <https://www.mouser.com/Connectors/FFC
 FFC-FPC-Jumper-Cables/_/N-axro3?P=1yc8ojpZ1z0wxjx>`_ connector (the white block near the
 bottom). The following table shows how the pins are connected in the `examples <examples.html>`_ (tested on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_)
 
-.. csv-table:: pinout (ordered the same as the 12-pin ribbon cable connector)
+.. csv-table:: pinout (ordered the same as the FFC/FPC cable connector)
     :header: Label,"MCU pin",Description
     :widths: 5,5,13
 
