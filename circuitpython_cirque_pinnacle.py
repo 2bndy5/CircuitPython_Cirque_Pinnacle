@@ -42,12 +42,11 @@ class PinnacleTouch:
             raise OSError("Cirque Pinnacle ASIC not responding")
         # init internal attributes w/ factory defaults after power-on-reset
         self._mode = 0  # 0 means relative mode which is factory default after power-on-reset
-        self.clear_flags()
         self.detect_finger_stylus()
-        self._rap_write(7, 14)  # enables all compensations
         self._rap_write(0x0A, 30)  # z-idle packet count
         self._rap_write_bytes(3, [0, 1, 2]) # configure relative (& absolute mode)
         self.set_adc_gain(0)
+        self.calibrate(True)  # enables all compensations
 
     @property
     def feed_enable(self):
@@ -73,15 +72,15 @@ class PinnacleTouch:
             raise ValueError("unrecognised input value for data mode. Use 0 for Relative mode, "
                              "1 for AnyMeas mode, or 2 for Absolute mode.")
         self._mode = mode
+        sys_config = self._rap_read(3) & 0xE7  # clear flags specific to AnyMeas mode
         if mode in (RELATIVE, ABSOLUTE):  # for relative/absolute mode
-            sys_config = self._rap_read(3) & 0xE7  # clear flags specific to AnyMeas mode
             if self.data_mode == ANYMEAS:  # if leaving AnyMeas mode
                 self._rap_write_bytes(3, [
                     sys_config,
                     1 | mode,  # set new mode's flag & enables feed
                     2])  # disables taps in Relative mode
                 self.sample_rate = 100
-                self._rap_write(7, 14)  # enables all compensations
+                self._rap_write(7, 0x1E)  # enables all compensations
                 self._rap_write(0x0A, 30)  # 30 z-idle packets
             else:  # ok to write appropriate mode
                 self._rap_write(4, 1 | mode)
@@ -132,8 +131,8 @@ class PinnacleTouch:
                                ((temp[4] & 0x0F) << 8) | temp[2],  # x
                                ((temp[4] & 0xF0) << 4) | temp[3],  # y
                                temp[5] & 0x3F]  # z
-                return_vals[1] = min(128, max(1920, return_vals[1]))
-                return_vals[2] = min(64, max(1472, return_vals[2]))
+                return_vals[1] = max(128, min(1920, return_vals[1]))
+                return_vals[2] = max(64, min(1472, return_vals[2]))
             elif self.data_mode == RELATIVE:  # if in relative mode
                 temp = self._rap_read_bytes(0x12, 4)
                 return_vals = bytearray([temp[0] & 7, temp[1], temp[2]])
@@ -210,7 +209,7 @@ class PinnacleTouch:
         """This attribute returns a `list` of the 46 signed 16-bit (short) values stored in the
         Pinnacle ASIC's memory that is used for taking measurements."""
         # combine every 2 bytes from resulting buffer to form a list of signed 16-bits integers
-        return list(unpack('46h', self._era_read_bytes(0x01DF, 46 * 2)))
+        return list(unpack('46h', self._era_read_bytes(0x01DF, 92)))
 
     @calibration_matrix.setter
     def calibration_matrix(self, matrix):
