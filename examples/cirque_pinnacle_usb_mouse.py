@@ -4,7 +4,7 @@ import time
 import board
 from digitalio import DigitalInOut
 import usb_hid
-from circuitpython_cirque_pinnacle import PinnacleTouchSPI, DataModes
+from circuitpython_cirque_pinnacle import PinnacleTouchSPI, RELATIVE
 
 mouse = None
 for dev in usb_hid.devices:
@@ -25,12 +25,11 @@ dr_pin = DigitalInOut(board.D2)
 tpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # NOTE we passed the dr_pin for slightly faster data reporting
 tpad.set_adc_gain(1)  # for curved overlay type
-tpad.data_mode = DataModes.RELATIVE  # ensure mouse mode is enabled
+tpad.data_mode = RELATIVE  # ensure mouse mode is enabled
 
 def move(timeout=10):
     """Send mouse X & Y reported data from the Pinnacle touch controller
-    for a period of ``timeout`` seconds.
-    """
+    for a period of ``timeout`` seconds."""
     if mouse is None:
         raise OSError("mouse HID device not available.")
     start = time.monotonic()

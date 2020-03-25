@@ -4,7 +4,7 @@ import time
 from struct import unpack
 import board
 from digitalio import DigitalInOut
-from circuitpython_cirque_pinnacle import PinnacleTouchSPI, DataModes
+from circuitpython_cirque_pinnacle import PinnacleTouchSPI, ANYMEAS
 
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
@@ -14,7 +14,7 @@ dr_pin = DigitalInOut(board.D2)
 tpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # if dr_pin was not specified upon instantiation.
 # this command will raise an AttributeError exception
-tpad.data_mode = DataModes.ANYMEAS
+tpad.data_mode = ANYMEAS
 
 # setup toggle and polarity bits for measuring with PNP gate muxing
 class MeasVector:
