@@ -28,12 +28,8 @@ MUX_REF1 = 0x10
 MUX_REF0 = 0x08
 MUX_PNP = 0x04
 MUX_NPN = 0x01
-
-class AnyMeasCrtl:
-    """These constants control the number of measurements performed in `measure_adc()`."""
-    CRTL_REPEAT = 0x80  #: required for more than 1 measurement
-    CRTL_PWR_IDLE = 0x40  #: triggers low power mode (sleep) after completing measurements
-# pylint: enable=bad-whitespace,too-few-public-methods
+CRTL_REPEAT = 0x80
+CRTL_PWR_IDLE = 0x40
 
 class PinnacleTouch:
     """The abstract base class for driving the Pinnacle ASIC."""
