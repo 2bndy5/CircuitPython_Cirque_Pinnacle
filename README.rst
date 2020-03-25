@@ -7,6 +7,15 @@
     :target: https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/actions/
     :alt: Build Status
 
+.. image:: https://img.shields.io/pypi/v/circuitpython-cirque-pinnacle.svg
+    :alt: latest version on PyPI
+    :target: https://pypi.python.org/pypi/circuitpython-cirque-pinnacle
+
+.. image:: https://pepy.tech/badge/circuitpython-cirque-pinnacle
+    :alt: Total PyPI downloads
+    :target: https://pepy.tech/project/circuitpython-cirque-pinnacle
+
+
 Introduction
 ============
 
