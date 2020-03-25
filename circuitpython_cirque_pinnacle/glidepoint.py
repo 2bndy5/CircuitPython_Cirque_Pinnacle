@@ -102,15 +102,17 @@ class PinnacleTouch:
     def relative_mode_config(self, rotate90=False, glide_extend=True,
                              secondary_tap=True, taps=False, intellimouse=False):
         """Configure settings specific to Relative mode (AKA Mouse mode) data reporting."""
-        config2 = rotate90 << 7 | (not glide_extend) << 4 | (
-            not secondary_tap) << 2 | (not taps) << 1 | intellimouse
-        self._rap_write(5, config2)
+        if self.data_mode == RELATIVE:
+            config2 = rotate90 << 7 | (not glide_extend) << 4 | (
+                not secondary_tap) << 2 | (not taps) << 1 | intellimouse
+            self._rap_write(5, config2)
 
     def absolute_mode_config(self, z_idle_count=30, invert_x=False, invert_y=False):
         """Configure settings specific to Absolute mode (reports axis positions)."""
-        self._rap_write(0x0A, max(0, min(z_idle_count, 255)))
-        config1 = (self._rap_read(4) & 0x3F) | (invert_y << 7) | (invert_x << 6)
-        self._rap_write(4, config1)
+        if self.data_mode == ABSOLUTE:
+            self._rap_write(0x0A, max(0, min(z_idle_count, 255)))
+            config1 = (self._rap_read(4) & 0x3F) | (invert_y << 7) | (invert_x << 6)
+            self._rap_write(4, config1)
 
     def report(self, only_new=True):
         """This function will return touch event data from the Pinnacle ASIC (including empty
