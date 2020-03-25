@@ -1,8 +1,5 @@
 
-.. If you created a package, create one automodule per module in the package.
-
-.. If your library file(s) are nested in a directory (e.g. /adafruit_foo/foo.py)
-.. use this format as the module name: "adafruit_foo.foo"
+.. currentmodule:: circuitpython_cirque_pinnacle
 
 PinnacleTouch API
 ==================
@@ -16,17 +13,17 @@ Data Modes
 
 .. data:: circuitpython_cirque_pinnacle.RELATIVE
    :annotation: =0
-   
+
    Alias symbol for specifying Relative mode (AKA Mouse mode).
 
 .. data:: circuitpython_cirque_pinnacle.ANYMEAS
    :annotation: =1
-   
+
    Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
 
 .. data:: circuitpython_cirque_pinnacle.ABSOLUTE
    :annotation: =2
-   
+
    Alias symbol for specifying Absolute mode (axis positions)
 
 AnyMeas mode Gain
@@ -36,19 +33,19 @@ AnyMeas mode Gain
    values.
 
 .. data:: circuitpython_cirque_pinnacle.GAIN_100
-   
+
    around 100% gain
 
 .. data:: circuitpython_cirque_pinnacle.GAIN_133
-   
+
    around 133% gain
 
 .. data:: circuitpython_cirque_pinnacle.GAIN_166
-   
+
    around 166% gain
 
 .. data:: circuitpython_cirque_pinnacle.GAIN_200
-   
+
    around 200% gain
 
 
@@ -61,35 +58,35 @@ AnyMeas mode Frequencies
    frequency will be larger than what is described here (& vice versa).
 
 .. data:: circuitpython_cirque_pinnacle.FREQ_0
-   
+
    frequency around 500,000Hz
 
 .. data:: circuitpython_cirque_pinnacle.FREQ_1
-   
+
    frequency around 444,444Hz
 
 .. data:: circuitpython_cirque_pinnacle.FREQ_2
-   
+
    frequency around 400,000Hz
 
 .. data:: circuitpython_cirque_pinnacle.FREQ_3
-   
+
    frequency around 363,636Hz
 
 .. data:: circuitpython_cirque_pinnacle.FREQ_4
-   
+
    frequency around 333,333Hz
 
 .. data:: circuitpython_cirque_pinnacle.FREQ_5
-   
+
    frequency around 307,692Hz
 
 .. data:: circuitpython_cirque_pinnacle.FREQ_6
-   
+
    frequency around 267,000Hz
 
 .. data:: circuitpython_cirque_pinnacle.FREQ_7
-   
+
    frequency around 235,000Hz
 
 
@@ -103,34 +100,34 @@ AnyMeas mode Muxing
       muxing gate is specified (when specifying an individual gate polarity).
 
 .. data:: circuitpython_cirque_pinnacle.MUX_REF1
-   
+
    enables a builtin capacitor (~0.5pF). See note in `measure_adc()`
 
 .. data:: circuitpython_cirque_pinnacle.MUX_REF0
-   
+
    enables a builtin capacitor (~0.25pF). See note in `measure_adc()`
 
 .. data:: circuitpython_cirque_pinnacle.MUX_PNP
-   
+
    enable PNP sense line
 
 .. data:: circuitpython_cirque_pinnacle.MUX_NPN
-   
+
    enable NPN sense line
 
 
 AnyMeas mode Control
 ********************
 
-   These constants control the number of measurements performed in `measure_adc()`. 
+   These constants control the number of measurements performed in `measure_adc()`.
    The number of measurements can range [0, 63].
-   
+
 .. data:: circuitpython_cirque_pinnacle.CRTL_REPEAT
-   
+
    required for more than 1 measurement
 
 .. data:: circuitpython_cirque_pinnacle.CRTL_PWR_IDLE
-   
+
    triggers low power mode (sleep) after completing measurements
 
 
@@ -195,7 +192,7 @@ hard_configured
 relative_mode_config()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.relative_mode_config()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.relative_mode_config
 
    (write only)
 
@@ -217,7 +214,7 @@ relative_mode_config()
 absolute_mode_config()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.absolute_mode_config()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.absolute_mode_config
 
    (write only)
 
@@ -238,7 +235,7 @@ absolute_mode_config()
 report()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.report()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.report
 
    This function only applies to Relative or Absolute
    mode, otherwise if `data_mode` is set to
@@ -319,7 +316,7 @@ report()
 clear_flags()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.clear_flags()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.clear_flags
 
 allow_sleep
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -365,7 +362,7 @@ sample_rate
 detect_finger_stylus()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.detect_finger_stylus()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.detect_finger_stylus
 
    :param bool enable_finger: `True` enables the Pinnacle ASIC's measurements to
       detect if the touch event was caused by a finger or 5.25mm stylus. `False` disables
@@ -382,7 +379,7 @@ detect_finger_stylus()
 calibrate()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.calibrate()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.calibrate
 
    This function only applies to Relative or Absolute mode, otherwise if `data_mode` is set to
    :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`, then this function will take no
@@ -431,7 +428,7 @@ calibration_matrix
 set_adc_gain()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.set_adc_gain()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.set_adc_gain
 
    (does not apply to AnyMeas mode). (write-only)
 
@@ -444,7 +441,7 @@ set_adc_gain()
 tune_edge_sensitivity()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.tune_edge_sensitivity()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.tune_edge_sensitivity
 
    This function was ported from Cirque's example code and doesn't seem to have corresponding
    documentation. I'm having trouble finding a memory map of the Pinnacle ASIC as this
@@ -455,7 +452,7 @@ AnyMeas mode
 
 anymeas_mode_config()
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.anymeas_mode_config()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.anymeas_mode_config
 
    Be sure to set the `data_mode` attribute to
    :attr:`~circuitpython_cirque_pinnacle.ANYMEAS` before calling this function
@@ -503,7 +500,7 @@ anymeas_mode_config()
 measure_adc()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.measure_adc()
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.measure_adc
 
    :param int bits_to_toggle: This 4-byte integer specifies which bits the Pinnacle touch
       controller should toggle. A bit of ``1`` flags that bit for toggling, and a bit of
