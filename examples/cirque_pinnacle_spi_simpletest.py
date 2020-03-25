@@ -12,7 +12,6 @@ dr_pin = DigitalInOut(board.D2)
 dr_pin.switch_to_input()
 
 tpad = PinnacleTouchSPI(spi, ss_pin) # NOTE we did not pass the dr_pin
-tpad.set_adc_gain(1) # for curved overlay type
 tpad.data_mode = ABSOLUTE # ensure Absolute mode is enabled
 tpad.absolute_mode_config(z_idle_count=1) # limit idle packet count to 1
 

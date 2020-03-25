@@ -25,7 +25,6 @@ dr_pin = DigitalInOut(board.D2)
 
 tpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # NOTE we passed the dr_pin for slightly faster data reporting
-tpad.set_adc_gain(1)  # for curved overlay type
 tpad.data_mode = RELATIVE  # ensure mouse mode is enabled
 
 def move(timeout=10):
