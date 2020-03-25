@@ -10,49 +10,129 @@ PinnacleTouch API
 Accepted Constants
 ------------------
 
-DataModes
-*********
+Data Modes
+***********
+   Allowed symbols for configuring the Pinanacle ASIC's data reporting/measurements.
 
-.. autoclass:: circuitpython_cirque_pinnacle.DataModes
-   :members:
+.. data:: circuitpython_cirque_pinnacle.RELATIVE
+   :annotation: =0
+   
+   Alias symbol for specifying Relative mode (AKA Mouse mode).
 
-AnyMeasGain
-*************
+.. data:: circuitpython_cirque_pinnacle.ANYMEAS
+   :annotation: =1
+   
+   Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
 
-.. autoclass:: circuitpython_cirque_pinnacle.AnyMeasGain
-   :members:
+.. data:: circuitpython_cirque_pinnacle.ABSOLUTE
+   :annotation: =2
+   
+   Alias symbol for specifying Absolute mode (axis positions)
 
-   The percentages defined here are approximate values.
+AnyMeas mode Gain
+******************
 
-AnyMeasFreq
-*************
+   Allowed ADC gain configurations of AnyMeas mode. The percentages defined here are approximate
+   values.
 
-.. autoclass:: circuitpython_cirque_pinnacle.AnyMeasFreq
-   :members:
+.. data:: circuitpython_cirque_pinnacle.GAIN_100
+   
+   around 100% gain
 
-   The frequencies defined here are
+.. data:: circuitpython_cirque_pinnacle.GAIN_133
+   
+   around 133% gain
+
+.. data:: circuitpython_cirque_pinnacle.GAIN_166
+   
+   around 166% gain
+
+.. data:: circuitpython_cirque_pinnacle.GAIN_200
+   
+   around 200% gain
+
+
+AnyMeas mode Frequencies
+************************
+
+   Allowed frequency configurations of AnyMeas mode. The frequencies defined here are
    approximated based on an aperture width of 500 nanoseconds. If the ``aperture_width``
    parameter to `anymeas_mode_config()` specified is less than 500 nanoseconds, then the
    frequency will be larger than what is described here (& vice versa).
 
-AnyMeasMux
-*************
+.. data:: circuitpython_cirque_pinnacle.FREQ_0
+   
+   frequency around 500,000Hz
 
-.. autoclass:: circuitpython_cirque_pinnacle.AnyMeasMux
-   :members:
+.. data:: circuitpython_cirque_pinnacle.FREQ_1
+   
+   frequency around 444,444Hz
 
+.. data:: circuitpython_cirque_pinnacle.FREQ_2
+   
+   frequency around 400,000Hz
+
+.. data:: circuitpython_cirque_pinnacle.FREQ_3
+   
+   frequency around 363,636Hz
+
+.. data:: circuitpython_cirque_pinnacle.FREQ_4
+   
+   frequency around 333,333Hz
+
+.. data:: circuitpython_cirque_pinnacle.FREQ_5
+   
+   frequency around 307,692Hz
+
+.. data:: circuitpython_cirque_pinnacle.FREQ_6
+   
+   frequency around 267,000Hz
+
+.. data:: circuitpython_cirque_pinnacle.FREQ_7
+   
+   frequency around 235,000Hz
+
+
+AnyMeas mode Muxing
+*******************
+
+   Allowed muxing gate polarity and reference capacitor configurations of AnyMeas mode.
    Combining these values (with ``+`` operator) is allowed.
 
    .. note:: The sign of the measurements taken in AnyMeas mode is inverted depending on which
       muxing gate is specified (when specifying an individual gate polarity).
 
-AnyMeasCrtl
-*************
+.. data:: circuitpython_cirque_pinnacle.MUX_REF1
+   
+   enables a builtin capacitor (~0.5pF). See note in `measure_adc()`
 
-.. autoclass:: circuitpython_cirque_pinnacle.AnyMeasCrtl
-   :members:
+.. data:: circuitpython_cirque_pinnacle.MUX_REF0
+   
+   enables a builtin capacitor (~0.25pF). See note in `measure_adc()`
 
+.. data:: circuitpython_cirque_pinnacle.MUX_PNP
+   
+   enable PNP sense line
+
+.. data:: circuitpython_cirque_pinnacle.MUX_NPN
+   
+   enable NPN sense line
+
+
+AnyMeas mode Control
+********************
+
+   These constants control the number of measurements performed in `measure_adc()`. 
    The number of measurements can range [0, 63].
+   
+.. data:: circuitpython_cirque_pinnacle.CRTL_REPEAT
+   
+   required for more than 1 measurement
+
+.. data:: circuitpython_cirque_pinnacle.CRTL_PWR_IDLE
+   
+   triggers low power mode (sleep) after completing measurements
+
 
 PinnacleTouch
 -------------
@@ -68,7 +148,7 @@ Constructor
       of the STATUS register is used to detirmine if the data being reported is new.
 
       .. important:: This parameter must be specified if your application is going to use the
-         Pinnacle ASIC's :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`
+         Pinnacle ASIC's :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`
          mode (a rather experimental measuring of raw ADC values).
 
 data_mode
@@ -76,9 +156,9 @@ data_mode
 
 .. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.data_mode
 
-   Valid input values are :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` for
-   relative/mouse mode, :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE` for
-   absolute positioning mode, or :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`
+   Valid input values are :attr:`~circuitpython_cirque_pinnacle.RELATIVE` for
+   relative/mouse mode, :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE` for
+   absolute positioning mode, or :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`
    (referred to as "AnyMeas" in specification sheets) mode for reading ADC values.
 
    :Returns:
@@ -87,9 +167,9 @@ data_mode
       - ``1`` for AnyMeas mode (raw ADC measurements)
       - ``2`` for Absolute mode (X & Y axis positions)
 
-   .. important:: When switching from :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS` to
-      :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` or
-      :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE` all configurations are reset, and
+   .. important:: When switching from :attr:`~circuitpython_cirque_pinnacle.ANYMEAS` to
+      :attr:`~circuitpython_cirque_pinnacle.RELATIVE` or
+      :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE` all configurations are reset, and
       must be re-configured by using  `absolute_mode_config()` or `relative_mode_config()`.
 
 Relative or Absolute mode
@@ -142,10 +222,10 @@ absolute_mode_config()
    (write only)
 
    This function only applies to Absolute mode, otherwise if `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS` or
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE`, then this function will take
+   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS` or
+   :attr:`~circuitpython_cirque_pinnacle.RELATIVE`, then this function will take
    no affect until `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`.
+   :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE`.
 
    :param int z_idle_count: Specifies the number of empty packets (x-axis, y-axis, and z-axis
       are ``0``) reported (every 10 milliseconds) when there is no touch detected. Defaults
@@ -162,7 +242,7 @@ report()
 
    This function only applies to Relative or Absolute
    mode, otherwise if `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function returns
+   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`, then this function returns
    `None` and does nothing.
 
    :param bool only_new: This parameter can be used to ensure the data reported is only new
@@ -277,10 +357,10 @@ sample_rate
    for a finger or stylus with a 5.25mm diameter tip.
 
    This function only applies to Relative or Absolute mode, otherwise if `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function will take no
+   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`, then this function will take no
    affect until `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` or
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`.
+   :attr:`~circuitpython_cirque_pinnacle.RELATIVE` or
+   :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE`.
 
 detect_finger_stylus()
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -305,10 +385,10 @@ calibrate()
 .. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.calibrate()
 
    This function only applies to Relative or Absolute mode, otherwise if `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function will take no
+   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`, then this function will take no
    affect until `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.RELATIVE` or
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.ABSOLUTE`.
+   :attr:`~circuitpython_cirque_pinnacle.RELATIVE` or
+   :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE`.
 
    :param bool run: If `True`, this function forces a calibration of the sensor. If `False`,
       this function just writes the following parameters to the Pinnacle ASIC's "CalConfig1"
@@ -378,23 +458,23 @@ anymeas_mode_config()
 .. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.anymeas_mode_config()
 
    Be sure to set the `data_mode` attribute to
-   :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS` before calling this function
+   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS` before calling this function
    otherwise it will do nothing.
 
    :param int gain: Sets the sensitivity of the ADC matrix. Valid values are the constants
-      defined in :class:`~circuitpython_cirque_pinnacle.AnyMeasGain`. Defaults to
-      :attr:`~circuitpython_cirque_pinnacle.AnyMeasGain.GAIN_200`.
+      defined in `AnyMeas mode Gain`_. Defaults to
+      :attr:`~circuitpython_cirque_pinnacle.GAIN_200`.
    :param int frequency: Sets the frequency of measurements made by the ADC matrix. Valid
       values are the constants defined in
-      :class:`~circuitpython_cirque_pinnacle.AnyMeasFreq`.
-      Defaults :attr:`~circuitpython_cirque_pinnacle.AnyMeasFreq.FREQ_0`.
+      `AnyMeas mode Frequencies`_.
+      Defaults :attr:`~circuitpython_cirque_pinnacle.FREQ_0`.
    :param int sample_length: Sets the maximum bit length of the measurements made by the ADC
       matrix. Valid values are ``128``, ``256``, or ``512``. Defaults to ``512``.
    :param int mux_ctrl: The Pinnacle ASIC can employ different bipolar junctions
       and/or reference capacitors. Valid values are the constants defined in
-      :class:`~circuitpython_cirque_pinnacle.AnyMeasMux`. Additional combination of
+      `AnyMeas mode Muxing`_. Additional combination of
       these constants is also allowed. Defaults to
-      :attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_PNP`.
+      :attr:`~circuitpython_cirque_pinnacle.MUX_PNP`.
    :param int apperture_width: Sets the window of time (in nanoseconds) to allow for the ADC
       to take a measurement. Valid values are multiples of 125 in range [``250``, ``1875``].
       Erroneous values are clamped/truncated to this range.
@@ -406,10 +486,10 @@ anymeas_mode_config()
 
    :param int ctrl_pwr_cnt: Configure the Pinnacle to perform a number of measurements for
       each call to `measure_adc()`. Defaults to 1. Constants defined in
-      :class:`~circuitpython_cirque_pinnacle.AnyMeasCrtl` can be used to specify if is sleep
-      is allowed (:attr:`~circuitpython_cirque_pinnacle.AnyMeasCrtl.CRTL_PWR_IDLE` -- this
+      `AnyMeas mode Control`_ can be used to specify if is sleep
+      is allowed (:attr:`~circuitpython_cirque_pinnacle.CRTL_PWR_IDLE` -- this
       is not default) or if repetive measurements is allowed (
-      :attr:`~circuitpython_cirque_pinnacle.AnyMeasCrtl.CRTL_REPEAT`) if number of
+      :attr:`~circuitpython_cirque_pinnacle.CRTL_REPEAT`) if number of
       measurements is more than 1.
 
       .. warning:: There is no bounds checking on the number of measurements specified
@@ -434,7 +514,7 @@ measure_adc()
 
    :Returns:
       A 2-byte `bytearray` that represents a signed short integer. If `data_mode` is not set
-      to :attr:`~circuitpython_cirque_pinnacle.DataModes.ANYMEAS`, then this function returns
+      to :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`, then this function returns
       `None` and does nothing.
 
    :4-byte Integer Format:

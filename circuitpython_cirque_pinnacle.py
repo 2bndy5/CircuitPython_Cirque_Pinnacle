@@ -1,70 +1,33 @@
-# The MIT License (MIT)
-#
-# Copyright (c) 2020 Brendan Doherty
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
 """
-PinnacleTouch API
-=================
-
 A driver class for the Cirque Pinnacle ASIC on the Cirque capacitve touch
 based circular trackpads.
 """
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
-import time
-import struct
+from time import sleep
+from struct import pack, unpack
 from adafruit_bus_device.spi_device import SPIDevice
 from adafruit_bus_device.i2c_device import I2CDevice
 
-# constants used for bitwise configuration
-# pylint: disable=too-few-public-methods
-class DataModes:
-    """Allowed symbols for configuring the Pinanacle ASIC's data reporting/measurements."""
-    RELATIVE = 0x00  #: Alias symbol for specifying Relative mode (AKA Mouse mode).
-    ANYMEAS = 0x01  #: Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
-    ABSOLUTE = 0x02  #: Alias symbol for specifying Absolute mode (axis positions)
-
-class AnyMeasGain:
-    """Allowed ADC gain configurations of AnyMeas mode."""
-    GAIN_100 = 0xC0  #: around 100% gain
-    GAIN_133 = 0x80  #: around 133% gain
-    GAIN_166 = 0x40  #: around 166% gain
-    GAIN_200 = 0x00  #: around 200% gain
-
-class AnyMeasFreq:
-    """Allowed frequency configurations of AnyMeas mode."""
-    FREQ_0 = 0x02  #: frequency around 500,000Hz
-    FREQ_1 = 0x03  #: frequency around 444,444Hz
-    FREQ_2 = 0x04  #: frequency around 400,000Hz
-    FREQ_3 = 0x05  #: frequency around 363,636Hz
-    FREQ_4 = 0x06  #: frequency around 333,333Hz
-    FREQ_5 = 0x07  #: frequency around 307,692Hz
-    FREQ_6 = 0x09  #: frequency around 267,000Hz
-    FREQ_7 = 0x0B  #: frequency around 235,000Hz
-
-class AnyMeasMux:
-    """Allowed muxing gate polarity and reference capacitor configurations of AnyMeas mode."""
-    MUX_REF1 = 0x10  #: enables a builtin capacitor (~0.5pF). See note in `measure_adc()`
-    MUX_REF0 = 0x08  #: enables a builtin capacitor (~0.25pF). See note in `measure_adc()`
-    MUX_PNP = 0x04  #: enable PNP sense line
-    MUX_NPN = 0x01  #: enable NPN sense line
+RELATIVE = 0x00
+ANYMEAS = 0x01
+ABSOLUTE = 0x02
+GAIN_100 = 0xC0
+GAIN_133 = 0x80
+GAIN_166 = 0x40
+GAIN_200 = 0x00
+FREQ_0 = 0x02
+FREQ_1 = 0x03
+FREQ_2 = 0x04
+FREQ_3 = 0x05
+FREQ_4 = 0x06
+FREQ_5 = 0x07
+FREQ_6 = 0x09
+FREQ_7 = 0x0B
+MUX_REF1 = 0x10
+MUX_REF0 = 0x08
+MUX_PNP = 0x04
+MUX_NPN = 0x01
 
 class AnyMeasCrtl:
     """These constants control the number of measurements performed in `measure_adc()`."""
@@ -110,13 +73,13 @@ class PinnacleTouch:
 
     @data_mode.setter
     def data_mode(self, mode):
-        if mode not in (DataModes.ANYMEAS, DataModes.RELATIVE, DataModes.ABSOLUTE):
+        if mode not in (ANYMEAS, RELATIVE, ABSOLUTE):
             raise ValueError("unrecognised input value for data mode. Use 0 for Relative mode, "
                              "1 for AnyMeas mode, or 2 for Absolute mode.")
         self._mode = mode
-        if mode in (DataModes.RELATIVE, DataModes.ABSOLUTE):  # for relative/absolute mode
+        if mode in (RELATIVE, ABSOLUTE):  # for relative/absolute mode
             sys_config = self._rap_read(3) & 0xE7  # clear flags specific to AnyMeas mode
-            if self.data_mode == DataModes.ANYMEAS:  # if leaving AnyMeas mode
+            if self.data_mode == ANYMEAS:  # if leaving AnyMeas mode
                 self._rap_write_bytes(3, [
                     sys_config,
                     1 | mode,  # set new mode's flag & enables feed
@@ -132,7 +95,7 @@ class PinnacleTouch:
                                      "please specify the dr_pin attribute for AnyMeas mode")
             # disable tracking computations for AnyMeas mode
             self._rap_write(3, sys_config | 0x08)
-            time.sleep(0.01)  # wait 10 ms for tracking measurements to expire
+            sleep(0.01)  # wait 10 ms for tracking measurements to expire
             self.anymeas_mode_config()  # configure registers for the AnyMeas mode
 
     @property
@@ -157,7 +120,7 @@ class PinnacleTouch:
     def report(self, only_new=True):
         """This function will return touch event data from the Pinnacle ASIC (including empty
         packets on ending of a touch event)."""
-        if self._mode == DataModes.ANYMEAS:
+        if self._mode == ANYMEAS:
             return None
         return_vals = None
         data_ready = False
@@ -167,7 +130,7 @@ class PinnacleTouch:
             else:
                 data_ready = self.dr_pin.value
         if (only_new and data_ready) or not only_new:
-            if self.data_mode == DataModes.ABSOLUTE:  # if absolute mode
+            if self.data_mode == ABSOLUTE:  # if absolute mode
                 temp = self._rap_read_bytes(0x12, 6)
                 return_vals = [temp[0] & 0x3F,  # buttons
                                ((temp[4] & 0x0F) << 8) | temp[2],  # x
@@ -175,7 +138,7 @@ class PinnacleTouch:
                                temp[5] & 0x3F]  # z
                 return_vals[1] = min(128, max(1920, return_vals[1]))
                 return_vals[2] = min(64, max(1472, return_vals[2]))
-            elif self.data_mode == DataModes.RELATIVE:  # if in relative mode
+            elif self.data_mode == RELATIVE:  # if in relative mode
                 temp = self._rap_read_bytes(0x12, 4)
                 return_vals = bytearray([temp[0] & 7, temp[1], temp[2]])
                 return_vals += bytes([temp[3]])
@@ -186,7 +149,7 @@ class PinnacleTouch:
         """This function clears the "Data Ready" flag which is reflected with the ``dr_pin``."""
         self._rap_write(2, 0)
         # delay 50 microseconds per official example from Cirque
-        time.sleep(0.00005)
+        sleep(0.00005)
 
     @property
     def allow_sleep(self):
@@ -214,7 +177,7 @@ class PinnacleTouch:
 
     @sample_rate.setter
     def sample_rate(self, val):
-        if self.data_mode != DataModes.ANYMEAS:
+        if self.data_mode != ANYMEAS:
             if val in (200, 300):
                 # disable palm & noise compensations
                 self._rap_write(6, 10)
@@ -238,8 +201,8 @@ class PinnacleTouch:
 
     def calibrate(self, run, tap=True, track_error=True, nerd=True, background=True):
         """Set calibration parameters when the Pinnacle ASIC calibrates itself."""
-        cal_config = tap << 4 | track_error << 3 | nerd << 2 | background << 1
-        if self.data_mode != DataModes.ANYMEAS:
+        if self.data_mode != ANYMEAS:
+            cal_config = tap << 4 | track_error << 3 | nerd << 2 | background << 1
             self._rap_write(7, cal_config | run)
             if run:
                 while self._rap_read(7) & 1:
@@ -251,7 +214,7 @@ class PinnacleTouch:
         """This attribute returns a `list` of the 46 signed 16-bit (short) values stored in the
         Pinnacle ASIC's memory that is used for taking measurements."""
         # combine every 2 bytes from resulting buffer to form a list of signed 16-bits integers
-        return list(struct.unpack('46h', self._era_read_bytes(0x01DF, 46 * 2)))
+        return list(unpack('46h', self._era_read_bytes(0x01DF, 46 * 2)))
 
     @calibration_matrix.setter
     def calibration_matrix(self, matrix):
@@ -263,7 +226,7 @@ class PinnacleTouch:
         # be sure to not write more than allowed
         for index in range(46):
             # write 2 bytes at a time
-            buf = struct.pack('h', matrix[index])
+            buf = pack('h', matrix[index])
             self._era_write(0x01DF + index * 2, buf[0])
             self._era_write(0x01DF + index * 2 + 1, buf[1])
         self.feed_enable = prev_feed_state  # resume previous feed state
@@ -282,11 +245,11 @@ class PinnacleTouch:
         self._era_write(0x0149, x_axis_wide_z_min)
         self._era_write(0x0168, y_axis_wide_z_min)
 
-    def anymeas_mode_config(self, gain=AnyMeasGain.GAIN_200, frequency=AnyMeasFreq.FREQ_0,
-                            sample_length=512, mux_ctrl=AnyMeasMux.MUX_PNP, apperture_width=500,
+    def anymeas_mode_config(self, gain=GAIN_200, frequency=FREQ_0,
+                            sample_length=512, mux_ctrl=MUX_PNP, apperture_width=500,
                             ctrl_pwr_cnt=1):
         """This function configures the Pinnacle ASIC to output raw ADC measurements."""
-        if self.data_mode == DataModes.ANYMEAS:
+        if self.data_mode == ANYMEAS:
             anymeas_config = [2, 3, 4, 0, 4, 0, 19, 0, 0, 1]
             anymeas_config[0] = gain | frequency
             anymeas_config[1] = (max(1, min(int(sample_length / 128), 3)))
@@ -300,7 +263,7 @@ class PinnacleTouch:
     def measure_adc(self, bits_to_toggle, toggle_polarity):
         """This function instigates and returns the measurements (a signed short) from the Pinnacle
         ASIC's ADC (Analog to Digital Converter) matrix (only applies to AnyMeas mode)."""
-        if self._mode != DataModes.ANYMEAS:
+        if self._mode != ANYMEAS:
             return None
         tog_pol = []  # assemble list of register buffers
         for i in range(3, -1, -1):
@@ -319,19 +282,15 @@ class PinnacleTouch:
         return bytearray(result)
 
     def _rap_read(self, reg):
-        """This function is overridden by the appropriate parent class based on interface type."""
         raise NotImplementedError()
 
     def _rap_read_bytes(self, reg, numb_bytes):
-        """This function is overridden by the appropriate parent class based on interface type."""
         raise NotImplementedError()
 
     def _rap_write(self, reg, value):
-        """This function is overridden by the appropriate parent class based on interface type."""
         raise NotImplementedError()
 
     def _rap_write_bytes(self, reg, values):
-        """This function is overridden by the appropriate parent class based on interface type."""
         raise NotImplementedError()
 
     def _era_read(self, reg):
