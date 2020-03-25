@@ -343,7 +343,7 @@ class PinnacleTouch:
             self.clear_flags()
         self.feed_enable = prev_feed_state  # resume previous feed state
 
-# pylint: disable=no-member
+# pylint: disable=no-member,too-few-public-methods
 class PinnacleTouchI2C(PinnacleTouch):
     """Parent class for interfacing with the Pinnacle ASIC via the I2C protocol."""
     def __init__(self, i2c, address=0x2A, dr_pin=None):
