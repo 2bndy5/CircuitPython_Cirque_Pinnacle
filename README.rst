@@ -29,8 +29,6 @@ Supported Features
   trackpads are natively capable of measuring only 1 touch point per event.
 * Download/upload the underlying compensation matrix for ADC measurements.
 * Adjust the ADC matrix gain (sensitivity).
-* compliant with use of context manager (using `with` block) for ease of switching
-  between different configurations of various data mode selections.
 
 .. tip:: The SPI protocol is the preferred method for interfacing with more than 1 Cirque circle
     trackpad from the same MCU (microcontroller). The Cirque Pinnacle does not allow
