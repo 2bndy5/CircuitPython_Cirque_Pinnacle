@@ -4,7 +4,8 @@ import time
 import board
 from digitalio import DigitalInOut
 import usb_hid
-from circuitpython_cirque_pinnacle import PinnacleTouchSPI, RELATIVE
+# this example also works with glideoint_lite.py
+from circuitpython_cirque_pinnacle.glidepoint import PinnacleTouchSPI, RELATIVE
 
 mouse = None
 for dev in usb_hid.devices:
