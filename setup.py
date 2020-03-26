@@ -62,5 +62,5 @@ setup(
     # simple. Or you can use find_packages().
     # TODO: IF LIBRARY FILES ARE A PACKAGE FOLDER,
     #       CHANGE `py_modules=['...']` TO `packages=['...']`
-    py_modules=['circuitpython_cirque_pinnacle'],
+    packages=['circuitpython_cirque_pinnacle'],
 )
