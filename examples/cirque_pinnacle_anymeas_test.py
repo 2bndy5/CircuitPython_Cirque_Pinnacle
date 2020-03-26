@@ -4,7 +4,8 @@ import time
 from struct import unpack
 import board
 from digitalio import DigitalInOut
-from circuitpython_cirque_pinnacle import PinnacleTouchSPI, ANYMEAS
+# this example does NOT work with glideoint_lite.py
+from circuitpython_cirque_pinnacle.glidepoint import PinnacleTouchSPI, ANYMEAS
 
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)

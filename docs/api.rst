@@ -4,6 +4,24 @@
 PinnacleTouch API
 ==================
 
+About the lite version
+----------------------
+
+This library includes a "lite" version of the module ``glidepoint.py`` titled ``glidepoint_lite.py``.
+The lite version is limited to only Relative and Absolute data modes. It has been developed to 
+save space on microcontrollers with limited amount of RAM and/or storage (like boards using the
+ATSAMD21 M0). The following functionality has been removed from the lite version:
+
+   * `anymeas_mode_config()`
+   * `measure_adc()`
+   * `detect_finger_stylus()`
+   * `calibrate()`
+   * `calibration_matrix`
+   * `set_adc_gain()`
+   * `tune_edge_sensitivity()`
+   * ``_era_write_bytes()`` (private member for accessing the Pinnacle ASIC's memory)
+   * all comments and docstrings (meaning ``help()`` will provide no specific information)
+
 Accepted Constants
 ------------------
 
@@ -11,17 +29,17 @@ Data Modes
 ***********
    Allowed symbols for configuring the Pinanacle ASIC's data reporting/measurements.
 
-.. data:: circuitpython_cirque_pinnacle.RELATIVE
+.. data:: circuitpython_cirque_pinnacle.glidepoint.RELATIVE
    :annotation: =0
 
    Alias symbol for specifying Relative mode (AKA Mouse mode).
 
-.. data:: circuitpython_cirque_pinnacle.ANYMEAS
+.. data:: circuitpython_cirque_pinnacle.glidepoint.ANYMEAS
    :annotation: =1
 
    Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
 
-.. data:: circuitpython_cirque_pinnacle.ABSOLUTE
+.. data:: circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE
    :annotation: =2
 
    Alias symbol for specifying Absolute mode (axis positions)
@@ -32,19 +50,19 @@ AnyMeas mode Gain
    Allowed ADC gain configurations of AnyMeas mode. The percentages defined here are approximate
    values.
 
-.. data:: circuitpython_cirque_pinnacle.GAIN_100
+.. data:: circuitpython_cirque_pinnacle.glidepoint.GAIN_100
 
    around 100% gain
 
-.. data:: circuitpython_cirque_pinnacle.GAIN_133
+.. data:: circuitpython_cirque_pinnacle.glidepoint.GAIN_133
 
    around 133% gain
 
-.. data:: circuitpython_cirque_pinnacle.GAIN_166
+.. data:: circuitpython_cirque_pinnacle.glidepoint.GAIN_166
 
    around 166% gain
 
-.. data:: circuitpython_cirque_pinnacle.GAIN_200
+.. data:: circuitpython_cirque_pinnacle.glidepoint.GAIN_200
 
    around 200% gain
 
@@ -57,35 +75,35 @@ AnyMeas mode Frequencies
    parameter to `anymeas_mode_config()` specified is less than 500 nanoseconds, then the
    frequency will be larger than what is described here (& vice versa).
 
-.. data:: circuitpython_cirque_pinnacle.FREQ_0
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_0
 
    frequency around 500,000Hz
 
-.. data:: circuitpython_cirque_pinnacle.FREQ_1
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_1
 
    frequency around 444,444Hz
 
-.. data:: circuitpython_cirque_pinnacle.FREQ_2
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_2
 
    frequency around 400,000Hz
 
-.. data:: circuitpython_cirque_pinnacle.FREQ_3
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_3
 
    frequency around 363,636Hz
 
-.. data:: circuitpython_cirque_pinnacle.FREQ_4
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_4
 
    frequency around 333,333Hz
 
-.. data:: circuitpython_cirque_pinnacle.FREQ_5
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_5
 
    frequency around 307,692Hz
 
-.. data:: circuitpython_cirque_pinnacle.FREQ_6
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_6
 
    frequency around 267,000Hz
 
-.. data:: circuitpython_cirque_pinnacle.FREQ_7
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_7
 
    frequency around 235,000Hz
 
@@ -99,19 +117,19 @@ AnyMeas mode Muxing
    .. note:: The sign of the measurements taken in AnyMeas mode is inverted depending on which
       muxing gate is specified (when specifying an individual gate polarity).
 
-.. data:: circuitpython_cirque_pinnacle.MUX_REF1
+.. data:: circuitpython_cirque_pinnacle.glidepoint.MUX_REF1
 
    enables a builtin capacitor (~0.5pF). See note in `measure_adc()`
 
-.. data:: circuitpython_cirque_pinnacle.MUX_REF0
+.. data:: circuitpython_cirque_pinnacle.glidepoint.MUX_REF0
 
    enables a builtin capacitor (~0.25pF). See note in `measure_adc()`
 
-.. data:: circuitpython_cirque_pinnacle.MUX_PNP
+.. data:: circuitpython_cirque_pinnacle.glidepoint.MUX_PNP
 
    enable PNP sense line
 
-.. data:: circuitpython_cirque_pinnacle.MUX_NPN
+.. data:: circuitpython_cirque_pinnacle.glidepoint.MUX_NPN
 
    enable NPN sense line
 
@@ -122,11 +140,11 @@ AnyMeas mode Control
    These constants control the number of measurements performed in `measure_adc()`.
    The number of measurements can range [0, 63].
 
-.. data:: circuitpython_cirque_pinnacle.CRTL_REPEAT
+.. data:: circuitpython_cirque_pinnacle.glidepoint.CRTL_REPEAT
 
    required for more than 1 measurement
 
-.. data:: circuitpython_cirque_pinnacle.CRTL_PWR_IDLE
+.. data:: circuitpython_cirque_pinnacle.glidepoint.CRTL_PWR_IDLE
 
    triggers low power mode (sleep) after completing measurements
 
@@ -137,7 +155,7 @@ PinnacleTouch
 Constructor
 *************************
 
-.. autoclass:: circuitpython_cirque_pinnacle.PinnacleTouch
+.. autoclass:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch
    :no-members:
 
    :param ~microcontroller.Pin dr_pin: The input pin connected to the Pinnacle ASIC's "Data
@@ -145,17 +163,17 @@ Constructor
       of the STATUS register is used to detirmine if the data being reported is new.
 
       .. important:: This parameter must be specified if your application is going to use the
-         Pinnacle ASIC's :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`
+         Pinnacle ASIC's :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`
          mode (a rather experimental measuring of raw ADC values).
 
 data_mode
 *************************
 
-.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.data_mode
+.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.data_mode
 
-   Valid input values are :attr:`~circuitpython_cirque_pinnacle.RELATIVE` for
-   relative/mouse mode, :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE` for
-   absolute positioning mode, or :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`
+   Valid input values are :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE` for
+   relative/mouse mode, :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` for
+   absolute positioning mode, or :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`
    (referred to as "AnyMeas" in specification sheets) mode for reading ADC values.
 
    :Returns:
@@ -164,9 +182,9 @@ data_mode
       - ``1`` for AnyMeas mode (raw ADC measurements)
       - ``2`` for Absolute mode (X & Y axis positions)
 
-   .. important:: When switching from :attr:`~circuitpython_cirque_pinnacle.ANYMEAS` to
-      :attr:`~circuitpython_cirque_pinnacle.RELATIVE` or
-      :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE` all configurations are reset, and
+   .. important:: When switching from :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` to
+      :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE` or
+      :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` all configurations are reset, and
       must be re-configured by using  `absolute_mode_config()` or `relative_mode_config()`.
 
 Relative or Absolute mode
@@ -175,14 +193,16 @@ Relative or Absolute mode
 feed_enable
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.feed_enable
+.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.feed_enable
 
-   This attribute does not apply to AnyMeas mode (only Relative & Absolute modes).
+   This function only applies to :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE`
+   or :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`, then this function will do nothing.
 
 hard_configured
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.hard_configured
+.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.hard_configured
 
    See note about product labeling in `Model Labeling Scheme <index.html#cc>`_. (read only)
 
@@ -192,9 +212,14 @@ hard_configured
 relative_mode_config()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.relative_mode_config
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.relative_mode_config
 
    (write only)
+
+   This function only applies to :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE`
+   mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` or
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE`, then this function does nothing.
 
    :param bool rotate90: Specifies if the axis data is altered for 90 degree rotation before
       reporting it (essentially swaps the axis data). Default is `False`.
@@ -214,15 +239,14 @@ relative_mode_config()
 absolute_mode_config()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.absolute_mode_config
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.absolute_mode_config
 
    (write only)
 
-   This function only applies to Absolute mode, otherwise if `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS` or
-   :attr:`~circuitpython_cirque_pinnacle.RELATIVE`, then this function will take
-   no affect until `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE`.
+   This function only applies to :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE`
+   mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` or
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE`, then this function does nothing.
 
    :param int z_idle_count: Specifies the number of empty packets (x-axis, y-axis, and z-axis
       are ``0``) reported (every 10 milliseconds) when there is no touch detected. Defaults
@@ -235,12 +259,11 @@ absolute_mode_config()
 report()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.report
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.report
 
-   This function only applies to Relative or Absolute
-   mode, otherwise if `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`, then this function returns
-   `None` and does nothing.
+   This function only applies to :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE`
+   or :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`, then this function returns `None` and does nothing.
 
    :param bool only_new: This parameter can be used to ensure the data reported is only new
       data. Otherwise the data returned can be either old data or new data. If the ``dr_pin``
@@ -316,12 +339,12 @@ report()
 clear_flags()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.clear_flags
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.clear_flags
 
 allow_sleep
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.allow_sleep
+.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.allow_sleep
 
    Set this attribute to `True` if you want the Pinnacle ASIC to enter sleep (low power)
    mode after about 5 seconds of inactivity (does not apply to AnyMeas mode). While the touch
@@ -332,7 +355,7 @@ allow_sleep
 shutdown
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.shutdown
+.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.shutdown
 
    `True` means powered down (AKA standby mode), and `False` means not powered down
    (Active, Idle, or Sleep mode).
@@ -344,7 +367,7 @@ shutdown
 sample_rate
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.sample_rate
+.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.sample_rate
 
    Valid values are ``100``, ``80``, ``60``, ``40``, ``20``, ``10``. Any other input values
    automatically set the sample rate to 100 sps (samples per second). Optionally, ``200`` and
@@ -353,16 +376,14 @@ sample_rate
    meant for using a stylus with a 2mm diameter tip, while the values less than 200 are meant
    for a finger or stylus with a 5.25mm diameter tip.
 
-   This function only applies to Relative or Absolute mode, otherwise if `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`, then this function will take no
-   affect until `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.RELATIVE` or
-   :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE`.
+   This function only applies to :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE`
+   or :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`, then this function will do nothing.
 
 detect_finger_stylus()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.detect_finger_stylus
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.detect_finger_stylus
 
    :param bool enable_finger: `True` enables the Pinnacle ASIC's measurements to
       detect if the touch event was caused by a finger or 5.25mm stylus. `False` disables
@@ -379,13 +400,11 @@ detect_finger_stylus()
 calibrate()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.calibrate
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.calibrate
 
-   This function only applies to Relative or Absolute mode, otherwise if `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`, then this function will take no
-   affect until `data_mode` is set to
-   :attr:`~circuitpython_cirque_pinnacle.RELATIVE` or
-   :attr:`~circuitpython_cirque_pinnacle.ABSOLUTE`.
+   This function only applies to :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE`
+   or :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` mode, otherwise if `data_mode` is set to
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`, then this function will do nothing.
 
    :param bool run: If `True`, this function forces a calibration of the sensor. If `False`,
       this function just writes the following parameters to the Pinnacle ASIC's "CalConfig1"
@@ -404,7 +423,7 @@ calibrate()
 calibration_matrix
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.calibration_matrix
+.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.calibration_matrix
 
    This matrix is not applicable in AnyMeas mode. Use this attribute to compare a prior
    compensation matrix with a new matrix that was either loaded manually by setting this
@@ -428,7 +447,7 @@ calibration_matrix
 set_adc_gain()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.set_adc_gain
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.set_adc_gain
 
    (does not apply to AnyMeas mode). (write-only)
 
@@ -441,7 +460,7 @@ set_adc_gain()
 tune_edge_sensitivity()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.tune_edge_sensitivity
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.tune_edge_sensitivity
 
    This function was ported from Cirque's example code and doesn't seem to have corresponding
    documentation. I'm having trouble finding a memory map of the Pinnacle ASIC as this
@@ -452,26 +471,26 @@ AnyMeas mode
 
 anymeas_mode_config()
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.anymeas_mode_config
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.anymeas_mode_config
 
    Be sure to set the `data_mode` attribute to
-   :attr:`~circuitpython_cirque_pinnacle.ANYMEAS` before calling this function
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` before calling this function
    otherwise it will do nothing.
 
    :param int gain: Sets the sensitivity of the ADC matrix. Valid values are the constants
       defined in `AnyMeas mode Gain`_. Defaults to
-      :attr:`~circuitpython_cirque_pinnacle.GAIN_200`.
+      :attr:`~circuitpython_cirque_pinnacle.glidepoint.GAIN_200`.
    :param int frequency: Sets the frequency of measurements made by the ADC matrix. Valid
       values are the constants defined in
       `AnyMeas mode Frequencies`_.
-      Defaults :attr:`~circuitpython_cirque_pinnacle.FREQ_0`.
+      Defaults :attr:`~circuitpython_cirque_pinnacle.glidepoint.FREQ_0`.
    :param int sample_length: Sets the maximum bit length of the measurements made by the ADC
       matrix. Valid values are ``128``, ``256``, or ``512``. Defaults to ``512``.
    :param int mux_ctrl: The Pinnacle ASIC can employ different bipolar junctions
       and/or reference capacitors. Valid values are the constants defined in
       `AnyMeas mode Muxing`_. Additional combination of
       these constants is also allowed. Defaults to
-      :attr:`~circuitpython_cirque_pinnacle.MUX_PNP`.
+      :attr:`~circuitpython_cirque_pinnacle.glidepoint.MUX_PNP`.
    :param int apperture_width: Sets the window of time (in nanoseconds) to allow for the ADC
       to take a measurement. Valid values are multiples of 125 in range [``250``, ``1875``].
       Erroneous values are clamped/truncated to this range.
@@ -484,9 +503,9 @@ anymeas_mode_config()
    :param int ctrl_pwr_cnt: Configure the Pinnacle to perform a number of measurements for
       each call to `measure_adc()`. Defaults to 1. Constants defined in
       `AnyMeas mode Control`_ can be used to specify if is sleep
-      is allowed (:attr:`~circuitpython_cirque_pinnacle.CRTL_PWR_IDLE` -- this
+      is allowed (:attr:`~circuitpython_cirque_pinnacle.glidepoint.CRTL_PWR_IDLE` -- this
       is not default) or if repetive measurements is allowed (
-      :attr:`~circuitpython_cirque_pinnacle.CRTL_REPEAT`) if number of
+      :attr:`~circuitpython_cirque_pinnacle.glidepoint.CRTL_REPEAT`) if number of
       measurements is more than 1.
 
       .. warning:: There is no bounds checking on the number of measurements specified
@@ -500,7 +519,11 @@ anymeas_mode_config()
 measure_adc()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.measure_adc
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.measure_adc
+
+   Be sure to set the `data_mode` attribute to
+   :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` before calling this function
+   otherwise it will do nothing.
 
    :param int bits_to_toggle: This 4-byte integer specifies which bits the Pinnacle touch
       controller should toggle. A bit of ``1`` flags that bit for toggling, and a bit of
@@ -511,7 +534,7 @@ measure_adc()
 
    :Returns:
       A 2-byte `bytearray` that represents a signed short integer. If `data_mode` is not set
-      to :attr:`~circuitpython_cirque_pinnacle.ANYMEAS`, then this function returns
+      to :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`, then this function returns
       `None` and does nothing.
 
    :4-byte Integer Format:
@@ -546,15 +569,15 @@ measure_adc()
       .. note:: Bits 29 and 28 represent the optional implementation of reference capacitors
             built into the Pinnacle ASIC. To use these capacitors, the
             corresponding constants
-            (:attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_REF0` and/or
-            :attr:`~circuitpython_cirque_pinnacle.AnyMeasMux.MUX_REF1`) must be passed to
+            (:attr:`~circuitpython_cirque_pinnacle.glidepoint.AnyMeasMux.MUX_REF0` and/or
+            :attr:`~circuitpython_cirque_pinnacle.glidepoint.AnyMeasMux.MUX_REF1`) must be passed to
             `anymeas_mode_config()` in the ``mux_ctrl`` parameter, and their representative
             bits must be flagged in both ``bits_to_toggle`` & ``toggle_polarity`` parameters.
 
 SPI & I2C Interfaces
 ********************
 
-.. autoclass:: circuitpython_cirque_pinnacle.PinnacleTouchSPI
+.. autoclass:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouchSPI
    :members:
    :show-inheritance:
 
@@ -564,7 +587,7 @@ SPI & I2C Interfaces
 
    See the base class for other instantiating parameters.
 
-.. autoclass:: circuitpython_cirque_pinnacle.PinnacleTouchI2C
+.. autoclass:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouchI2C
    :members:
    :show-inheritance:
 

@@ -271,6 +271,13 @@ body {
  text-align: left;
 }
 
+.rst-content table.docutils.citation tt,
+.rst-content table.docutils.citation code,
+.rst-content table.docutils.footnote tt,
+.rst-content table.docutils.footnote code {
+ color:#16ff00;
+}
+
 .wy-table-bordered-all td, .rst-content table.docutils td {
   text-align: left;
 }
