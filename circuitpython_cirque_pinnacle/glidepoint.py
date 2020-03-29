@@ -99,7 +99,7 @@ class PinnacleTouch:
         customized hardware configuration."""
         return bool(self._rap_read(0x1f))
 
-    def relative_mode_config(self, rotate90=False, taps=False, secondary_tap=True,
+    def relative_mode_config(self, rotate90=False, taps=True, secondary_tap=True,
                              glide_extend=True, intellimouse=False):
         """Configure settings specific to Relative mode (AKA Mouse mode) data reporting."""
         if self.data_mode == RELATIVE:

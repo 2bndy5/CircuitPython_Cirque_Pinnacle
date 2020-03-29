@@ -224,8 +224,7 @@ relative_mode_config()
    :param bool rotate90: Specifies if the axis data is altered for 90 degree rotation before
       reporting it (essentially swaps the axis data). Default is `False`.
    :param bool taps: Specifies if all taps should be reported (`True`) or not
-      (`False`). Default is `True`. This affects ``secondary_tap`` option as well. The
-      primary button (left mouse button) is emulated with a tap.
+      (`False`). Default is `True`. This affects ``secondary_tap`` option as well.
    :param bool secondary_tap: Specifies if tapping in the top-left corner (depending on
       orientation) triggers the secondary button data. Defaults to `True`. This feature is
       only available if `hard_configured` is `False`.
