@@ -50,8 +50,8 @@ class PinnacleTouch:
     def hard_configured(self):
         return bool(self._rap_read(0x1f))
 
-    def relative_mode_config(self, rotate90=False, glide_extend=True,
-                             secondary_tap=True, taps=False, intellimouse=False):
+    def relative_mode_config(self, rotate90=False, taps=False, secondary_tap=True,
+                             glide_extend=True, intellimouse=False):
         config2 = rotate90 << 7 | (not glide_extend) << 4 | (
             not secondary_tap) << 2 | (not taps) << 1 | intellimouse
         self._rap_write(5, config2)

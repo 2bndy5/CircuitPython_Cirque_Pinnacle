@@ -223,15 +223,15 @@ relative_mode_config()
 
    :param bool rotate90: Specifies if the axis data is altered for 90 degree rotation before
       reporting it (essentially swaps the axis data). Default is `False`.
-   :param bool glide_extend: A patended feature that allows the user to glide their finger off
-      the edge of the sensor and continue gesture with the touch event. Default is `True`.
-      This feature is only available if `hard_configured` is `False`.
-   :param bool secondary_tap: Specifies if tapping in the top-left corner (depending on
-      orientation) triggers the secondary button data. Defaults to `True`. This feature is
-      only available if `hard_configured` is `False`.
    :param bool taps: Specifies if all taps should be reported (`True`) or not
       (`False`). Default is `True`. This affects ``secondary_tap`` option as well. The
       primary button (left mouse button) is emulated with a tap.
+   :param bool secondary_tap: Specifies if tapping in the top-left corner (depending on
+      orientation) triggers the secondary button data. Defaults to `True`. This feature is
+      only available if `hard_configured` is `False`.
+   :param bool glide_extend: A patended feature that allows the user to glide their finger off
+      the edge of the sensor and continue gesture with the touch event. Default is `True`.
+      This feature is only available if `hard_configured` is `False`.
    :param bool intellimouse: Specifies if the data reported includes a byte about scroll data.
       Default is `False`. Because this flag is specific to scroll data, this feature is only
       available if `hard_configured` is `False`.
