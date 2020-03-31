@@ -309,16 +309,22 @@ report()
             * - 3
               - change in scroll wheel
 
-                -128 |LessEq| Y |LessEq| 127 [3]_
-              - z-axis Position
+                -128 |LessEq| SCROLL |LessEq| 127 [3]_
+              - z-axis Magnitude
 
    .. [1] The returned button data is a byte in which each bit represents a button.
       The bit to button order is as follows:
 
-      0. [LSB] Button 1 (thought of as Left button in Relative/Mouse mode). If taps
-         are enabled using `relative_mode_config()`, a single tap will be reflected here.
-      1. Button 2 (thought of as Right button in Relative/Mouse mode)
-      2. Button 3 (thought of as Middle or scroll wheel button in Relative/Mouse mode)
+         0. [LSB] Button 1 (thought of as Left button in Relative/Mouse mode). If ``taps``
+            parameter is passed as `True` when calling `relative_mode_config()`, a single
+            tap will be reflected here.
+         1. Button 2 (thought of as Right button in Relative/Mouse mode). If ``taps`` and
+            ``secondary_tap`` parameters are passed as `True` when calling `relative_mode_config()`,
+            a single tap in the perspective top-left-most corner will be reflected here (secondary
+            taps are constantly disabled if `hard_configured` returns `True`). Note that the
+            top-left-most corner can be perspectively moved if ``rotate90`` parameter is passed as
+            `True` when calling `relative_mode_config()`.
+         2. Button 3 (thought of as Middle or scroll wheel button in Relative/Mouse mode)
    .. [2] The axis data reported in Relative/Mouse mode is in two's
       comliment form. Use Python's :py:func:`struct.unpack()` to convert the
       data into integer form (see `Simple Test example <examples.html#simple-test>`_
