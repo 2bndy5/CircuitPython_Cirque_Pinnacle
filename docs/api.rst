@@ -526,6 +526,7 @@ measure_adc()
 
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.measure_adc
 
+   Internally this function calls `start_measure_adc()` and `get_measure_adc()` in sequence.
    Be sure to set the `data_mode` attribute to
    :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` before calling this function
    otherwise it will do nothing.
@@ -578,6 +579,30 @@ measure_adc()
             :attr:`~circuitpython_cirque_pinnacle.glidepoint.AnyMeasMux.MUX_REF1`) must be passed to
             `anymeas_mode_config()` in the ``mux_ctrl`` parameter, and their representative
             bits must be flagged in both ``bits_to_toggle`` & ``toggle_polarity`` parameters.
+
+start_measure_adc()
+^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.start_measure_adc
+
+   See the parameters and table in `measure_adc()` as this is its helper function, and all
+   parameters there are used the same way here.
+
+get_measure_adc()
+^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.get_measure_adc
+
+   This function is only meant ot be used in conjunction with `start_measure_adc()` for
+   non-blocking application.
+
+   :returns:
+      * `None` if `data_mode` is not set to `ANYMEAS` or if the "data ready" pin's signal is not
+        active (while `data_mode` is set to `ANYMEAS`) meaing the Pinnacle ASIC is still computing
+        the ADC measurements based on the 4-byte polynomials passed to `start_measure_adc()`.
+      * a `bytearray` that represents a signed 16-bit integer upon completed ADC measurements based
+        on the 4-byte polynomials passed to `start_measure_adc()`.
+
 
 SPI & I2C Interfaces
 ********************

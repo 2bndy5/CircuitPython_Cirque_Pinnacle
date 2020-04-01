@@ -258,25 +258,36 @@ class PinnacleTouch:
             self.clear_flags()
 
     def measure_adc(self, bits_to_toggle, toggle_polarity):
-        """This function instigates and returns the measurements (a signed short) from the Pinnacle
-        ASIC's ADC (Analog to Digital Converter) matrix (only applies to AnyMeas mode)."""
+        """This blocking function instigates and returns the measurements (a signed short) from
+        the Pinnacle ASIC's ADC (Analog to Digital Converter) matrix."""
+        self.start_measure_adc(bits_to_toggle, toggle_polarity)
+        result = self.get_measure_adc()
+        while result is None:  # wait till measurements are complete
+            result = self.get_measure_adc()  # Pinnacle is still computing
+        return result
+
+    def start_measure_adc(self, bits_to_toggle, toggle_polarity):
+        """A non-blocking function that starts measuring ADC values in AnyMeas mode."""
+        if self._mode != ANYMEAS:
+            tog_pol = []  # assemble list of register buffers
+            for i in range(3, -1, -1):
+                tog_pol.append((bits_to_toggle >> (i * 8)) & 0xFF)
+            for i in range(3, -1, -1):
+                tog_pol.append((toggle_polarity >> (i * 8)) & 0xFF)
+            # write toggle and polarity parameters to register 0x13 - 0x1A (PACKET_BYTE_1 + 8)
+            self._rap_write_bytes(0x13, tog_pol)
+            # initiate measurements
+            self._rap_write(3, self._rap_read(3) | 0x18)
+
+    def get_measure_adc(self):
+        """A non-blocking function that returns ADC measurement on completion."""
         if self._mode != ANYMEAS:
             return None
-        tog_pol = []  # assemble list of register buffers
-        for i in range(3, -1, -1):
-            tog_pol.append((bits_to_toggle >> (i * 8)) & 0xFF)
-        for i in range(3, -1, -1):
-            tog_pol.append((toggle_polarity >> (i * 8)) & 0xFF)
-        # write toggle and polarity parameters to register 0x13 - 0x1A (PACKET_BYTE_1 + 8)
-        self._rap_write_bytes(0x13, tog_pol)
-
-        # initiate measurements
-        self._rap_write(3, self._rap_read(3) | 0x18)
-        while not self.dr_pin.value:  # wait till measurements are complete
-            pass  # Pinnacle is still computing
+        if not self.dr_pin.value:
+            return None
         result = self._rap_read_bytes(0x11, 2)
         self.clear_flags()
-        return bytearray(result)
+        return result
 
     def _rap_read(self, reg):
         raise NotImplementedError()
