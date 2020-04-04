@@ -3,8 +3,11 @@
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
 import time
-from adafruit_bus_device.spi_device import SPIDevice
-from adafruit_bus_device.i2c_device import I2CDevice
+try:
+    from ubus_device import SPIDevice, I2CDevice
+except ImportError:
+    from adafruit_bus_device.spi_device import SPIDevice
+    from adafruit_bus_device.i2c_device import I2CDevice
 
 RELATIVE = 0x00
 ABSOLUTE = 0x02

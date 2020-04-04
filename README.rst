@@ -63,7 +63,7 @@ Pinout
 .. image:: https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/raw/master/docs/_static/Cirque_GlidePoint-Circle-Trackpad.png
     :target: https://www.mouser.com/new/cirque/glidepoint-circle-trackpads/
 
-The above picture is a example of the Cirque GlidePoint circle trackpad. This picture
+The above picture is an example of the Cirque GlidePoint circle trackpad. This picture
 is chosen as the test pads (larger copper circular pads) are clearly labeled. The test pads
 are extended to the `12-pin FFC/FPC cable <https://www.mouser.com/Connectors/FFC-FPC/
 FFC-FPC-Jumper-Cables/_/N-axro3?P=1yc8ojpZ1z0wxjx>`_ connector (the white block near the
