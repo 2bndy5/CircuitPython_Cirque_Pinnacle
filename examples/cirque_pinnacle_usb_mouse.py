@@ -11,13 +11,11 @@ from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchSPI, RELATIVE
 # from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchI2C, RELATIVE
 # i2c = board.I2C()
 
-# if using a trackpad configured for SPI
-spi = board.SPI()
-ss_pin = DigitalInOut(board.D7)
-
 dr_pin = DigitalInOut(board.D2)
 
 # if using a trackpad configured for SPI
+spi = board.SPI()
+ss_pin = DigitalInOut(board.D7)
 tpad = PinnacleTouchSPI(spi, ss_pin) # NOTE we did not pass the dr_pin
 # if using a trackpad configured for I2C
 # tpad = PinnacleTouchI2C(i2c) # NOTE we did not pass the dr_pin

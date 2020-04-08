@@ -63,4 +63,13 @@ setup(
     # TODO: IF LIBRARY FILES ARE A PACKAGE FOLDER,
     #       CHANGE `py_modules=['...']` TO `packages=['...']`
     packages=['circuitpython_cirque_pinnacle'],
+
+    # Specifiy your homepage URL for your project here
+    url=repo,
+
+    # Extra links for the sidebar on pypi
+    project_urls={
+        'Documentation': 'https://circuitpython-cirque-pinnacle.readthedocs.io',
+    },
+    download_url='{}/releases'.format(repo),
 )

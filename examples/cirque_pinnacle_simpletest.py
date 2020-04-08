@@ -1,4 +1,4 @@
-"""A simple test example. this example also works with glidepoint_lite.py"""
+"""A simple test example. This example also works with glidepoint_lite.py"""
 import time
 import struct
 import board
@@ -9,11 +9,11 @@ from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchSPI, ABSOLUTE
 # from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchI2C, ABSOLUTE, RELATIVE
 # i2c = board.I2C()
 
-spi = board.SPI()  # if using a trackpad configured for SPI
-ss_pin = DigitalInOut(board.D7)
 dr_pin = DigitalInOut(board.D2)
 
 # if using a trackpad configured for SPI
+spi = board.SPI()
+ss_pin = DigitalInOut(board.D7)
 tpad = PinnacleTouchSPI(spi, ss_pin) # NOTE we did not pass the dr_pin
 # if using a trackpad configured for I2C
 # tpad = PinnacleTouchI2C(i2c) # NOTE we did not pass the dr_pin
