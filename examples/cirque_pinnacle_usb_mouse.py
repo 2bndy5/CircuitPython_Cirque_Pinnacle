@@ -5,22 +5,21 @@ import time
 import board
 from digitalio import DigitalInOut
 import usb_hid
-# if using a trackpad configured for SPI
-from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchSPI, RELATIVE
-# if using a trackpad configured for I2C
-# from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchI2C, RELATIVE
-# i2c = board.I2C()
+import circuitpython_cirque_pinnacle.glidepoint as Pinnacle
 
 dr_pin = DigitalInOut(board.D2)
+# NOTE Specifying the optional keyword argument ``dr_pin`` to the
+# constructor expedites ``report()`` when using Absolute or Relative modes
 
 # if using a trackpad configured for SPI
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
-tpad = PinnacleTouchSPI(spi, ss_pin) # NOTE we did not pass the dr_pin
+tpad = Pinnacle.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # if using a trackpad configured for I2C
-# tpad = PinnacleTouchI2C(i2c) # NOTE we did not pass the dr_pin
+# i2c = board.I2C()
+# tpad = Pinnacle.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
 
-tpad.data_mode = RELATIVE  # ensure mouse mode is enabled
+tpad.data_mode = Pinnacle.RELATIVE  # ensure mouse mode is enabled
 
 mouse = None
 for dev in usb_hid.devices:

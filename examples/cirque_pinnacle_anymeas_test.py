@@ -5,27 +5,23 @@ import time
 import struct
 import board
 from digitalio import DigitalInOut
-# if using a trackpad configured for SPI
-from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchSPI, ANYMEAS
-# if using a trackpad configured for I2C
-# from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchI2C, ANYMEAS
-# i2c = board.I2C()
+import circuitpython_cirque_pinnacle.glidepoint as Pinnacle
+
+dr_pin = DigitalInOut(board.D2)
+# NOTE The dr_pin is a required keyword argument to the
+# constructor when using AnyMeas mode
 
 # if using a trackpad configured for SPI
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
-
-dr_pin = DigitalInOut(board.D2)
-
-# NOTE The dr_pin is a required arg to use AnyMeas mode
-# if using a trackpad configured for SPI
-tpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+tpad = Pinnacle.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # if using a trackpad configured for I2C
-# tpad = PinnacleTouchI2C(i2c, dr_pin=dr_pin)
+# i2c = board.I2C()
+# tpad = Pinnacle.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
 
 # if dr_pin was not specified upon instantiation.
 # this command will raise an AttributeError exception
-tpad.data_mode = ANYMEAS
+tpad.data_mode = Pinnacle.ANYMEAS
 
 # setup toggle and polarity bits for measuring with PNP gate muxing
 class MeasVector:
@@ -51,8 +47,9 @@ def compensate(count=5):
     """take ``count`` measurements, then average them together  """
     for i, v in enumerate(vectors):
         idle_vectors[i] = 0
-        for _ in range(count):  #
-            idle_vectors[i] += struct.unpack('h', tpad.measure_adc(v.toggle, v.polarity))[0]
+        for _ in range(count):
+            result = struct.unpack('h', tpad.measure_adc(v.toggle, v.polarity))[0]
+            idle_vectors[i] += result
         idle_vectors[i] /= count
         print("compensation {}: {}".format(i, idle_vectors[i]))
 
