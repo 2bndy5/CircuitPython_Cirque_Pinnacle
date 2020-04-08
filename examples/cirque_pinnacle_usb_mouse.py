@@ -6,9 +6,9 @@ import board
 from digitalio import DigitalInOut
 import usb_hid
 # if using a trackpad configured for SPI
-from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchSPI, ABSOLUTE, RELATIVE
+from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchSPI, RELATIVE
 # if using a trackpad configured for I2C
-# from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchI2C, ABSOLUTE, RELATIVE
+# from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchI2C, RELATIVE
 # i2c = board.I2C()
 
 # if using a trackpad configured for SPI
