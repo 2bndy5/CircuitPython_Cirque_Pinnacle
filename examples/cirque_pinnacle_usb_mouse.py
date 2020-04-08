@@ -1,11 +1,28 @@
 """ This example uses CircuitPython's built-in `usb_hid` API
-to emulate a mouse with the Cirque circle trackpad."""
+to emulate a mouse with the Cirque circle trackpad. This example
+also works with glidepoint_lite.py"""
 import time
 import board
 from digitalio import DigitalInOut
 import usb_hid
-# this example also works with glideoint_lite.py
-from circuitpython_cirque_pinnacle.glidepoint import PinnacleTouchSPI, RELATIVE
+# if using a trackpad configured for SPI
+from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchSPI, ABSOLUTE, RELATIVE
+# if using a trackpad configured for I2C
+# from circuitpython_cirque_pinnacle.glidepoint import  PinnacleTouchI2C, ABSOLUTE, RELATIVE
+# i2c = board.I2C()
+
+# if using a trackpad configured for SPI
+spi = board.SPI()
+ss_pin = DigitalInOut(board.D7)
+
+dr_pin = DigitalInOut(board.D2)
+
+# if using a trackpad configured for SPI
+tpad = PinnacleTouchSPI(spi, ss_pin) # NOTE we did not pass the dr_pin
+# if using a trackpad configured for I2C
+# tpad = PinnacleTouchI2C(i2c) # NOTE we did not pass the dr_pin
+
+tpad.data_mode = RELATIVE  # ensure mouse mode is enabled
 
 mouse = None
 for dev in usb_hid.devices:
@@ -18,14 +35,6 @@ for dev in usb_hid.devices:
 #   byte1 = delta x-axis
 #   byte2 = delta y-axis
 #   byte3 = delta scroll wheel
-
-spi = board.SPI()
-ss_pin = DigitalInOut(board.D7)
-dr_pin = DigitalInOut(board.D2)
-
-tpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
-# NOTE we passed the dr_pin for slightly faster data reporting
-tpad.data_mode = RELATIVE  # ensure mouse mode is enabled
 
 def move(timeout=10):
     """Send mouse X & Y reported data from the Pinnacle touch controller

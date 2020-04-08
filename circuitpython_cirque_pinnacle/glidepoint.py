@@ -146,8 +146,6 @@ class PinnacleTouch:
                                ((temp[4] & 0x0F) << 8) | temp[2],  # x
                                ((temp[4] & 0xF0) << 4) | temp[3],  # y
                                temp[5] & 0x3F]  # z
-                return_vals[1] = max(128, min(1920, return_vals[1]))
-                return_vals[2] = max(64, min(1472, return_vals[2]))
             elif self.data_mode == RELATIVE:  # if in relative mode
                 temp = self._rap_read_bytes(0x12, 4)
                 return_vals = bytearray([temp[0] & 7, temp[1], temp[2]])
