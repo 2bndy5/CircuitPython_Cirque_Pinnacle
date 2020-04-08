@@ -23,7 +23,7 @@ tpad.absolute_mode_config(z_idle_count=1) # limit idle packet count to 1
 
 def print_data(timeout=6):
     """Print available data reports from the Pinnacle touch controller
-    until there's no touch for a period of ``timeout`` seconds."""
+    until there's no input for a period of ``timeout`` seconds."""
     print("using {} mode".format("Relative" if tpad.data_mode < ABSOLUTE else "Absolute"))
     start = time.monotonic()
     while time.monotonic() - start < timeout:

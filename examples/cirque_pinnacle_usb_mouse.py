@@ -38,7 +38,7 @@ for dev in usb_hid.devices:
 
 def move(timeout=10):
     """Send mouse X & Y reported data from the Pinnacle touch controller
-    for a period of ``timeout`` seconds."""
+    until there's no input for a period of ``timeout`` seconds."""
     if mouse is None:
         raise OSError("mouse HID device not available.")
     start = time.monotonic()
@@ -46,4 +46,5 @@ def move(timeout=10):
         data = tpad.report()  # only returns fresh data (if any)
         if data:  # is there fresh data?
             mouse.send_report(data)  # not using scroll wheel; nor back/forward butons
+            start = time.monotonic()
     mouse.send_report(b'\x00' * 4)  # release buttons (just in case)
