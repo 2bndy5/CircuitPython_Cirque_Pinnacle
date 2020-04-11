@@ -376,23 +376,21 @@ class PinnacleTouch:
             self.clear_flags()
         self.feed_enable = prev_feed_state  # resume previous feed state
 
-# pylint: disable=no-member,too-few-public-methods
+# pylint: disable=no-member
 class PinnacleTouchI2C(PinnacleTouch):
     """Parent class for interfacing with the Pinnacle ASIC via the I2C
     protocol."""
     def __init__(self, i2c, address=0x2A, dr_pin=None):
-        self._i2c = I2CDevice(i2c, (address << 1))  # per datasheet
+        self._i2c = I2CDevice(i2c, address)
         super(PinnacleTouchI2C, self).__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
         return self._rap_read_bytes(reg)
 
     def _rap_read_bytes(self, reg, numb_bytes=1):
-        self._i2c.device_address &= 0xFE  # set write flag
         buf = bytearray([reg | 0xA0])  # per datasheet
         with self._i2c as i2c:
             i2c.write(buf)  # includes a STOP condition
-        self._i2c.device_address |= 1  # set read flag
         buf = bytearray(numb_bytes)  # for accumulating response(s)
         with self._i2c as i2c:
             # auto-increments register for each byte read
@@ -403,7 +401,6 @@ class PinnacleTouchI2C(PinnacleTouch):
         self._rap_write_bytes(reg, [value])
 
     def _rap_write_bytes(self, reg, values):
-        self._i2c.device_address &= 0xFE  # set write flag
         buf = b''
         for index, byte in enumerate(values):  # for bytearrays/lists/tuples
             # Pinnacle doesn't auto-increment register addresses for

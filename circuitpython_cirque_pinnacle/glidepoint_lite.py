@@ -177,18 +177,16 @@ class PinnacleTouch:
 # pylint: disable=no-member
 class PinnacleTouchI2C(PinnacleTouch):
     def __init__(self, i2c, address=0x2A, dr_pin=None):
-        self._i2c = I2CDevice(i2c, (address << 1))
+        self._i2c = I2CDevice(i2c, address)
         super(PinnacleTouchI2C, self).__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
         return self._rap_read_bytes(reg)
 
     def _rap_read_bytes(self, reg, numb_bytes=1):
-        self._i2c.device_address &= 0xFE
         buf = bytearray([reg | 0xA0])
         with self._i2c as i2c:
             i2c.write(buf)
-        self._i2c.device_address |= 1
         buf = bytearray(numb_bytes)
         with self._i2c as i2c:
             i2c.readinto(buf)
@@ -198,7 +196,6 @@ class PinnacleTouchI2C(PinnacleTouch):
         self._rap_write_bytes(reg, [value])
 
     def _rap_write_bytes(self, reg, values):
-        self._i2c.device_address &= 0xFE
         buf = b''
         for index, byte in enumerate(values):
             buf += bytearray([(reg + index) | 0x80, byte & 0xFF])
