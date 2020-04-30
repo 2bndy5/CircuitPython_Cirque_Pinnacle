@@ -298,14 +298,14 @@ report()
                    -128 |LessEq| X |LessEq| 127
                  - x-axis Position
 
-                   128 |LessEq| X |LessEq| 1920
+                   0 |LessEq| X |LessEq| 2047
                * - 2
                  - change in y-axis [2]_
 
                    -128 |LessEq| Y |LessEq| 127
                  - y-axis Position
 
-                   64 |LessEq| Y |LessEq| 1472
+                   0 |LessEq| Y |LessEq| 1535
                * - 3
                  - change in scroll wheel
 
@@ -531,12 +531,22 @@ measure_adc()
       :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` before calling this function
       otherwise it will do nothing.
 
-      :param int bits_to_toggle: This 4-byte integer specifies which bits the Pinnacle touch
-         controller should toggle. A bit of ``1`` flags that bit for toggling, and a bit of
-         ``0`` signifies that the bit should remain unaffected.
-      :param int toggle_polarity: This 4-byte integer specifies which polarity the specified
-         bits (from ``bits_to_toggle`` parameter) are toggled. A bit of ``1`` toggles that bit
-         positve, and a bit of ``0`` toggles that bit negative.
+      :parameters:
+         Each of the parameters are a 4-byte integer (see format table below) in which each bit
+         corresponds to a capacitance sensing eletrode in the sensor's matrix (12 electrodes for
+         Y-axis, 16 electrodes for X-axis). They are used to compensate for varying capacitances in
+         the electrodes during measurements. **It is highly recommended that the trackpad be
+         installed in a finished/prototyped housing when determining what electrodes to
+         manipulate.** See `AnyMeas mode example <examples.html#anymeas-mode-example>`_ to
+         understand how to use these 4-byte integers.
+
+         * bits_to_toggle (`int <https://docs.python.org/3.7/library/functions.html#int>`_) - A bit
+           of ``1`` flags that electrode's ouput for toggling, and a bit of ``0`` signifies that
+           the electrode's output should remain unaffected.
+         * toggle_polarity (`int <https://docs.python.org/3.7/library/functions.html#int>`_) - This
+           specifies which polarity the output of the electrode(s) (specified with corresponding
+           bits in ``bits_to_toggle`` parameter) should be toggled (forced). A bit of ``1`` toggles
+           that bit positve, and a bit of ``0`` toggles that bit negative.
 
       :Returns:
          A 2-byte `bytearray` that represents a signed short integer. If `data_mode` is not set
@@ -544,6 +554,14 @@ measure_adc()
          `None` and does nothing.
 
       :4-byte Integer Format:
+         Bits 31 & 30 are not used and should remain ``0``. Bits 29 and 28 represent the optional
+         implementation of reference capacitors built into the Pinnacle ASIC. To use these
+         capacitors, the corresponding constants
+         (:attr:`~circuitpython_cirque_pinnacle.glidepoint.AnyMeasMux.MUX_REF0` and/or
+         :attr:`~circuitpython_cirque_pinnacle.glidepoint.AnyMeasMux.MUX_REF1`) must be passed to
+         `anymeas_mode_config()` in the ``mux_ctrl`` parameter, and their representative
+         bits must be flagged in both ``bits_to_toggle`` & ``toggle_polarity`` parameters.
+
          .. csv-table:: byte 3 (MSByte)
                :stub-columns: 1
                :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
@@ -568,17 +586,6 @@ measure_adc()
 
                "bit position",7,6,5,4,3,2,1,0
                "representation",X7,X6,X5,X4,X3,X2,X1,X0
-
-         See `AnyMeas mode example <examples.html#anymeas-mode-example>`_ to understand how to
-         use these 4-byte integer polynomials.
-
-         .. note:: Bits 29 and 28 represent the optional implementation of reference capacitors
-               built into the Pinnacle ASIC. To use these capacitors, the
-               corresponding constants
-               (:attr:`~circuitpython_cirque_pinnacle.glidepoint.AnyMeasMux.MUX_REF0` and/or
-               :attr:`~circuitpython_cirque_pinnacle.glidepoint.AnyMeasMux.MUX_REF1`) must be passed to
-               `anymeas_mode_config()` in the ``mux_ctrl`` parameter, and their representative
-               bits must be flagged in both ``bits_to_toggle`` & ``toggle_polarity`` parameters.
 
 start_measure_adc()
 ^^^^^^^^^^^^^^^^^^^^
