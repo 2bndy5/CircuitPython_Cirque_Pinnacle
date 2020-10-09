@@ -152,19 +152,24 @@ AnyMeas mode Control
 PinnacleTouch
 -------------
 
+.. |dr_pin_parameter| replace:: The input pin connected to the Pinnacle ASIC's "Data
+      Ready" pin. If this parameter is not specified, then the SW_DR (software data ready) flag
+      of the STATUS register is used to detirmine if the data being reported is new.
+
+.. |dr_pin_note| replace:: This parameter must be specified if your application is going to use the
+      Pinnacle ASIC's :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`
+      mode (a rather experimental measuring of raw ADC values).
+
+
 Constructor
 *************************
 
    .. autoclass:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch
       :no-members:
 
-      :param ~microcontroller.Pin dr_pin: The input pin connected to the Pinnacle ASIC's "Data
-         Ready" pin. If this parameter is not specified, then the SW_DR (software data ready) flag
-         of the STATUS register is used to detirmine if the data being reported is new.
+      :param ~microcontroller.Pin dr_pin: |dr_pin_parameter|
 
-         .. important:: This parameter must be specified if your application is going to use the
-            Pinnacle ASIC's :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`
-            mode (a rather experimental measuring of raw ADC values).
+         .. important:: |dr_pin_note|
 
 data_mode
 *************************
@@ -622,8 +627,9 @@ SPI & I2C Interfaces
          other driver classes that use the same SPI bus (MOSI, MISO, & SCK pins).
       :param ~microcontroller.Pin ss_pin: The "slave select" pin output to the Pinnacle ASIC.
       :param int spi_frequency: The SPI bus speed in Hz. Default is 12 MHz.
+      :param ~microcontroller.Pin dr_pin: |dr_pin_parameter|
 
-      See the base class for other instantiating parameters.
+         .. important:: |dr_pin_note|
 
    .. autoclass:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouchI2C
       :members:
@@ -633,5 +639,6 @@ SPI & I2C Interfaces
       :param ~busio.I2C i2c: The object of the I2C bus to use. This object must be shared among
          other driver classes that use the same I2C bus (SDA & SCL pins).
       :param int address: The slave I2C address of the Pinnacle ASIC. Defaults to ``0x2A``.
+      :param ~microcontroller.Pin dr_pin: |dr_pin_parameter|
 
-      See the base class for other instantiating parameters.
+         .. important:: |dr_pin_note|
