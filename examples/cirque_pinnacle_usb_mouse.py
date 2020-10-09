@@ -42,6 +42,6 @@ def move(timeout=10):
     while time.monotonic() - start < timeout:
         data = tpad.report()  # only returns fresh data (if any)
         if data:  # is there fresh data?
-            mouse.send_report(data)  # not using scroll wheel; nor back/forward butons
+            mouse.send_report(data)  # no scrolling or backward/forward
             start = time.monotonic()
     mouse.send_report(b'\x00' * 4)  # release buttons (just in case)

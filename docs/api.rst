@@ -621,6 +621,7 @@ SPI & I2C Interfaces
       :param ~busio.SPI spi: The object of the SPI bus to use. This object must be shared among
          other driver classes that use the same SPI bus (MOSI, MISO, & SCK pins).
       :param ~microcontroller.Pin ss_pin: The "slave select" pin output to the Pinnacle ASIC.
+      :param int spi_frequency: The SPI bus speed in Hz. Default is 12 MHz.
 
       See the base class for other instantiating parameters.
 

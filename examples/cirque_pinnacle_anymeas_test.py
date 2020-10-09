@@ -26,9 +26,11 @@ tpad.data_mode = Pinnacle.ANYMEAS
 # setup toggle and polarity bits for measuring with PNP gate muxing
 class MeasVector:
     """A blueprint matrix used to manipulate the measurements' vector"""
+
     def __init__(self, toggle, polarity):
         self.toggle = toggle
         self.polarity = polarity
+
 
 vectors = []
 # This toggles Y0 only and toggles it positively
@@ -43,22 +45,31 @@ vectors.append(MeasVector(0x00008000, 0x00000000))
 vectors.append(MeasVector(0x00FF00FF, 0x000000FF))
 
 idle_vectors = [0] * len(vectors)
+
+
 def compensate(count=5):
     """take ``count`` measurements, then average them together  """
-    for i, v in enumerate(vectors):
+    for i, vector in enumerate(vectors):
         idle_vectors[i] = 0
         for _ in range(count):
-            result = struct.unpack('h', tpad.measure_adc(v.toggle, v.polarity))[0]
+            result = struct.unpack(
+                "h",
+                tpad.measure_adc(vector.toggle, vector.polarity)
+            )[0]
             idle_vectors[i] += result
         idle_vectors[i] /= count
         print("compensation {}: {}".format(i, idle_vectors[i]))
+
 
 def take_measurements(timeout=10):
     """read ``len(vectors)`` number of measurements and print results for
     ``timeout`` number of seconds."""
     start = time.monotonic()
     while time.monotonic() - start < timeout:
-        for i, v in enumerate(vectors):
-            result = struct.unpack('h', tpad.measure_adc(v.toggle, v.polarity))[0]
-            print("vector{}: {}".format(i, result - idle_vectors[i]), end='\t')
+        for i, vector in enumerate(vectors):
+            result = struct.unpack(
+                "h",
+                tpad.measure_adc(vector.toggle, vector.polarity)
+            )[0]
+            print("vector{}: {}".format(i, result - idle_vectors[i]), end="\t")
         print()

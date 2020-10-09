@@ -75,31 +75,27 @@ class PinnacleTouch:
     @data_mode.setter
     def data_mode(self, mode):
         if mode not in (ANYMEAS, RELATIVE, ABSOLUTE):
-            raise ValueError("unrecognised input value for data mode. Use 0 "
-                             "for Relative mode, 1 for AnyMeas mode, or 2 "
-                             "for Absolute mode.")
-        self._mode = mode
+            raise ValueError("Unrecognised input value for data_mode.")
         sys_config = self._rap_read(3) & 0xE7  # clear AnyMeas mode flags
-        if mode in (RELATIVE, ABSOLUTE):  # for relative/absolute mode
+        if mode in (RELATIVE, ABSOLUTE):
             if self.data_mode == ANYMEAS:  # if leaving AnyMeas mode
-                self._rap_write_bytes(3, [
-                    sys_config,
-                    1 | mode,  # set new mode's flag & enables feed
-                    2])  # disables taps in Relative mode
+                # set mode flag, enable feed, disable taps in Relative mode
+                self._rap_write_bytes(3, [sys_config, 1 | mode, 2])
                 self.sample_rate = 100
                 self._rap_write(7, 0x1E)  # enables all compensations
                 self._rap_write(0x0A, 30)  # 30 z-idle packets
-            else:  # ok to write appropriate mode
-                self._rap_write(4, 1 | mode)
+            else:  # not leaving AnyMeas mode
+                self._rap_write(4, 1 | mode)  # set mode flag, enable feed
         else:  # for AnyMeas mode
-            if self.dr_pin is None:  # this mode requires the use of DR IRQ pin
-                raise AttributeError("Data Ready digital input (interupt) pin "
-                                     "is None, please specify the dr_pin "
-                                     "attribute for AnyMeas mode")
+            if self.dr_pin is None:  # AnyMeas requires the DR pin
+                raise AttributeError(
+                    "need the Data Ready (DR) pin specified for AnyMeas mode"
+                )
             # disable tracking computations for AnyMeas mode
             self._rap_write(3, sys_config | 0x08)
-            time.sleep(0.01)  # wait 10 ms for tracking measurements to expire
+            time.sleep(0.01)  # wait for tracking computations to expire
             self.anymeas_mode_config()  # configure registers for AnyMeas
+        self._mode = mode
 
     @property
     def hard_configured(self):
@@ -113,19 +109,18 @@ class PinnacleTouch:
         """Configure settings specific to Relative mode (AKA Mouse mode) data
         reporting."""
         if self.data_mode == RELATIVE:
-            config2 = rotate90 << 7 | (not glide_extend) << 4 | (
-                not secondary_tap) << 2 | (not taps) << 1 | intellimouse
-            self._rap_write(5, config2)
+            config2 = (rotate90 << 7) | ((not glide_extend) << 4)
+            config2 |= ((not secondary_tap) << 2) | ((not taps) << 1)
+            self._rap_write(5, config2 | bool(intellimouse))
 
-    def absolute_mode_config(self, z_idle_count=30, invert_x=False,
-                             invert_y=False):
+    def absolute_mode_config(self, z_idle_count=30,
+                             invert_x=False, invert_y=False):
         """Configure settings specific to Absolute mode (reports axis
         positions)."""
         if self.data_mode == ABSOLUTE:
             self._rap_write(0x0A, max(0, min(z_idle_count, 255)))
-            config1 = self._rap_read(4) & 0x3F
-            config1 |= (invert_y << 7) | (invert_x << 6)
-            self._rap_write(4, config1)
+            config1 = self._rap_read(4) & 0x3F | (invert_y << 7)
+            self._rap_write(4, config1 | (invert_x << 6))
 
     def report(self, only_new=True):
         """This function will return touch event data from the Pinnacle ASIC
@@ -141,15 +136,15 @@ class PinnacleTouch:
                 data_ready = self.dr_pin.value
         if (only_new and data_ready) or not only_new:
             if self.data_mode == ABSOLUTE:  # if absolute mode
-                temp = self._rap_read_bytes(0x12, 6)
-                return_vals = [temp[0] & 0x3F,  # buttons
-                               ((temp[4] & 0x0F) << 8) | temp[2],  # x
-                               ((temp[4] & 0xF0) << 4) | temp[3],  # y
-                               temp[5] & 0x3F]  # z
+                return_vals = list(self._rap_read_bytes(0x12, 6))
+                return_vals[0] &= 0x3F  # buttons
+                return_vals[2] |= (return_vals[4] & 0x0F) << 8  # x
+                return_vals[3] |= (return_vals[4] & 0xF0) << 4  # y
+                return_vals[5] &= 0x3F  # z
+                del return_vals[4], return_vals[1]  # no longer need these
             elif self.data_mode == RELATIVE:  # if in relative mode
-                temp = self._rap_read_bytes(0x12, 4)
-                return_vals = bytearray([temp[0] & 7, temp[1], temp[2]])
-                return_vals += bytes([temp[3]])
+                return_vals = self._rap_read_bytes(0x12, 4)
+                return_vals[0] &= 7
             self.clear_flags()
         return return_vals
 
@@ -157,8 +152,7 @@ class PinnacleTouch:
         """This function clears the "Data Ready" flag which is reflected with
         the ``dr_pin``."""
         self._rap_write(2, 0)
-        # delay 50 microseconds per official example from Cirque
-        time.sleep(0.00005)
+        time.sleep(0.00005)  # per official example from Cirque
 
     @property
     def allow_sleep(self):
@@ -234,28 +228,19 @@ class PinnacleTouch:
 
     @calibration_matrix.setter
     def calibration_matrix(self, matrix):
-        if len(matrix) < 46:  # padd short matrices w/ 0s
-            matrix += [0] * (46 - len(matrix))
-        # save time on bus interactions by pausing feed now
-        prev_feed_state = self.feed_enable
-        self.feed_enable = False  # required for ERA functions anyway
-        # be sure to not write more than allowed
+        matrix += [0] * (46 - len(matrix)) # padd short matrices w/ 0s
         for index in range(46):
-            # write 2 bytes at a time
             buf = pack('h', matrix[index])
             self._era_write(0x01DF + index * 2, buf[0])
             self._era_write(0x01DF + index * 2 + 1, buf[1])
-        self.feed_enable = prev_feed_state  # resume previous feed state
 
     def set_adc_gain(self, sensitivity):
         """Sets the ADC gain in range [0,3] to enhance performance based on
         the overlay type"""
-        if 0 <= sensitivity < 4:
-            val = self._era_read(0x0187) & 0x3F
-            val |= sensitivity << 6
-            self._era_write(0x0187, val)
-        else:
-            raise ValueError("{} is out of bounds [0,3]".format(sensitivity))
+        if not 0 <= sensitivity < 4:
+            raise ValueError("sensitivity is out of bounds [0,3]")
+        val = self._era_read(0x0187) & 0x3F | (sensitivity << 6)
+        self._era_write(0x0187, val)
 
     def tune_edge_sensitivity(self, x_axis_wide_z_min=0x04,
                               y_axis_wide_z_min=0x03):
@@ -339,7 +324,7 @@ class PinnacleTouch:
         return buf
 
     def _era_read_bytes(self, reg, numb_bytes):
-        buf = b''
+        buf = b""
         prev_feed_state = self.feed_enable
         self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write_bytes(0x1C, [reg >> 8, reg & 0xff])
@@ -385,14 +370,13 @@ class PinnacleTouchI2C(PinnacleTouch):
         super(PinnacleTouchI2C, self).__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
-        return self._rap_read_bytes(reg)
+        return self._rap_read_bytes(reg, 1)
 
-    def _rap_read_bytes(self, reg, numb_bytes=1):
-        buf = bytearray([reg | 0xA0])  # per datasheet
+    def _rap_read_bytes(self, reg, numb_bytes):
+        buf = bytes([reg | 0xA0])  # per datasheet
         with self._i2c as i2c:
             i2c.write(buf)  # includes a STOP condition
-        buf = bytearray(numb_bytes)  # for accumulating response(s)
-        with self._i2c as i2c:
+            buf = bytearray(numb_bytes)  # for response(s)
             # auto-increments register for each byte read
             i2c.readinto(buf)
         return buf
@@ -401,25 +385,25 @@ class PinnacleTouchI2C(PinnacleTouch):
         self._rap_write_bytes(reg, [value])
 
     def _rap_write_bytes(self, reg, values):
-        buf = b''
-        for index, byte in enumerate(values):  # for bytearrays/lists/tuples
-            # Pinnacle doesn't auto-increment register addresses for
-            # I2C write operations
+        buf = b""
+        for index, byte in enumerate(values):
+            # Pinnacle doesn't auto-increment register
+            # addresses for I2C write operations
             # Also truncate int elements of a list/tuple
-            buf += bytearray([(reg + index) | 0x80, byte & 0xFF])
+            buf += bytes([(reg + index) | 0x80, byte & 0xFF])
         with self._i2c as i2c:
             i2c.write(buf)
 
 class PinnacleTouchSPI(PinnacleTouch):
     """Parent class for interfacing with the Pinnacle ASIC via the SPI
     protocol."""
-    def __init__(self, spi, ss_pin, dr_pin=None):
-        self._spi = SPIDevice(spi, chip_select=ss_pin, baudrate=12000000,
-                              phase=1)
+    def __init__(self, spi, ss_pin, spi_frequency=12000000, dr_pin=None):
+        self._spi = SPIDevice(spi, chip_select=ss_pin, phase=1,
+                              baudrate=spi_frequency)
         super(PinnacleTouchSPI, self).__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
-        buf_out = bytearray([reg | 0xA0]) + b'\xFB' * 3
+        buf_out = bytes([reg | 0xA0]) + b"\xFB" * 3
         buf_in = bytearray(len(buf_out))
         with self._spi as spi:
             spi.write_readinto(buf_out, buf_in)
@@ -427,15 +411,14 @@ class PinnacleTouchSPI(PinnacleTouch):
 
     def _rap_read_bytes(self, reg, numb_bytes):
         # using auto-increment method
-        buf_out = bytearray([reg | 0xA0]) + b'\xFC' * \
-            (1 + numb_bytes) + b'\xFB'
+        buf_out = bytes([reg | 0xA0]) + b"\xFC" * (1 + numb_bytes) + b"\xFB"
         buf_in = bytearray(len(buf_out))
         with self._spi as spi:
             spi.write_readinto(buf_out, buf_in)
         return buf_in[3:]
 
     def _rap_write(self, reg, value):
-        buf = bytearray([(reg | 0x80), value])
+        buf = bytes([(reg | 0x80), value])
         with self._spi as spi:
             spi.write(buf)
 
