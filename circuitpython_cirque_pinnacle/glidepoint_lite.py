@@ -177,7 +177,7 @@ class PinnacleTouch:
 class PinnacleTouchI2C(PinnacleTouch):
     def __init__(self, i2c, address=0x2A, dr_pin=None):
         self._i2c = I2CDevice(i2c, address)
-        super(PinnacleTouchI2C, self).__init__(dr_pin=dr_pin)
+        super().__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
         return self._rap_read_bytes(reg, 1)
@@ -204,7 +204,7 @@ class PinnacleTouchSPI(PinnacleTouch):
     def __init__(self, spi, ss_pin, spi_frequency=12000000, dr_pin=None):
         self._spi = SPIDevice(spi, chip_select=ss_pin, phase=1,
                               baudrate=spi_frequency)
-        super(PinnacleTouchSPI, self).__init__(dr_pin=dr_pin)
+        super().__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
         buf_out = bytes([reg | 0xA0]) + b"\xFB" * 3
