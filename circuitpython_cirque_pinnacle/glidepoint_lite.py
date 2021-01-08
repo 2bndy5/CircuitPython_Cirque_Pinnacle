@@ -44,7 +44,7 @@ class PinnacleTouch:
 
     @data_mode.setter
     def data_mode(self, mode):
-        self._mode = mode if mode in (RELATIVE, ABSOLUTE) else RELATIVE
+        self._mode = bool(mode) * 2
         self._rap_write(4, 1 | self._mode)
 
     @property
@@ -73,14 +73,14 @@ class PinnacleTouch:
             else:
                 data_ready = self.dr_pin.value
         if (only_new and data_ready) or not only_new:
-            if self.data_mode == ABSOLUTE:
+            if self.data_mode:
                 return_vals = list(self._rap_read_bytes(18, 6))
                 return_vals[0] &= 63
                 return_vals[2] |= (return_vals[4] & 15) << 8
                 return_vals[3] |= (return_vals[4] & 240) << 4
                 return_vals[5] &= 63
                 del return_vals[4], return_vals[1]
-            elif self.data_mode == RELATIVE:
+            else:
                 return_vals = self._rap_read_bytes(18, 4)
                 return_vals[0] &= 7
             self.clear_status_flags()
