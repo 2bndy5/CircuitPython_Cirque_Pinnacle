@@ -218,7 +218,7 @@ html_theme_options = {
     "repo_url": "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/",
     "repo_name": "CircuitPython_Cirque_Pinnacle",
     # Visible levels of the global TOC; -1 means unlimited
-    "globaltoc_depth": 1,
+    "globaltoc_depth": 2,
     # If False, expand all TOC entries
     "globaltoc_collapse": False,
     # If True, show hidden TOC entries

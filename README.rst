@@ -22,6 +22,9 @@ Introduction
 A CircuitPython driver library that implements the Adafruit_BusDevice library
 for interfacing with the Cirque Pinnacle (1CA027) touch controller used in Cirque Circle Trackpads.
 
+Features
+==========
+
 Supported Features
 ------------------
 
@@ -112,6 +115,7 @@ TM\ [yyyxxx]_\ -202\ [i]_\ -\ [cc]_\ [o]_
 
 Dependencies
 =============
+
 This driver depends on:
 
 * `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_
@@ -123,6 +127,7 @@ This is easily achieved by downloading `the Adafruit library and driver bundle
 
 How to Install
 =====================
+
 This library is deployed to pypi.org, so you can easily install this library
 using ``pip3 install circuitpython-cirque-pinnacle`` or use the following
 commands:
@@ -133,7 +138,6 @@ commands:
     cd CircuitPython_Cirque_Pinnacle
     python3 setup.py install
 
-To install globally, prefix the last command with ``sudo``.
 
 Usage Example
 =============

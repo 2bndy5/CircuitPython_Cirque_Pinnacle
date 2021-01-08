@@ -2,6 +2,134 @@
 PinnacleTouch API
 ==================
 
+Accepted Constants
+------------------
+
+Data Modes
+***********
+
+
+Allowed symbols for configuring the Pinanacle ASIC's data reporting/measurements.
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.RELATIVE
+   :annotation: =0
+
+
+   Alias symbol for specifying Relative mode (AKA Mouse mode).
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.ANYMEAS
+   :annotation: =1
+
+   Alias symbol for specifying "AnyMeas" mode (raw ADC measurement)
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE
+   :annotation: =2
+
+   Alias symbol for specifying Absolute mode (axis positions)
+
+AnyMeas mode Gain
+******************
+
+Allowed ADC gain configurations of AnyMeas mode. The percentages defined here are approximate
+values.
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.GAIN_100
+
+   around 100% gain
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.GAIN_133
+
+   around 133% gain
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.GAIN_166
+
+   around 166% gain
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.GAIN_200
+
+   around 200% gain
+
+
+AnyMeas mode Frequencies
+************************
+
+Allowed frequency configurations of AnyMeas mode. The frequencies defined here are
+approximated based on an aperture width of 500 nanoseconds. If the ``aperture_width``
+parameter to `anymeas_mode_config()` specified is less than 500 nanoseconds, then the
+frequency will be larger than what is described here (& vice versa).
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_0
+
+   frequency around 500,000Hz
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_1
+
+   frequency around 444,444Hz
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_2
+
+   frequency around 400,000Hz
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_3
+
+   frequency around 363,636Hz
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_4
+
+   frequency around 333,333Hz
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_5
+
+   frequency around 307,692Hz
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_6
+
+   frequency around 267,000Hz
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.FREQ_7
+
+   frequency around 235,000Hz
+
+AnyMeas mode Muxing
+*******************
+
+Allowed muxing gate polarity and reference capacitor configurations of AnyMeas mode.
+Combining these values (with ``+`` operator) is allowed.
+
+.. note:: The sign of the measurements taken in AnyMeas mode is inverted depending on which
+   muxing gate is specified (when specifying an individual gate polarity).
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.MUX_REF1
+
+   enables a builtin capacitor (~0.5pF). See note in `measure_adc()`
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.MUX_REF0
+
+   enables a builtin capacitor (~0.25pF). See note in `measure_adc()`
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.MUX_PNP
+
+   enable PNP sense line
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.MUX_NPN
+
+   enable NPN sense line
+
+
+AnyMeas mode Control
+********************
+
+These constants control the number of measurements performed in `measure_adc()`.
+The number of measurements can range [0, 63].
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.CRTL_REPEAT
+
+   required for more than 1 measurement
+
+.. data:: circuitpython_cirque_pinnacle.glidepoint.CRTL_PWR_IDLE
+
+   triggers low power mode (sleep) after completing measurements
+
 PinnacleTouch
 -------------
 
@@ -342,17 +470,17 @@ anymeas_mode_config()
    otherwise it will do nothing.
 
    :param int gain: Sets the sensitivity of the ADC matrix. Valid values are the constants
-      defined in `AnyMeas mode Gain <constants.html#anymeas-mode-gain>`_. Defaults to
+      defined in `AnyMeas mode Gain`_. Defaults to
       :attr:`~circuitpython_cirque_pinnacle.glidepoint.GAIN_200`.
    :param int frequency: Sets the frequency of measurements made by the ADC matrix. Valid
       values are the constants defined in
-      `AnyMeas mode Frequencies <constants.html#anymeas-mode-frequencies>`_.
+      `AnyMeas mode Frequencies`_.
       Defaults :attr:`~circuitpython_cirque_pinnacle.glidepoint.FREQ_0`.
    :param int sample_length: Sets the maximum bit length of the measurements made by the ADC
       matrix. Valid values are ``128``, ``256``, or ``512``. Defaults to ``512``.
    :param int mux_ctrl: The Pinnacle ASIC can employ different bipolar junctions
       and/or reference capacitors. Valid values are the constants defined in
-      `AnyMeas mode Muxing <constants.html#anymeas-mode-muxing>`_. Additional combination of
+      `AnyMeas mode Muxing`_. Additional combination of
       these constants is also allowed. Defaults to
       :attr:`~circuitpython_cirque_pinnacle.glidepoint.MUX_PNP`.
    :param int apperture_width: Sets the window of time (in nanoseconds) to allow for the ADC
@@ -366,7 +494,7 @@ anymeas_mode_config()
 
    :param int ctrl_pwr_cnt: Configure the Pinnacle to perform a number of measurements for
       each call to `measure_adc()`. Defaults to 1. Constants defined in
-      `AnyMeas mode Control <constants.html#anymeas-mode-control>`_ can be used to specify if is sleep
+      `AnyMeas mode Control`_ can be used to specify if is sleep
       is allowed (:attr:`~circuitpython_cirque_pinnacle.glidepoint.CRTL_PWR_IDLE` -- this
       is not default) or if repetive measurements is allowed (
       :attr:`~circuitpython_cirque_pinnacle.glidepoint.CRTL_REPEAT`) if number of
