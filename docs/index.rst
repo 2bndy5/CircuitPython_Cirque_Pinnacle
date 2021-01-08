@@ -16,7 +16,6 @@
     :caption: API Reference
     :hidden:
 
-    constants
     api
 
 .. toctree::
