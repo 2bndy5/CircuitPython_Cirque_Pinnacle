@@ -145,10 +145,10 @@ class PinnacleTouch:
             elif self.data_mode == RELATIVE:  # if in relative mode
                 return_vals = self._rap_read_bytes(0x12, 4)
                 return_vals[0] &= 7
-            self.clear_flags()
+            self.clear_status_flags()
         return return_vals
 
-    def clear_flags(self):
+    def clear_status_flags(self):
         """This function clears the "Data Ready" flag which is reflected with
         the ``dr_pin``."""
         self._rap_write(2, 0)
@@ -215,7 +215,7 @@ class PinnacleTouch:
             if run:
                 while self._rap_read(7) & 1:
                     pass  # calibration is running
-                self.clear_flags()  # now that calibration is done
+                self.clear_status_flags()  # now that calibration is done
 
     @property
     def calibration_matrix(self):
@@ -262,7 +262,7 @@ class PinnacleTouch:
             anymeas_config[9] = ctrl_pwr_cnt
             self._rap_write_bytes(5, anymeas_config)
             self._rap_write_bytes(0x13, [0] * 8)
-            self.clear_flags()
+            self.clear_status_flags()
 
     def measure_adc(self, bits_to_toggle, toggle_polarity):
         """This blocking function instigates and returns the measurements (a
@@ -296,7 +296,7 @@ class PinnacleTouch:
         if not self.dr_pin.value:
             return None
         result = self._rap_read_bytes(0x11, 2)
-        self.clear_flags()
+        self.clear_status_flags()
         return result
 
     def _rap_read(self, reg):
@@ -319,7 +319,7 @@ class PinnacleTouch:
         while self._rap_read(0x1E):  # read until reg == 0
             pass  # also sets Command Complete flag in Status register
         buf = self._rap_read(0x1B)  # get value
-        self.clear_flags()
+        self.clear_status_flags()
         self.feed_enable = prev_feed_state  # resume previous feed state
         return buf
 
@@ -333,7 +333,7 @@ class PinnacleTouch:
             while self._rap_read(0x1E):  # read until reg == 0
                 pass  # also sets Command Complete flag in Status register
             buf += bytes([self._rap_read(0x1B)])  # get value
-            self.clear_flags()
+            self.clear_status_flags()
         self.feed_enable = prev_feed_state  # resume previous feed state
         return buf
 
@@ -345,7 +345,7 @@ class PinnacleTouch:
         self._rap_write(0x1E, 2)  # indicate writing only 1 byte
         while self._rap_read(0x1E):  # read until reg == 0
             pass  # also sets Command Complete flag in Status register
-        self.clear_flags()
+        self.clear_status_flags()
         self.feed_enable = prev_feed_state  # resume previous feed state
 
     def _era_write_bytes(self, reg, value, numb_bytes):
@@ -358,7 +358,7 @@ class PinnacleTouch:
         for _ in range(numb_bytes):
             while self._rap_read(0x1E):  # read until reg == 0
                 pass  # also sets Command Complete flag in Status register
-            self.clear_flags()
+            self.clear_status_flags()
         self.feed_enable = prev_feed_state  # resume previous feed state
 
 # pylint: disable=no-member

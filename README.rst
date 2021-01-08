@@ -11,7 +11,7 @@
     :alt: latest version on PyPI
     :target: https://pypi.python.org/pypi/circuitpython-cirque-pinnacle
 
-.. image:: https://pepy.tech/badge/circuitpython-cirque-pinnacle
+.. image:: https://static.pepy.tech/personalized-badge/circuitpython-cirque-pinnacle?period=total&units=international_system&left_color=grey&right_color=blue&left_text=Pypi%20Downloads
     :alt: Total PyPI downloads
     :target: https://pepy.tech/project/circuitpython-cirque-pinnacle
 
@@ -70,21 +70,21 @@ FFC-FPC-Jumper-Cables/_/N-axro3?P=1yc8ojpZ1z0wxjx>`_ connector (the white block 
 bottom). The following table shows how the pins are connected in the `examples <examples.html>`_ (tested on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_)
 
 .. csv-table:: pinout (ordered the same as the FFC/FPC cable connector)
-    :header: Label,"MCU pin",Description
-    :widths: 5,5,13
+    :header: "cable pin number", Label, "MCU pin", Description
+    :widths: 2, 5, 5, 13
 
-    SCK,SCK,"SPI clock line"
-    SO,MISO,"Master Input Slave Output"
-    SS,D7,"Slave Select (AKA Chip Select)"
-    DR,D2,"""data ready"" interrupt"
-    SI,MOSI,"SPI Master Output Slave Input"
-    B2,N/A,"Hardware input button #2"
-    B3,N/A,"Hardware input button #3"
-    B1,N/A,"Hardware input button #1"
-    SCL,SCL,"I2C clock line"
-    SDA,SDA,"I2C data line"
-    GND,GND,"Ground"
-    VDD,3V,"3V power supply"
+    1, SCK, SCK, "SPI clock line"
+    2, SO, MISO, "Master Input Slave Output"
+    3, SS, D7, "Slave Select (AKA Chip Select)"
+    4, DR, D2, """data ready"" interrupt"
+    5, SI, MOSI, "SPI Master Output Slave Input"
+    6, B2, N/A, "Hardware input button #2"
+    7, B3, N/A, "Hardware input button #3"
+    8, B1, N/A, "Hardware input button #1"
+    9, SCL, SCL, "I2C clock line"
+    10, SDA, SDA, "I2C data line"
+    11, GND, GND, "Ground"
+    12, VDD, 3V, "3V power supply"
 
 .. tip:: Of course, you can capture button data manually (if your application utilizes more
     than 3 buttons), but if you connect the pins B1, B2, B3 to momentary push buttons that
@@ -94,21 +94,21 @@ bottom). The following table shows how the pins are connected in the `examples <
 Model Labeling Scheme
 ---------------------
 
-  TM\ [yyyxxx]_\ -202\ [i]_\ -\ [cc]_\ [o]_
+TM\ [yyyxxx]_\ -202\ [i]_\ -\ [cc]_\ [o]_
 
-  .. [yyyxxx] stands for the vertical & horizontal width of the trackpad, respectively.
-  .. [i] stands for the hardwired interface protocol (3 = I2C, 4 = SPI). Notice, if there is a
-    resistor populated at the R1 (470K ohm) junction (located just above the Pinnacle ASIC), it
-    is configured for SPI, otherwise it is configured for I2C.
-  .. [cc] stands for Custom Configuration which describes if a 470K ohm resistor is populated at
-    junction R4. "30" (resistor at R4 exists) means that the hardware is configured to disable
-    certain features despite what this library does. "00" (no resistor at R4) means that the
-    hardware is configured to allow certain features to be manipulated by this library. These
-    features include "secondary tap" (thought of as "right mouse button" in relative data mode),
-    Intellimouse scrolling (Microsoft patented scroll wheel behavior -- a throw back to when
-    scroll wheels were first introduced), and 180 degree orientation (your application can invert
-    the axis data anyway).
-  .. [o] stands for the overlay type (0 = none, 1 = adhesive, 2 = flat, 3 = curved)
+.. [yyyxxx]  stands for the respective vertical & horizontal width of the trackpad in millimeters.
+.. [i] stands for the hardwired interface protocol (3 = I2C, 4 = SPI). Notice, if there is a
+  resistor populated at the R1 (470K ohm) junction (located just above the Pinnacle ASIC), it
+  is configured for SPI, otherwise it is configured for I2C.
+.. [cc] stands for Custom Configuration which describes if a 470K ohm resistor is populated at
+  junction R4. "30" (resistor at R4 exists) means that the hardware is configured to disable
+  certain features despite what this library does. "00" (no resistor at R4) means that the
+  hardware is configured to allow certain features to be manipulated by this library. These
+  features include "secondary tap" (thought of as "right mouse button" in relative data mode),
+  Intellimouse scrolling (Microsoft patented scroll wheel behavior -- a throw back to when
+  scroll wheels were first introduced), and 180 degree orientation (your application can invert
+  the axis data anyway).
+.. [o] stands for the overlay type (0 = none, 1 = adhesive, 2 = flat, 3 = curved)
 
 Dependencies
 =============

@@ -1,11 +1,13 @@
-""" a test example using SPI to read ADC measurements from the Pinnacle touch
-controller in "AnyMeas" mode. This example does NOT work with
-glidepoint_lite.py"""
+"""
+A test example using SPI to read ADC measurements from the Pinnacle touch
+controller in "AnyMeas" mode
+"""
 import time
 import struct
 import board
 from digitalio import DigitalInOut
-import circuitpython_cirque_pinnacle.glidepoint as Pinnacle
+# This example does NOT work with glidepoint_lite.py
+import circuitpython_cirque_pinnacle.glidepoint as glidepoint
 
 dr_pin = DigitalInOut(board.D2)
 # NOTE The dr_pin is a required keyword argument to the
@@ -14,14 +16,14 @@ dr_pin = DigitalInOut(board.D2)
 # if using a trackpad configured for SPI
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
-tpad = Pinnacle.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+tpad = glidepoint.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # if using a trackpad configured for I2C
 # i2c = board.I2C()
-# tpad = Pinnacle.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
+# tpad = glidepoint.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
 
 # if dr_pin was not specified upon instantiation.
 # this command will raise an AttributeError exception
-tpad.data_mode = Pinnacle.ANYMEAS
+tpad.data_mode = glidepoint.ANYMEAS
 
 # setup toggle and polarity bits for measuring with PNP gate muxing
 class MeasVector:

@@ -1,11 +1,14 @@
-""" This example uses CircuitPython's built-in `usb_hid` API
-to emulate a mouse with the Cirque circle trackpad. This example
-also works with glidepoint_lite.py"""
+"""
+This example uses CircuitPython's built-in `usb_hid` API
+to emulate a mouse with the Cirque circle trackpad
+"""
 import time
 import board
 from digitalio import DigitalInOut
 import usb_hid
-import circuitpython_cirque_pinnacle.glidepoint as Pinnacle
+# if running this on a ATSAMD21 M0 based board
+# import circuitpython_cirque_pinnacle.glidepoint_lite as glidepoint
+import circuitpython_cirque_pinnacle.glidepoint as glidepoint
 
 dr_pin = DigitalInOut(board.D2)
 # NOTE Specifying the optional keyword argument ``dr_pin`` to the
@@ -14,12 +17,12 @@ dr_pin = DigitalInOut(board.D2)
 # if using a trackpad configured for SPI
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
-tpad = Pinnacle.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+tpad = glidepoint.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # if using a trackpad configured for I2C
 # i2c = board.I2C()
-# tpad = Pinnacle.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
+# tpad = glidepoint.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
 
-tpad.data_mode = Pinnacle.RELATIVE  # ensure mouse mode is enabled
+tpad.data_mode = glidepoint.RELATIVE  # ensure mouse mode is enabled
 
 mouse = None
 for dev in usb_hid.devices:

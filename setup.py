@@ -4,12 +4,9 @@ See:
 https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
-
 from os import path
 from setuptools import setup
-
-# To use a consistent encoding
-from codecs import open
+from codecs import open  # To use a consistent encoding
 
 here = path.abspath(path.dirname(__file__))
 
@@ -41,8 +38,6 @@ setup(
         "Topic :: System :: Hardware",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
     ],
     # What does your project relate to?
     keywords="adafruit blinka circuitpython Pinnacle "

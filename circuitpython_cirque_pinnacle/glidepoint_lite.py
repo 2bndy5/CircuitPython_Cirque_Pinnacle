@@ -19,12 +19,12 @@ class PinnacleTouch:
             self.dr_pin.switch_to_input()
         firmware_id, firmware_ver = self._rap_read_bytes(0, 2)
         if firmware_id != 7 or firmware_ver != 0x3A:
-            raise OSError("Cirque Pinnacle ASIC not responding")
+            raise RuntimeError("Cirque Pinnacle ASIC not responding")
         self._mode = 0
         self.sample_rate = 100
         self._rap_write(0x0A, 30)
         self._rap_write_bytes(3, [0, 1, 2])
-        self.clear_flags()
+        self.clear_status_flags()
 
     @property
     def feed_enable(self):
@@ -43,10 +43,8 @@ class PinnacleTouch:
 
     @data_mode.setter
     def data_mode(self, mode):
-        if mode not in (RELATIVE, ABSOLUTE):
-            raise ValueError("Unrecognised input value for data_mode.")
-        self._rap_write(4, 1 | mode)
-        self._mode = mode
+        self._mode = mode if mode in (RELATIVE, ABSOLUTE) else RELATIVE
+        self._rap_write(4, 1 | self._mode)
 
     @property
     def hard_configured(self):
@@ -84,10 +82,10 @@ class PinnacleTouch:
             elif self.data_mode == RELATIVE:
                 return_vals = self._rap_read_bytes(0x12, 4)
                 return_vals[0] &= 7
-            self.clear_flags()
+            self.clear_status_flags()
         return return_vals
 
-    def clear_flags(self):
+    def clear_status_flags(self):
         self._rap_write(2, 0)
         time.sleep(0.00005)
 
@@ -97,7 +95,7 @@ class PinnacleTouch:
 
     @allow_sleep.setter
     def allow_sleep(self, is_enabled):
-        self._rap_write(3, (self._rap_read(3) & 0xFB) | (is_enabled << 2))
+        self._rap_write(3, (self._rap_read(3) & 0xFB) | (bool(is_enabled) << 2))
 
     @property
     def shutdown(self):
@@ -105,7 +103,7 @@ class PinnacleTouch:
 
     @shutdown.setter
     def shutdown(self, is_off):
-        self._rap_write(3, (self._rap_read(3) & 0xFD) | (is_off << 1))
+        self._rap_write(3, (self._rap_read(3) & 0xFD) | (bool(is_off) << 1))
 
     @property
     def sample_rate(self):
@@ -146,7 +144,7 @@ class PinnacleTouch:
         while self._rap_read(0x1E):
             pass
         buf = self._rap_read(0x1B)
-        self.clear_flags()
+        self.clear_status_flags()
         self.feed_enable = prev_feed_state
         return buf
 
@@ -160,7 +158,7 @@ class PinnacleTouch:
             while self._rap_read(0x1E):
                 pass
             buf += bytes([self._rap_read(0x1B)])
-            self.clear_flags()
+            self.clear_status_flags()
         self.feed_enable = prev_feed_state
         return buf
 
@@ -172,7 +170,7 @@ class PinnacleTouch:
         self._rap_write(0x1E, 2)
         while self._rap_read(0x1E):
             pass
-        self.clear_flags()
+        self.clear_status_flags()
         self.feed_enable = prev_feed_state
 
 # pylint: disable=no-member
