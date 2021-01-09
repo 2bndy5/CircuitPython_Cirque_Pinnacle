@@ -189,12 +189,12 @@ pygments_style = "dark_plus"
 html_theme = "sphinx_material"
 # Material theme options
 html_sidebars = {
-    "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
+    "**": ["globaltoc.html", "localtoc.html", "searchbox.html"]
 }
 
 html_theme_options = {
     # Set the name of the project to appear in the navigation.
-    "nav_title": "CircuitPython-Cirque-Pinnacle",
+    "nav_title": "Cirque Pinnacle on CircuitPython",
     # A list of dictionaries where each has three keys:
     #   href: The URL or pagename (str)
     #   title: The title to appear (str)
@@ -218,7 +218,7 @@ html_theme_options = {
     "repo_url": "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/",
     "repo_name": "CircuitPython_Cirque_Pinnacle",
     # Visible levels of the global TOC; -1 means unlimited
-    "globaltoc_depth": 2,
+    "globaltoc_depth": 1,
     # If False, expand all TOC entries
     "globaltoc_collapse": False,
     # If True, show hidden TOC entries
@@ -245,6 +245,7 @@ html_css_files = [
 # pixels large.
 html_favicon = "_static/favicon.ico"
 
+html_logo = "_static/Logo.png"
 # Output file base name for HTML help builder.
 htmlhelp_basename = "CircuitpythonCirquePinnacleLibrarydoc"
 

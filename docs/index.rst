@@ -1,10 +1,9 @@
-.. include:: ../README.rst
+.. include:: greetings.rst
 
 .. toctree::
     :hidden:
 
-    self
-    about_lite
+    greetings
 
 .. toctree::
     :caption: Examples
@@ -16,6 +15,7 @@
     :caption: API Reference
     :hidden:
 
+    about_lite
     api
 
 .. toctree::

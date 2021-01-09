@@ -1,6 +1,4 @@
 
-Examples
-=========
 
 Simple Test
 -----------
