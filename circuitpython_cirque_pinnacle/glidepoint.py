@@ -68,7 +68,7 @@ class PinnacleTouch:
 
     @property
     def data_mode(self):
-        """This attribute controls which mode the data report is configured
+        """This attribute controls which mode the data read is configured
         for."""
         return self._mode
 
@@ -122,30 +122,29 @@ class PinnacleTouch:
             config1 = self._rap_read(4) & 63 | (invert_y << 7)
             self._rap_write(4, config1 | (invert_x << 6))
 
-    def report(self, only_new=True):
+    def available(self):
+        """Determine if there is fresh data to report."""
+        if self.dr_pin is None:
+            return bool(self._rap_read(2) & 4)
+        return self.dr_pin.value
+
+    def read(self, only_new=True):
         """This function will return touch event data from the Pinnacle ASIC
         (including empty packets on ending of a touch event)."""
         if self._mode == ANYMEAS:
             return None
         return_vals = None
-        data_ready = False
-        if only_new:
-            if self.dr_pin is None:
-                data_ready = self._rap_read(2) & 4
-            else:
-                data_ready = self.dr_pin.value
-        if (only_new and data_ready) or not only_new:
-            if self.data_mode == ABSOLUTE:  # if absolute mode
-                return_vals = list(self._rap_read_bytes(18, 6))
-                return_vals[0] &= 63  # buttons
-                return_vals[2] |= (return_vals[4] & 15) << 8  # x
-                return_vals[3] |= (return_vals[4] & 240) << 4  # y
-                return_vals[5] &= 63  # z
-                del return_vals[4], return_vals[1]  # no longer need these
-            elif self.data_mode == RELATIVE:  # if in relative mode
-                return_vals = self._rap_read_bytes(18, 4)
-                return_vals[0] &= 7
-            self.clear_status_flags()
+        if self.data_mode == ABSOLUTE:  # if absolute mode
+            return_vals = list(self._rap_read_bytes(18, 6))
+            return_vals[0] &= 63  # buttons
+            return_vals[2] |= (return_vals[4] & 15) << 8  # x
+            return_vals[3] |= (return_vals[4] & 240) << 4  # y
+            return_vals[5] &= 63  # z
+            del return_vals[4], return_vals[1]  # no longer need these
+        elif self.data_mode == RELATIVE:  # if in relative mode
+            return_vals = self._rap_read_bytes(18, 4)
+            return_vals[0] &= 7
+        self.clear_status_flags()
         return return_vals
 
     def clear_status_flags(self):

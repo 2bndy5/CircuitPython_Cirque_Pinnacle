@@ -241,23 +241,29 @@ absolute_mode_config()
    :param bool invert_y: Specifies if the y-axis data is to be inverted before reporting it.
       Default is `False`.
 
-report()
+available()
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.report
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.available
+
+   If the ``dr_pin`` parameter is specified upon instantiation, then the specified
+   input pin is used to detect if the data is new. Otherwise the SW_DR flag in the
+   STATUS register is used to detirmine if the data is new.
+
+   :Return: If there is fresh data to report (`True`) or not (`False`).
+
+   .. versionadded:: 0.0.5
+
+read()
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.read
 
    This function only applies to :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE`
    or :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` mode, otherwise if `data_mode` is set to
    :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`, then this function returns `None` and does nothing.
 
-   :param bool only_new: This parameter can be used to ensure the data reported is only new
-      data. Otherwise the data returned can be either old data or new data. If the ``dr_pin``
-      parameter is specified upon instantiation, then the specified input pin is used to
-      detect if the data is new. Otherwise the SW_DR flag in the STATUS register is used to
-      detirmine if the data is new.
-
-   :Returns: `None` if  the ``only_new`` parameter is set `True` and there is no new data to
-      report. Otherwise, a `list` or `bytearray` of parameters that describe the (touch or
+   :Returns: A `list` or `bytearray` of parameters that describe the (touch or
       button) event. The structure is as follows:
 
       .. list-table::
@@ -326,6 +332,9 @@ report()
       returned `bytearray` follows the buffer structure of a mouse HID report (see
       `USB Mouse example <examples.html#usb-mouse-example>`_).
    .. |LessEq| unicode:: U+2264
+
+   .. versionchanged:: 0.0.5
+      removed ``only_true`` parameter in favor of using `available()`
 
 clear_status_flags()
 ^^^^^^^^^^^^^^^^^^^^^^^

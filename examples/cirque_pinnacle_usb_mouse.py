@@ -12,7 +12,7 @@ import circuitpython_cirque_pinnacle.glidepoint as glidepoint
 
 dr_pin = DigitalInOut(board.D2)
 # NOTE Specifying the optional keyword argument ``dr_pin`` to the
-# constructor expedites ``report()`` when using Absolute or Relative modes
+# constructor expedites ``read()`` when using Absolute or Relative modes
 
 # if using a trackpad configured for SPI
 spi = board.SPI()
@@ -43,7 +43,7 @@ def move(timeout=10):
         raise OSError("mouse HID device not available.")
     start = time.monotonic()
     while time.monotonic() - start < timeout:
-        data = tpad.report()  # only returns fresh data (if any)
+        data = tpad.read()  # only returns fresh data (if any)
         if data:  # is there fresh data?
             mouse.send_report(data)  # no scrolling or backward/forward
             start = time.monotonic()

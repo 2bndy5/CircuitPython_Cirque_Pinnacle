@@ -21,9 +21,9 @@ from pygments.token import (
 
 sys.path.insert(0, os.path.abspath(".."))
 
-# -- General configuration ------------------------------------------------
 
-# -- General configuration ------------------------------------------------
+# -- General configuration
+# ------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -72,7 +72,7 @@ author = u"Brendan Doherty"
 # built documents.
 #
 # The short X.Y version.
-version = u"1.0"
+version = "dev"
 # The full version, including alpha/beta/rc tags.
 release = u"1.0"
 
@@ -105,9 +105,6 @@ default_role = "any"
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #
 add_function_parentheses = True
-
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False

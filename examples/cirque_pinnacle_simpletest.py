@@ -34,7 +34,7 @@ def print_data(timeout=6):
     start = time.monotonic()
     while time.monotonic() - start < timeout:
         if dr_pin.value: # is there new data?
-            data = tpad.report(only_new=False)
+            data = tpad.read(only_new=False)
             # Because we did not specify the dr_pin when instantiating the tpad variable,
             #   only_new=False skips the extra SPI or I2C transaction to check the
             #   SW_DR flag in the STATUS register which is reflected on the dr_pin
