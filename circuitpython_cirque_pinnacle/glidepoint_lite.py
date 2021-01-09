@@ -69,7 +69,7 @@ class PinnacleTouch:
             return bool(self._rap_read(2) & 4)
         return self.dr_pin.value
 
-    def read(self, only_new=True):
+    def read(self):
         return_vals = None
         if self.data_mode:
             return_vals = list(self._rap_read_bytes(18, 6))

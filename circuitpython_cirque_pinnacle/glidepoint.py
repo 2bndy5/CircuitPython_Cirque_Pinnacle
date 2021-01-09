@@ -128,7 +128,7 @@ class PinnacleTouch:
             return bool(self._rap_read(2) & 4)
         return self.dr_pin.value
 
-    def read(self, only_new=True):
+    def read(self):
         """This function will return touch event data from the Pinnacle ASIC
         (including empty packets on ending of a touch event)."""
         if self._mode == ANYMEAS:
