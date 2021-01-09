@@ -15,6 +15,11 @@ body {
   background-color: unset;
 }
 
+.md-typeset blockquote {
+  border-left: .2rem solid rgb(117, 116, 116);
+  color: rgb(189, 189, 189);
+}
+
 .md-typeset .codehilitetable .linenos pre,
 .md-typeset .highlighttable .linenos pre {
   color: #FCFCFC;
@@ -30,7 +35,7 @@ span.highlighted {
 }
 
 .highlight-shell.notranslate .highlight pre {
-  color:#fcfcfc;
+  color: #fcfcfc;
 }
 
 .highlight .cpf {
@@ -48,11 +53,11 @@ span.highlighted {
 }
 
 .md-typeset .admonition.seealso {
-  border-left:.2rem solid hsl(301, 100%, 63%);
+  border-left: .2rem solid hsl(301, 100%, 63%);
 }
 
 .md-typeset .admonition.seealso .admonition-title {
-  background-color:hsla(287, 100%, 63%, 0.1);
+  background-color: hsla(287, 100%, 63%, 0.1);
 }
 
 .md-typeset .admonition.important .admonition-title::before {
@@ -61,11 +66,11 @@ span.highlighted {
 }
 
 .md-typeset .admonition.important {
-  border-left:.2rem solid hsl(123, 100%, 63%);
+  border-left: .2rem solid hsl(123, 100%, 63%);
 }
 
 .md-typeset .admonition.important .admonition-title {
-  background-color:hsla(123, 100%, 63%, 0.1);
+  background-color: hsla(123, 100%, 63%, 0.1);
 }
 
 .md-typeset .admonition.warning .admonition-title::before {
@@ -73,11 +78,11 @@ span.highlighted {
 }
 
 .md-typeset .admonition.warning {
-  border-left:.2rem solid hsl(0, 100%, 63%);
+  border-left: .2rem solid hsl(0, 100%, 63%);
 }
 
 .md-typeset .admonition.warning .admonition-title {
-  background-color:hsla(0, 100%, 63%, 0.1);
+  background-color: hsla(0, 100%, 63%, 0.1);
 }
 
 .sig-name.descname,
@@ -124,10 +129,10 @@ html body .md-typeset .headerlink {
 }
 
 html .md-nav--primary .md-nav__title {
-  height:6.6rem;
-  padding:3rem .8rem .2rem;
-  line-height:1.4rem;
-  white-space:normal;
+  height: 6.6rem;
+  padding: 3rem .8rem .2rem;
+  line-height: 1.4rem;
+  white-space: normal;
 }
 
 .md-nav__title--site {
@@ -136,7 +141,7 @@ html .md-nav--primary .md-nav__title {
 
 @media only screen and (max-width:59.9375em) {
   [data-md-color-primary=blue] .md-nav__source {
-      background-color: rgb(0, 107, 9);
+    background-color: rgb(0, 107, 9);
   }
 }
 
@@ -162,12 +167,12 @@ html [data-md-color-primary=blue] .md-nav--primary .md-nav__title--site {
 }
 
 .md-typeset table:not([class]) th {
-  background-color:rgba(23, 35, 83, 0.8);
+  background-color: rgba(23, 35, 83, 0.8);
 }
 
 .md-typeset table:not([class]) tr:hover {
-  background-color:rgba(56, 2, 81, 0.8);
-  box-shadow:inset 0 .05rem 0 #9515ff;
+  background-color: rgba(56, 2, 81, 0.8);
+  box-shadow: inset 0 .05rem 0 #9515ff;
 }
 
 table {
