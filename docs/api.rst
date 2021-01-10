@@ -290,14 +290,14 @@ read()
                 -128 |LessEq| X |LessEq| 127
               - x-axis Position
 
-                0 |LessEq| X |LessEq| 2047
+                0 |LessEq| X |LessEq| 2047 [4]_
             * - 2
               - change in y-axis [2]_
 
                 -128 |LessEq| Y |LessEq| 127
               - y-axis Position
 
-                0 |LessEq| Y |LessEq| 1535
+                0 |LessEq| Y |LessEq| 1535 [5]_
             * - 3
               - change in scroll wheel
 
@@ -331,6 +331,10 @@ read()
       Otherwise this is an empty byte as the
       returned `bytearray` follows the buffer structure of a mouse HID report (see
       `USB Mouse example <examples.html#usb-mouse-example>`_).
+   .. [4] The datasheet recommends the x-axis value (in Absolute mode) should be
+      clamped to range 128 |LessEq| ``x`` |LessEq| 1920 for reliability.
+   .. [5] The datasheet recommends the y-axis value (in Absolute mode) should be
+      clamped to range 64 |LessEq| ``y`` |LessEq| 1472 for reliability.
    .. |LessEq| unicode:: U+2264
 
    .. versionchanged:: 0.0.5
