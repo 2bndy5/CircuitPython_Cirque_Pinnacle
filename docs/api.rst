@@ -299,9 +299,9 @@ read()
 
                 0 |LessEq| Y |LessEq| 1535 [5]_
             * - 3
-              - change in scroll wheel
+              - change in scroll wheel [3]_
 
-                -128 |LessEq| SCROLL |LessEq| 127 [3]_
+                -128 |LessEq| SCROLL |LessEq| 127
               - z-axis Magnitude
 
    .. [1] The returned button data is a byte in which each bit represents a button.
