@@ -5,7 +5,7 @@ based circular trackpads.
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
 import time
-from struct import pack, unpack
+from struct
 from micropython import const
 try:
     from ubus_device import SPIDevice, I2CDevice
@@ -43,7 +43,7 @@ class PinnacleTouch:
             self.dr_pin.switch_to_input()
         firmware_id, firmware_ver = self._rap_read_bytes(0, 2)
         if firmware_id != 7 or firmware_ver != 0x3A:
-            raise OSError("Cirque Pinnacle ASIC not responding")
+            raise RuntimeError("Cirque Pinnacle ASIC not responding")
         # init internal attributes w/ factory defaults after power-on-reset
         self._mode = 0  # 0 means relative mode which is factory default
         self.detect_finger_stylus()
@@ -223,13 +223,13 @@ class PinnacleTouch:
         measurements."""
         # combine every 2 bytes from resulting buffer into list of signed
         # 16-bits integers
-        return list(unpack('46h', self._era_read_bytes(0x01DF, 92)))
+        return list(struct.unpack('46h', self._era_read_bytes(0x01DF, 92)))
 
     @calibration_matrix.setter
     def calibration_matrix(self, matrix):
         matrix += [0] * (46 - len(matrix)) # padd short matrices w/ 0s
         for index in range(46):
-            buf = pack('h', matrix[index])
+            buf = struct.pack('h', matrix[index])
             self._era_write(0x01DF + index * 2, buf[0])
             self._era_write(0x01DF + index * 2 + 1, buf[1])
 
