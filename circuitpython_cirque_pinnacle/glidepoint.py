@@ -5,7 +5,7 @@ based circular trackpads.
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
 import time
-from struct
+import struct
 from micropython import const
 try:
     from ubus_device import SPIDevice, I2CDevice
