@@ -53,7 +53,7 @@ bottom). The following table shows how the pins are connected in the `examples <
 
 .. csv-table:: pinout (ordered the same as the FFC/FPC cable connector)
     :header: "cable pin number", Label, "MCU pin", Description
-    :widths: 2, 5, 5, 13
+    :widths: 4, 5, 5, 13
 
     1, SCK, SCK, "SPI clock line"
     2, SO, MISO, "Master Input Slave Output"

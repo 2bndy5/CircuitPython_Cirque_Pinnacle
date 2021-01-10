@@ -1,4 +1,6 @@
-.. include:: greetings.rst
+.. only:: html
+
+    .. include:: greetings.rst
 
 .. toctree::
     :hidden:
@@ -6,7 +8,6 @@
     greetings
 
 .. toctree::
-    :caption: Examples
     :hidden:
 
     examples
@@ -36,9 +37,11 @@
     Adafruit Blog <https://blog.adafruit.com>
     Adafruit Store <https://www.adafruit.com>
 
-Indices and tables
-==================
+.. only:: html
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    Indices and tables
+    ==================
+
+    * :ref:`genindex`
+    * :ref:`modindex`
+    * :ref:`search`

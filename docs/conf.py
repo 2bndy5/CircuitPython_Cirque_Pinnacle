@@ -35,7 +35,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_copybutton",
-    "sphinx_sitemap",
+    # "sphinx_sitemap",
     # "rst2pdf.pdfbuilder",  # for local pdf builder support
 ]
 
@@ -93,8 +93,7 @@ exclude_patterns = [
     "Thumbs.db",
     ".DS_Store",
     ".env",
-    "CODE_OF_CONDUCT.md"
-    "requirements.txt",
+    "CODE_OF_CONDUCT.md" "requirements.txt",
 ]
 
 # The reST default role (used for this markup: `text`) to use for all
@@ -116,6 +115,7 @@ napoleon_numpy_docstring = False
 
 # pygment custom style
 # --------------------------------------------------
+
 
 class DarkPlus(Style):
     """A custom pygment highlighting scheme based on
@@ -146,7 +146,7 @@ class DarkPlus(Style):
         Name.Decorator: "#EAEB82",
         Name.Exception: "#48C999",
         Name.Attribute: "#569CD6",
-        Name.Variable:" #9CDCFE",
+        Name.Variable: " #9CDCFE",
         Name.Variable.Magic: "#EAEB82",
         Name.Function: "#EAEB82",
         Name.Function.Magic: "#EAEB82",
@@ -185,9 +185,7 @@ pygments_style = "dark_plus"
 # a list of builtin themes.
 html_theme = "sphinx_material"
 # Material theme options
-html_sidebars = {
-    "**": ["globaltoc.html", "localtoc.html", "searchbox.html"]
-}
+html_sidebars = {"**": ["globaltoc.html", "localtoc.html", "searchbox.html"]}
 
 html_theme_options = {
     # Set the name of the project to appear in the navigation.
@@ -197,16 +195,8 @@ html_theme_options = {
     #   title: The title to appear (str)
     #   internal: Flag indicating to use pathto (bool)
     "nav_links": [
-        {
-            "href": "examples",
-            "title": "Examples",
-            "internal": True
-        },
-        {
-            "href": "api",
-            "title": "API Reference",
-            "internal": True
-        },
+        {"href": "examples", "title": "Examples", "internal": True},
+        {"href": "api", "title": "API Reference", "internal": True},
     ],
     # Set the color and the accent color
     "color_primary": "blue",
@@ -246,21 +236,18 @@ html_logo = "_static/Logo.png"
 # Output file base name for HTML help builder.
 htmlhelp_basename = "CircuitpythonCirquePinnacleLibrarydoc"
 
-# -- Options for LaTeX output ---------------------------------------------
+# -- Options for LaTeX output
+# ---------------------------------------------
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
-    #
-    # 'papersize': 'letterpaper',
+    "papersize": "letterpaper",
     # The font size ('10pt', '11pt' or '12pt').
-    #
-    # 'pointsize': '10pt',
+    "pointsize": "10pt",
     # Additional stuff for the LaTeX preamble.
-    #
-    # 'preamble': '',
+    "preamble": "",
     # Latex figure (float) alignment
-    #
-    # 'figure_align': 'htbp',
+    "figure_align": "htbp",
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -276,7 +263,8 @@ latex_documents = [
     ),
 ]
 
-# -- Options for manual page output ---------------------------------------
+# -- Options for manual page output
+# ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
@@ -290,7 +278,8 @@ man_pages = [
     )
 ]
 
-# -- Options for Texinfo output -------------------------------------------
+# -- Options for Texinfo output
+# -------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
@@ -307,14 +296,16 @@ texinfo_documents = [
     ),
 ]
 
-# ---Options for PDF output-----------------------------------------
+# ---Options for PDF output
+# -----------------------------------------
 # requires `rst2pdf` module which is not builtin to Python 3.4 nor
 # readthedocs.org's docker)
-# pdf_documents = [
-#     (
-#         "index",
-#         u"CircuitPython-Cirque-Pinnacle",
-#         u"CircuitPython-Cirque-Pinnacle library documentation",
-#         u"Brendan Doherty",
-#     ),
-# ]
+
+pdf_documents = [
+    (
+        "index",
+        u"CircuitPython-Cirque-Pinnacle",
+        u"CircuitPython-Cirque-Pinnacle library documentation",
+        u"Brendan Doherty",
+    ),
+]

@@ -334,7 +334,7 @@ read()
    .. |LessEq| unicode:: U+2264
 
    .. versionchanged:: 0.0.5
-      removed ``only_true`` parameter in favor of using `available()`
+      removed ``only_new`` parameter in favor of using `available()`.
 
 clear_status_flags()
 ^^^^^^^^^^^^^^^^^^^^^^^
