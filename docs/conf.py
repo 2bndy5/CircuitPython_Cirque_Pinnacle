@@ -1,26 +1,9 @@
 # pylint: disable=invalid-name,too-few-public-methods
 """This file is for `sphinx-build` configuration"""
-import os
-import sys
-import pygments.styles
-from pygments.style import Style
-from pygments.token import (
-    Text,
-    Other,
-    Comment,
-    Keyword,
-    Name,
-    Literal,
-    String,
-    Number,
-    Operator,
-    Generic,
-    Punctuation,
-)
+# import os
+# import sys
 
-
-sys.path.insert(0, os.path.abspath(".."))
-
+# sys.path.insert(0, os.path.abspath("../circuitpython_cirque_pinnacle"))
 
 # -- General configuration
 # ------------------------------------------------
@@ -34,8 +17,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
-    "sphinx_copybutton",
-    # "sphinx_sitemap",
+    "sphinx_immaterial",
     # "rst2pdf.pdfbuilder",  # for local pdf builder support
 ]
 
@@ -47,10 +29,6 @@ autodoc_member_order = "bysource"
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.7", None),
-    "BusDevice": (
-        "https://circuitpython.readthedocs.io/projects/busdevice/en/latest/",
-        None,
-    ),
     "CircuitPython": ("https://circuitpython.readthedocs.io/en/latest/", None),
 }
 
@@ -113,103 +91,43 @@ todo_emit_warnings = False
 
 napoleon_numpy_docstring = False
 
-# pygment custom style
-# --------------------------------------------------
-
-
-class DarkPlus(Style):
-    """A custom pygment highlighting scheme based on
-    VSCode's builtin `Dark Plus` theme"""
-
-    background_color = "#1E1E1E"
-    highlight_color = "#ff0000"
-    line_number_color = "#FCFCFC"
-    line_number_background_color = "#282828"
-
-    default_style = ""
-    styles = {
-        Text: "#FEFEFE",
-        Comment.Single: "#5E9955",
-        Comment.Multiline: "#5E9955",
-        Comment.Preproc: "#B369BF",
-        Other: "#FEFEFE",
-        Keyword: "#499CD6",
-        Keyword.Declaration: "#C586C0",
-        Keyword.Namespace: "#B369BF",
-        # Keyword.Pseudo: "#499CD6",
-        # Keyword.Reserved: "#499CD6",
-        Keyword.Type: "#48C999",
-        Name: "#FEFEFE",
-        Name.Builtin: "#EAEB82",
-        Name.Builtin.Pseudo: "#499DC7",
-        Name.Class: "#48C999",
-        Name.Decorator: "#EAEB82",
-        Name.Exception: "#48C999",
-        Name.Attribute: "#569CD6",
-        Name.Variable: " #9CDCFE",
-        Name.Variable.Magic: "#EAEB82",
-        Name.Function: "#EAEB82",
-        Name.Function.Magic: "#EAEB82",
-        Literal: "#AC4C1E",
-        String: "#B88451",
-        String.Escape: "#DEA868",
-        String.Affix: "#499DC7",
-        Number: "#B3D495",
-        Operator: "#FEFEFE",
-        Operator.Word: "#499DC7",
-        Generic.Output: "#F4DA8B",
-        Generic.Prompt: "#99FFA2",
-        Generic.Traceback: "#FF0909",
-        Generic.Error: "#FF0909",
-        Punctuation: "#FEFEFE",
-    }
-
-
-def pygments_monkeypatch_style(mod_name, cls):
-    """ function to inject a custom pygment style """
-    cls_name = cls.__name__
-    mod = type(__import__("os"))(mod_name)
-    setattr(mod, cls_name, cls)
-    setattr(pygments.styles, mod_name, mod)
-    sys.modules["pygments.styles." + mod_name] = mod
-    pygments.styles.STYLE_MAP[mod_name] = mod_name + "::" + cls_name
-
-
-pygments_monkeypatch_style("dark_plus", DarkPlus)
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "dark_plus"
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "sphinx_material"
+html_theme = "sphinx_immaterial"
 # Material theme options
 html_sidebars = {"**": ["globaltoc.html", "localtoc.html", "searchbox.html"]}
 
 html_theme_options = {
-    # Set the name of the project to appear in the navigation.
-    "nav_title": "Cirque Pinnacle on CircuitPython",
-    # A list of dictionaries where each has three keys:
-    #   href: The URL or pagename (str)
-    #   title: The title to appear (str)
-    #   internal: Flag indicating to use pathto (bool)
-    "nav_links": [
-        {"href": "examples", "title": "Examples", "internal": True},
-        {"href": "api", "title": "API Reference", "internal": True},
-    ],
     # Set the color and the accent color
-    "color_primary": "blue",
-    "color_accent": "light-blue",
+    "palette": [
+        {
+            "media": "(prefers-color-scheme: light)",
+            "scheme": "default",
+            "primary": "blue",
+            "accent": "light-blue",
+            "toggle": {
+                "icon": "material/toggle-switch-off-outline",
+                "name": "Switch to dark mode",
+            }
+        },
+        {
+            "media": "(prefers-color-scheme: dark)",
+            "scheme": "slate",
+            "primary": "blue",
+            "accent": "light-blue",
+            "toggle": {
+                "icon": "material/toggle-switch",
+                "name": "Switch to light mode",
+            }
+        },
+    ],
     # Set the repo location to get a badge with stats
     "repo_url": "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/",
     "repo_name": "CircuitPython_Cirque_Pinnacle",
-    # Visible levels of the global TOC; -1 means unlimited
-    "globaltoc_depth": 1,
     # If False, expand all TOC entries
     "globaltoc_collapse": False,
-    # If True, show hidden TOC entries
-    "globaltoc_includehidden": True,
 }
 
 
@@ -223,9 +141,7 @@ html_static_path = ["_static"]
 
 # These paths are either relative to html_static_path
 # or fully qualified paths (eg. https://...)
-html_css_files = [
-    "dark_material.css",
-]
+# html_css_files = []
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
