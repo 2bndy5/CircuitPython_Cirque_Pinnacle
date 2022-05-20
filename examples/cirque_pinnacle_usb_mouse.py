@@ -7,8 +7,8 @@ import board
 from digitalio import DigitalInOut
 import usb_hid
 # if running this on a ATSAMD21 M0 based board
-# import circuitpython_cirque_pinnacle.glidepoint_lite as glidepoint
-import circuitpython_cirque_pinnacle.glidepoint as glidepoint
+# from circuitpython_cirque_pinnacle import glidepoint_lite as glidepoint
+from circuitpython_cirque_pinnacle import glidepoint
 
 dr_pin = DigitalInOut(board.D2)
 # NOTE Specifying the optional keyword argument ``dr_pin`` to the
@@ -17,12 +17,12 @@ dr_pin = DigitalInOut(board.D2)
 # if using a trackpad configured for SPI
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
-tpad = glidepoint.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+t_pad = glidepoint.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # if using a trackpad configured for I2C
 # i2c = board.I2C()
-# tpad = glidepoint.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
+# t_pad = glidepoint.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
 
-tpad.data_mode = glidepoint.RELATIVE  # ensure mouse mode is enabled
+t_pad.data_mode = glidepoint.RELATIVE  # ensure mouse mode is enabled
 
 mouse = None
 for dev in usb_hid.devices:
@@ -43,7 +43,7 @@ def move(timeout=10):
         raise OSError("mouse HID device not available.")
     start = time.monotonic()
     while time.monotonic() - start < timeout:
-        data = tpad.read()  # only returns fresh data (if any)
+        data = t_pad.read()  # only returns fresh data (if any)
         if data:  # is there fresh data?
             mouse.send_report(data)  # no scrolling or backward/forward
             start = time.monotonic()

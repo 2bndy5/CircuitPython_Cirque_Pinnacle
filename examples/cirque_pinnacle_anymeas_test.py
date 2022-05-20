@@ -7,7 +7,7 @@ import struct
 import board
 from digitalio import DigitalInOut
 # This example does NOT work with glidepoint_lite.py
-import circuitpython_cirque_pinnacle.glidepoint as glidepoint
+from circuitpython_cirque_pinnacle import glidepoint
 
 dr_pin = DigitalInOut(board.D2)
 # NOTE The dr_pin is a required keyword argument to the
@@ -16,14 +16,14 @@ dr_pin = DigitalInOut(board.D2)
 # if using a trackpad configured for SPI
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
-tpad = glidepoint.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+t_pad = glidepoint.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # if using a trackpad configured for I2C
 # i2c = board.I2C()
-# tpad = glidepoint.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
+# t_pad = glidepoint.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
 
 # if dr_pin was not specified upon instantiation.
 # this command will raise an AttributeError exception
-tpad.data_mode = glidepoint.ANYMEAS
+t_pad.data_mode = glidepoint.ANYMEAS
 
 # setup toggle and polarity bits for measuring with PNP gate muxing
 class MeasVector:
@@ -56,7 +56,7 @@ def compensate(count=5):
         for _ in range(count):
             result = struct.unpack(
                 "h",
-                tpad.measure_adc(vector.toggle, vector.polarity)
+                t_pad.measure_adc(vector.toggle, vector.polarity)
             )[0]
             idle_vectors[i] += result
         idle_vectors[i] /= count
@@ -71,7 +71,7 @@ def take_measurements(timeout=10):
         for i, vector in enumerate(vectors):
             result = struct.unpack(
                 "h",
-                tpad.measure_adc(vector.toggle, vector.polarity)
+                t_pad.measure_adc(vector.toggle, vector.polarity)
             )[0]
             print("vector{}: {}".format(i, result - idle_vectors[i]), end="\t")
         print()

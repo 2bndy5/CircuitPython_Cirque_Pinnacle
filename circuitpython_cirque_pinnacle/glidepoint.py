@@ -1,5 +1,5 @@
 """
-A driver class for the Cirque Pinnacle ASIC on the Cirque capacitve touch
+A driver class for the Cirque Pinnacle ASIC on the Cirque capacitive touch
 based circular trackpads.
 """
 __version__ = "0.0.0-auto.0"
@@ -78,7 +78,7 @@ class PinnacleTouch:
     @data_mode.setter
     def data_mode(self, mode):
         if mode not in (ANYMEAS, RELATIVE, ABSOLUTE):
-            raise ValueError("Unrecognised input value for data_mode.")
+            raise ValueError("Unrecognized input value for data_mode.")
         sys_config = self._rap_read(3) & 0xE7  # clear AnyMeas mode flags
         if mode in (RELATIVE, ABSOLUTE):
             if self.data_mode == ANYMEAS:  # if leaving AnyMeas mode
@@ -234,7 +234,7 @@ class PinnacleTouch:
 
     @calibration_matrix.setter
     def calibration_matrix(self, matrix):
-        matrix += [0] * (46 - len(matrix))  # padd short matrices w/ 0s
+        matrix += [0] * (46 - len(matrix))  # pad short matrices w/ 0s
         for index in range(46):
             buf = struct.pack("h", matrix[index])
             self._era_write(0x01DF + index * 2, buf[0])
