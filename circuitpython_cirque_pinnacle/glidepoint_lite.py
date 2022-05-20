@@ -3,7 +3,6 @@
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
 import time
-
 try:
     from ubus_device import SPIDevice, I2CDevice
 except ImportError:
@@ -12,7 +11,6 @@ except ImportError:
 
 RELATIVE = 0x00
 ABSOLUTE = 0x02
-
 
 class PinnacleTouch:
     def __init__(self, dr_pin=None):
@@ -46,27 +44,23 @@ class PinnacleTouch:
     @data_mode.setter
     def data_mode(self, mode):
         if mode not in (RELATIVE, ABSOLUTE):
-            raise ValueError("Unrecognized input value for data_mode.")
+            raise ValueError("Unrecognised input value for data_mode.")
         self._rap_write(4, 1 | mode)
         self._mode = mode
 
     @property
     def hard_configured(self):
-        return bool(self._rap_read(0x1F))
+        return bool(self._rap_read(0x1f))
 
-    def relative_mode_config(
-        self,
-        rotate90=False,
-        taps=True,
-        secondary_tap=True,
-        glide_extend=True,
-        intellimouse=False,
-    ):
+    def relative_mode_config(self, rotate90=False, taps=True,
+                             secondary_tap=True, glide_extend=True,
+                             intellimouse=False):
         config2 = (rotate90 << 7) | ((not glide_extend) << 4)
         config2 |= ((not secondary_tap) << 2) | ((not taps) << 1)
         self._rap_write(5, config2 | bool(intellimouse))
 
-    def absolute_mode_config(self, z_idle_count=30, invert_x=False, invert_y=False):
+    def absolute_mode_config(self, z_idle_count=30,
+                             invert_x=False, invert_y=False):
         self._rap_write(0x0A, max(0, min(z_idle_count, 255)))
         config1 = self._rap_read(4) & 0x3F | (invert_y << 7)
         self._rap_write(4, config1 | (invert_x << 6))
@@ -147,7 +141,7 @@ class PinnacleTouch:
     def _era_read(self, reg):
         prev_feed_state = self.feed_enable
         self.feed_enable = False
-        self._rap_write_bytes(0x1C, [reg >> 8, reg & 0xFF])
+        self._rap_write_bytes(0x1C, [reg >> 8, reg & 0xff])
         self._rap_write(0x1E, 1)
         while self._rap_read(0x1E):
             pass
@@ -157,10 +151,10 @@ class PinnacleTouch:
         return buf
 
     def _era_read_bytes(self, reg, numb_bytes):
-        buf = b""
+        buf = b''
         prev_feed_state = self.feed_enable
         self.feed_enable = False
-        self._rap_write_bytes(0x1C, [reg >> 8, reg & 0xFF])
+        self._rap_write_bytes(0x1C, [reg >> 8, reg & 0xff])
         for _ in range(numb_bytes):
             self._rap_write(0x1E, 5)
             while self._rap_read(0x1E):
@@ -174,13 +168,12 @@ class PinnacleTouch:
         prev_feed_state = self.feed_enable
         self.feed_enable = False
         self._rap_write(0x1B, value)
-        self._rap_write_bytes(0x1C, [reg >> 8, reg & 0xFF])
+        self._rap_write_bytes(0x1C, [reg >> 8, reg & 0xff])
         self._rap_write(0x1E, 2)
         while self._rap_read(0x1E):
             pass
         self.clear_flags()
         self.feed_enable = prev_feed_state
-
 
 # pylint: disable=no-member
 class PinnacleTouchI2C(PinnacleTouch):
@@ -209,10 +202,10 @@ class PinnacleTouchI2C(PinnacleTouch):
         with self._i2c as i2c:
             i2c.write(buf)
 
-
 class PinnacleTouchSPI(PinnacleTouch):
     def __init__(self, spi, ss_pin, spi_frequency=12000000, dr_pin=None):
-        self._spi = SPIDevice(spi, chip_select=ss_pin, phase=1, baudrate=spi_frequency)
+        self._spi = SPIDevice(spi, chip_select=ss_pin, phase=1,
+                              baudrate=spi_frequency)
         super(PinnacleTouchSPI, self).__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg):
