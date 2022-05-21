@@ -17,4 +17,4 @@
 
 A circuitpython library for using the Cirque Glidepoint circle trackpads (as seen in the Steam Controller and Valve\HTC Vive VR controllers).
 
-Read the `Documentation at <http://circuitpython-cirque-pinnacle.rtfd.io/en/lastest>`_
+Read the `Documentation at ReadTheDocs.org <http://circuitpython-cirque-pinnacle.rtfd.io/en/lastest>`_
