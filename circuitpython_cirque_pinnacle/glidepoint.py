@@ -115,11 +115,11 @@ class PinnacleTouch:
 
     def relative_mode_config(
         self,
-        rotate90=False,
-        taps=True,
-        secondary_tap=True,
-        glide_extend=True,
-        intellimouse=False,
+        rotate90: bool = False,
+        taps: bool = True,
+        secondary_tap: bool = True,
+        glide_extend: bool = True,
+        intellimouse: bool = False,
     ):
         """Configure settings specific to Relative mode (AKA Mouse mode) data
         reporting."""
@@ -448,14 +448,14 @@ class PinnacleTouchSPI(PinnacleTouch):
         self._spi = SPIDevice(spi, chip_select=ss_pin, phase=1, baudrate=spi_frequency)
         super().__init__(dr_pin=dr_pin)
 
-    def _rap_read(self, reg) -> int:
+    def _rap_read(self, reg: int) -> int:
         buf_out = bytes([reg | 0xA0]) + b"\xFB" * 3
         buf_in = bytearray(len(buf_out))
         with self._spi as spi:
             spi.write_readinto(buf_out, buf_in)
         return buf_in[3]
 
-    def _rap_read_bytes(self, reg, numb_bytes) -> bytearray:
+    def _rap_read_bytes(self, reg: int, numb_bytes: int) -> bytearray:
         # using auto-increment method
         buf_out = bytes([reg | 0xA0]) + b"\xFC" * (1 + numb_bytes) + b"\xFB"
         buf_in = bytearray(len(buf_out))
@@ -463,11 +463,11 @@ class PinnacleTouchSPI(PinnacleTouch):
             spi.write_readinto(buf_out, buf_in)
         return buf_in[3:]
 
-    def _rap_write(self, reg, value):
+    def _rap_write(self, reg: int, value: int):
         buf = bytes([(reg | 0x80), value])
         with self._spi as spi:
             spi.write(buf)
 
-    def _rap_write_bytes(self, reg, values):
+    def _rap_write_bytes(self, reg: int, values: list[int]):
         for i, val in enumerate(values):
             self._rap_write(reg + i, val)
