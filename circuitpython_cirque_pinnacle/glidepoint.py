@@ -9,10 +9,17 @@ import struct
 from micropython import const
 
 try:
+    from typing import Optional
+except ImportError:
+    pass
+
+try:
     from ubus_device import SPIDevice, I2CDevice
 except ImportError:
     from adafruit_bus_device.spi_device import SPIDevice
     from adafruit_bus_device.i2c_device import I2CDevice
+import digitalio
+import busio
 
 RELATIVE = const(0x00)
 ANYMEAS = const(0x01)
@@ -40,7 +47,7 @@ CRTL_PWR_IDLE = const(0x40)
 class PinnacleTouch:
     """The abstract base class for driving the Pinnacle ASIC."""
 
-    def __init__(self, dr_pin=None):
+    def __init__(self, dr_pin: Optional[digitalio.DigitalInOut] = None):
         self.dr_pin = dr_pin
         if dr_pin is not None:
             self.dr_pin.switch_to_input()
@@ -56,13 +63,13 @@ class PinnacleTouch:
         self.calibrate(True)  # enables all compensations
 
     @property
-    def feed_enable(self):
+    def feed_enable(self) -> bool:
         """This `bool` attribute controls if the touch/button event data is
         reported (`True`) or not (`False`)."""
         return bool(self._rap_read(4) & 1)
 
     @feed_enable.setter
-    def feed_enable(self, is_on):
+    def feed_enable(self, is_on: bool):
         is_enabled = self._rap_read(4)
         if is_enabled & 1 != is_on:
             # save ourselves the unnecessary transaction
@@ -70,13 +77,13 @@ class PinnacleTouch:
             self._rap_write(4, is_enabled)
 
     @property
-    def data_mode(self):
+    def data_mode(self) -> int:
         """This attribute controls which mode the data read is configured
         for."""
         return self._mode
 
     @data_mode.setter
-    def data_mode(self, mode):
+    def data_mode(self, mode: int):
         if mode not in (ANYMEAS, RELATIVE, ABSOLUTE):
             raise ValueError("Unrecognized input value for data_mode.")
         sys_config = self._rap_read(3) & 0xE7  # clear AnyMeas mode flags
@@ -101,7 +108,7 @@ class PinnacleTouch:
         self._mode = mode
 
     @property
-    def hard_configured(self):
+    def hard_configured(self) -> bool:
         """This `bool` attribute can be used to inform applications about
         factory customized hardware configuration."""
         return bool(self._rap_read(0x1F))
@@ -121,7 +128,9 @@ class PinnacleTouch:
             config2 |= ((not secondary_tap) << 2) | ((not taps) << 1)
             self._rap_write(5, config2 | bool(intellimouse))
 
-    def absolute_mode_config(self, z_idle_count=30, invert_x=False, invert_y=False):
+    def absolute_mode_config(
+        self, z_idle_count: int = 30, invert_x: bool = False, invert_y: bool = False
+    ):
         """Configure settings specific to Absolute mode (reports axis
         positions)."""
         if self.data_mode == ABSOLUTE:
@@ -129,13 +138,13 @@ class PinnacleTouch:
             config1 = self._rap_read(4) & 0x3F | (invert_y << 7)
             self._rap_write(4, config1 | (invert_x << 6))
 
-    def available(self):
+    def available(self) -> bool:
         """Determine if there is fresh data to report."""
         if self.dr_pin is None:
             return bool(self._rap_read(2) & 4)
         return self.dr_pin.value
 
-    def read(self):
+    def read(self) -> list[int]:
         """This function will return touch event data from the Pinnacle ASIC
         (including empty packets on ending of a touch event)."""
         if self._mode == ANYMEAS:
@@ -161,32 +170,32 @@ class PinnacleTouch:
         time.sleep(0.00005)  # per official example from Cirque
 
     @property
-    def allow_sleep(self):
+    def allow_sleep(self) -> bool:
         """This attribute specifies if the Pinnacle ASIC is allowed to sleep
         after about 5 seconds of idle (no input event)."""
         return bool(self._rap_read(3) & 4)
 
     @allow_sleep.setter
-    def allow_sleep(self, is_enabled):
+    def allow_sleep(self, is_enabled: bool):
         self._rap_write(3, (self._rap_read(3) & 0xFB) | (is_enabled << 2))
 
     @property
-    def shutdown(self):
+    def shutdown(self) -> bool:
         """This attribute controls power of the Pinnacle ASIC."""
         return bool(self._rap_read(3) & 2)
 
     @shutdown.setter
-    def shutdown(self, is_off):
+    def shutdown(self, is_off: bool):
         self._rap_write(3, (self._rap_read(3) & 0xFD) | (is_off << 1))
 
     @property
-    def sample_rate(self):
+    def sample_rate(self) -> int:
         """This attribute controls how many samples (of data) per second are
         reported."""
         return self._rap_read(9)
 
     @sample_rate.setter
-    def sample_rate(self, val):
+    def sample_rate(self, val: int):
         if self.data_mode != ANYMEAS:
             if val in (200, 300):
                 # disable palm & noise compensations
@@ -202,7 +211,10 @@ class PinnacleTouch:
             self._rap_write(9, val)
 
     def detect_finger_stylus(
-        self, enable_finger=True, enable_stylus=True, sample_rate=100
+        self,
+        enable_finger: bool = True,
+        enable_stylus: bool = True,
+        sample_rate: int = 100,
     ):
         """This function will configure the Pinnacle ASIC to detect either
         finger, stylus, or both."""
@@ -211,7 +223,14 @@ class PinnacleTouch:
         self._era_write(0x00EB, finger_stylus)
         self.sample_rate = sample_rate
 
-    def calibrate(self, run, tap=True, track_error=True, nerd=True, background=True):
+    def calibrate(
+        self,
+        run: bool,
+        tap: bool = True,
+        track_error: bool = True,
+        nerd: bool = True,
+        background: bool = True,
+    ):
         """Set calibration parameters when the Pinnacle ASIC calibrates
         itself."""
         if self.data_mode != ANYMEAS:
@@ -224,7 +243,7 @@ class PinnacleTouch:
                 self.clear_status_flags()  # now that calibration is done
 
     @property
-    def calibration_matrix(self):
+    def calibration_matrix(self) -> list[int]:
         """This attribute returns a `list` of the 46 signed 16-bit (short)
         values stored in the Pinnacle ASIC's memory that is used for taking
         measurements."""
@@ -233,14 +252,14 @@ class PinnacleTouch:
         return list(struct.unpack("46h", self._era_read_bytes(0x01DF, 92)))
 
     @calibration_matrix.setter
-    def calibration_matrix(self, matrix):
+    def calibration_matrix(self, matrix: list[int]):
         matrix += [0] * (46 - len(matrix))  # pad short matrices w/ 0s
         for index in range(46):
             buf = struct.pack("h", matrix[index])
             self._era_write(0x01DF + index * 2, buf[0])
             self._era_write(0x01DF + index * 2 + 1, buf[1])
 
-    def set_adc_gain(self, sensitivity):
+    def set_adc_gain(self, sensitivity: int):
         """Sets the ADC gain in range [0,3] to enhance performance based on
         the overlay type"""
         if not 0 <= sensitivity < 4:
@@ -248,19 +267,21 @@ class PinnacleTouch:
         val = self._era_read(0x0187) & 0x3F | (sensitivity << 6)
         self._era_write(0x0187, val)
 
-    def tune_edge_sensitivity(self, x_axis_wide_z_min=0x04, y_axis_wide_z_min=0x03):
+    def tune_edge_sensitivity(
+        self, x_axis_wide_z_min: int = 0x04, y_axis_wide_z_min: int = 0x03
+    ):
         """Changes thresholds to improve detection of fingers."""
         self._era_write(0x0149, x_axis_wide_z_min)
         self._era_write(0x0168, y_axis_wide_z_min)
 
     def anymeas_mode_config(
         self,
-        gain=GAIN_200,
-        frequency=FREQ_0,
-        sample_length=512,
-        mux_ctrl=MUX_PNP,
-        apperture_width=500,
-        ctrl_pwr_cnt=1,
+        gain: int = GAIN_200,
+        frequency: int = FREQ_0,
+        sample_length: int = 512,
+        mux_ctrl: int = MUX_PNP,
+        apperture_width: int = 500,
+        ctrl_pwr_cnt: int = 1,
     ):
         """This function configures the Pinnacle ASIC to output raw ADC
         measurements."""
@@ -275,7 +296,7 @@ class PinnacleTouch:
             self._rap_write_bytes(0x13, [0] * 8)
             self.clear_status_flags()
 
-    def measure_adc(self, bits_to_toggle, toggle_polarity):
+    def measure_adc(self, bits_to_toggle: int, toggle_polarity: int) -> bytearray:
         """This blocking function instigates and returns the measurements (a
         signed short) from the Pinnacle ASIC's ADC (Analog to Digital
         Converter) matrix."""
@@ -285,11 +306,11 @@ class PinnacleTouch:
             result = self.get_measure_adc()  # Pinnacle is still computing
         return result
 
-    def start_measure_adc(self, bits_to_toggle, toggle_polarity):
+    def start_measure_adc(self, bits_to_toggle: int, toggle_polarity: int):
         """A non-blocking function that starts measuring ADC values in
         AnyMeas mode."""
         if self._mode == ANYMEAS:
-            tog_pol = []  # assemble list of register buffers
+            tog_pol: list[int] = []  # assemble list of register buffers
             for i in range(3, -1, -1):
                 tog_pol.append((bits_to_toggle >> (i * 8)) & 0xFF)
             for i in range(3, -1, -1):
@@ -299,7 +320,7 @@ class PinnacleTouch:
             # initiate measurements
             self._rap_write(3, self._rap_read(3) | 0x18)
 
-    def get_measure_adc(self):
+    def get_measure_adc(self) -> Optional[bytearray]:
         """A non-blocking function that returns ADC measurement on
         completion."""
         if self._mode != ANYMEAS:
@@ -310,19 +331,19 @@ class PinnacleTouch:
         self.clear_status_flags()
         return result
 
-    def _rap_read(self, reg):
+    def _rap_read(self, reg: int) -> int:
         raise NotImplementedError()
 
-    def _rap_read_bytes(self, reg, numb_bytes):
+    def _rap_read_bytes(self, reg: int, numb_bytes: int) -> bytearray:
         raise NotImplementedError()
 
-    def _rap_write(self, reg, value):
+    def _rap_write(self, reg: int, value: int):
         raise NotImplementedError()
 
-    def _rap_write_bytes(self, reg, values):
+    def _rap_write_bytes(self, reg: int, values: list[int]):
         raise NotImplementedError()
 
-    def _era_read(self, reg):
+    def _era_read(self, reg: int) -> int:
         prev_feed_state = self.feed_enable
         self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write_bytes(0x1C, [reg >> 8, reg & 0xFF])
@@ -334,7 +355,7 @@ class PinnacleTouch:
         self.feed_enable = prev_feed_state  # resume previous feed state
         return buf
 
-    def _era_read_bytes(self, reg, numb_bytes):
+    def _era_read_bytes(self, reg: int, numb_bytes: int) -> bytes:
         buf = b""
         prev_feed_state = self.feed_enable
         self.feed_enable = False  # accessing raw memory, so do this
@@ -348,7 +369,7 @@ class PinnacleTouch:
         self.feed_enable = prev_feed_state  # resume previous feed state
         return buf
 
-    def _era_write(self, reg, value):
+    def _era_write(self, reg: int, value: int):
         prev_feed_state = self.feed_enable
         self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write(0x1B, value)  # write value
@@ -359,7 +380,7 @@ class PinnacleTouch:
         self.clear_status_flags()
         self.feed_enable = prev_feed_state  # resume previous feed state
 
-    def _era_write_bytes(self, reg, value, numb_bytes):
+    def _era_write_bytes(self, reg: int, value: int, numb_bytes: int):
         # rarely used as it only writes 1 value to multiple registers
         prev_feed_state = self.feed_enable
         self.feed_enable = False  # accessing raw memory, so do this
@@ -378,14 +399,19 @@ class PinnacleTouchI2C(PinnacleTouch):
     """Parent class for interfacing with the Pinnacle ASIC via the I2C
     protocol."""
 
-    def __init__(self, i2c, address=0x2A, dr_pin=None):
+    def __init__(
+        self,
+        i2c: busio.I2C,
+        address: int = 0x2A,
+        dr_pin: Optional[digitalio.DigitalInOut] = None,
+    ):
         self._i2c = I2CDevice(i2c, address)
         super().__init__(dr_pin=dr_pin)
 
-    def _rap_read(self, reg):
+    def _rap_read(self, reg: int) -> int:
         return self._rap_read_bytes(reg, 1)
 
-    def _rap_read_bytes(self, reg, numb_bytes):
+    def _rap_read_bytes(self, reg: int, numb_bytes: int) -> bytearray:
         buf = bytes([reg | 0xA0])  # per datasheet
         with self._i2c as i2c:
             i2c.write(buf)  # includes a STOP condition
@@ -394,10 +420,10 @@ class PinnacleTouchI2C(PinnacleTouch):
             i2c.readinto(buf)
         return buf
 
-    def _rap_write(self, reg, value):
+    def _rap_write(self, reg: int, value: int):
         self._rap_write_bytes(reg, [value])
 
-    def _rap_write_bytes(self, reg, values):
+    def _rap_write_bytes(self, reg: int, values: list[int]):
         buf = b""
         for index, byte in enumerate(values):
             # Pinnacle doesn't auto-increment register
@@ -412,18 +438,24 @@ class PinnacleTouchSPI(PinnacleTouch):
     """Parent class for interfacing with the Pinnacle ASIC via the SPI
     protocol."""
 
-    def __init__(self, spi, ss_pin, spi_frequency=12000000, dr_pin=None):
+    def __init__(
+        self,
+        spi: busio.SPI,
+        ss_pin: digitalio.DigitalInOut,
+        spi_frequency: int = 12000000,
+        dr_pin: Optional[digitalio.DigitalInOut] = None,
+    ):
         self._spi = SPIDevice(spi, chip_select=ss_pin, phase=1, baudrate=spi_frequency)
         super().__init__(dr_pin=dr_pin)
 
-    def _rap_read(self, reg):
+    def _rap_read(self, reg) -> int:
         buf_out = bytes([reg | 0xA0]) + b"\xFB" * 3
         buf_in = bytearray(len(buf_out))
         with self._spi as spi:
             spi.write_readinto(buf_out, buf_in)
         return buf_in[3]
 
-    def _rap_read_bytes(self, reg, numb_bytes):
+    def _rap_read_bytes(self, reg, numb_bytes) -> bytearray:
         # using auto-increment method
         buf_out = bytes([reg | 0xA0]) + b"\xFC" * (1 + numb_bytes) + b"\xFB"
         buf_in = bytearray(len(buf_out))

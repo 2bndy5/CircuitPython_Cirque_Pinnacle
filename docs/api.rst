@@ -9,7 +9,7 @@ Data Modes
 ***********
 
 
-Allowed symbols for configuring the Pinanacle ASIC's data reporting/measurements.
+Allowed symbols for configuring the Pinnacle ASIC's data reporting/measurements.
 
 .. data:: circuitpython_cirque_pinnacle.glidepoint.RELATIVE
    :annotation: =0
@@ -135,20 +135,16 @@ PinnacleTouch
 
 .. |dr_pin_parameter| replace:: The input pin connected to the Pinnacle ASIC's "Data
       Ready" pin. If this parameter is not specified, then the SW_DR (software data ready) flag
-      of the STATUS register is used to detirmine if the data being reported is new.
+      of the STATUS register is used to determine if the data being reported is new.
 
 .. |dr_pin_note| replace:: This parameter must be specified if your application is going to use the
       Pinnacle ASIC's :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`
       mode (a rather experimental measuring of raw ADC values).
 
-
-Constructor
-*************************
-
 .. autoclass:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch
    :no-members:
 
-   :param ~microcontroller.Pin dr_pin: |dr_pin_parameter|
+   :param ~digitalio.DigitalInOut dr_pin: |dr_pin_parameter|
 
       .. important:: |dr_pin_note|
 
@@ -168,7 +164,8 @@ data_mode
       - ``1`` for AnyMeas mode (raw ADC measurements)
       - ``2`` for Absolute mode (X & Y axis positions)
 
-   .. important:: When switching from :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` to
+   .. important::
+      When switching from :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` to
       :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE` or
       :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` all configurations are reset, and
       must be re-configured by using  `absolute_mode_config()` or `relative_mode_config()`.
@@ -176,17 +173,11 @@ data_mode
 Relative or Absolute mode
 *************************
 
-feed_enable
-^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.feed_enable
 
    This function only applies to :attr:`~circuitpython_cirque_pinnacle.glidepoint.RELATIVE`
    or :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` mode, otherwise if `data_mode` is set to
    :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`, then this function will do nothing.
-
-hard_configured
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.hard_configured
 
@@ -194,9 +185,6 @@ hard_configured
 
    :Returns:
       `True` if a 470K ohm resistor is populated at the junction labeled "R4"
-
-relative_mode_config()
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.relative_mode_config
 
@@ -214,15 +202,12 @@ relative_mode_config()
    :param bool secondary_tap: Specifies if tapping in the top-left corner (depending on
       orientation) triggers the secondary button data. Defaults to `True`. This feature is
       always disabled if `hard_configured` is `True`.
-   :param bool glide_extend: A patended feature that allows the user to glide their finger off
+   :param bool glide_extend: A patented feature that allows the user to glide their finger off
       the edge of the sensor and continue gesture with the touch event. Default is `True`.
       This feature is always disabled if `hard_configured` is `True`.
    :param bool intellimouse: Specifies if the data reported includes a byte about scroll data.
       Default is `False`. Because this flag is specific to scroll data, this feature is always
       disabled if `hard_configured` is `True`.
-
-absolute_mode_config()
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.absolute_mode_config
 
@@ -241,21 +226,15 @@ absolute_mode_config()
    :param bool invert_y: Specifies if the y-axis data is to be inverted before reporting it.
       Default is `False`.
 
-available()
-^^^^^^^^^^^^^^^^^^^^^^^
-
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.available
 
    If the ``dr_pin`` parameter is specified upon instantiation, then the specified
    input pin is used to detect if the data is new. Otherwise the SW_DR flag in the
-   STATUS register is used to detirmine if the data is new.
+   STATUS register is used to determine if the data is new.
 
    :Return: If there is fresh data to report (`True`) or not (`False`).
 
    .. versionadded:: 0.0.5
-
-read()
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.read
 
@@ -267,42 +246,42 @@ read()
       button) event. The structure is as follows:
 
       .. list-table::
-            :header-rows: 1
-            :widths: 1, 5, 5
+         :header-rows: 1
+         :widths: 1, 5, 5
 
-            * - Index
-              - Relative (Mouse) mode
+         * - Index
+           - Relative (Mouse) mode
 
-                as a `bytearray`
-              - Absolute Mode
+             as a `bytearray`
+           - Absolute Mode
 
-                as a `list`
-            * - 0
-              - Button Data [1]_
+             as a `list`
+         * - 0
+           - Button Data [1]_
 
-                one unsigned byte
-              - Button Data [1]_
+             one unsigned byte
+           - Button Data [1]_
 
-                one unsigned byte
-            * - 1
-              - change in x-axis [2]_
+             one unsigned byte
+         * - 1
+           - change in x-axis [2]_
 
-                -128 |LessEq| X |LessEq| 127
-              - x-axis Position
+             -128 |LessEq| X |LessEq| 127
+           - x-axis Position
 
-                0 |LessEq| X |LessEq| 2047 [4]_
-            * - 2
-              - change in y-axis [2]_
+             0 |LessEq| X |LessEq| 2047 [4]_
+         * - 2
+           - change in y-axis [2]_
 
-                -128 |LessEq| Y |LessEq| 127
-              - y-axis Position
+             -128 |LessEq| Y |LessEq| 127
+           - y-axis Position
 
-                0 |LessEq| Y |LessEq| 1535 [5]_
-            * - 3
-              - change in scroll wheel [3]_
+             0 |LessEq| Y |LessEq| 1535 [5]_
+         * - 3
+           - change in scroll wheel [3]_
 
-                -128 |LessEq| SCROLL |LessEq| 127
-              - z-axis Magnitude
+             -128 |LessEq| SCROLL |LessEq| 127
+           - z-axis Magnitude
 
    .. [1] The returned button data is a byte in which each bit represents a button.
       The bit to button order is as follows:
@@ -318,7 +297,7 @@ read()
          `True` when calling `relative_mode_config()`.
       2. Button 3 (thought of as Middle or scroll wheel button in Relative/Mouse mode)
    .. [2] The axis data reported in Relative/Mouse mode is in two's
-      comliment form. Use Python's :py:func:`struct.unpack()` to convert the
+      compliment form. Use Python's :py:func:`struct.unpack()` to convert the
       data into integer form (see `Simple Test example <examples.html#simple-test>`_
       for how to use this function).
 
@@ -340,13 +319,7 @@ read()
    .. versionchanged:: 0.0.5
       removed ``only_new`` parameter in favor of using `available()`.
 
-clear_status_flags()
-^^^^^^^^^^^^^^^^^^^^^^^
-
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.clear_status_flags
-
-allow_sleep
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.allow_sleep
 
@@ -356,20 +329,15 @@ allow_sleep
    ASIC will take about 300 milliseconds to wake up (does not include handling the touch event
    or button press data).
 
-shutdown
-^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.shutdown
 
    `True` means powered down (AKA standby mode), and `False` means not powered down
    (Active, Idle, or Sleep mode).
 
-   .. note:: The ASIC will take about 300 milliseconds to complete the transition
+   .. note::
+      The ASIC will take about 300 milliseconds to complete the transition
       from powered down mode to active mode. No touch events or button presses will be
       monitored while powered down.
-
-sample_rate
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.sample_rate
 
@@ -384,9 +352,6 @@ sample_rate
    or :attr:`~circuitpython_cirque_pinnacle.glidepoint.ABSOLUTE` mode, otherwise if `data_mode` is set to
    :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS`, then this function will do nothing.
 
-detect_finger_stylus()
-^^^^^^^^^^^^^^^^^^^^^^^
-
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.detect_finger_stylus
 
    :param bool enable_finger: `True` enables the Pinnacle ASIC's measurements to
@@ -398,11 +363,9 @@ detect_finger_stylus()
    :param int sample_rate: See the `sample_rate` attribute as this parameter manipulates that
       attribute.
 
-   .. tip:: Consider adjusting the ADC matrix's gain to enhance performance/results using
+   .. tip::
+      Consider adjusting the ADC matrix's gain to enhance performance/results using
       `set_adc_gain()`
-
-calibrate()
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.calibrate
 
@@ -419,13 +382,11 @@ calibrate()
       something to do with palm detection/compensation.
    :param bool background: Enable dynamic background compensation? Default is `True`.
 
-   .. note:: According to the datasheet, calibration of the sensor takes about 100
+   .. note::
+      According to the datasheet, calibration of the sensor takes about 100
       milliseconds. This function will block until calibration is complete (if ``run`` is
       `True`). It is recommended for typical applications to leave all optional parameters
       in their default states.
-
-calibration_matrix
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.calibration_matrix
 
@@ -434,8 +395,8 @@ calibration_matrix
    attribute to a `list` of 46 signed 16-bit (short) integers or created internally by calling
    `calibrate()` with the ``run`` parameter as `True`.
 
-   .. note:: A paraphrased note from Cirque's Application Note on Comparing compensation
-      matrices:
+   .. note::
+      A paraphrased note from Cirque's Application Note on Comparing compensation matrices:
 
       If any 16-bit values are above 20K (absolute), it generally indicates a problem with
       the sensor. If no values exceed 20K, proceed with the data comparison. Compare each
@@ -448,9 +409,6 @@ calibration_matrix
       Another strategy is to average any two values that differ by more than 500 and write
       this new matrix, with the average values, back into Pinnacle ASIC.
 
-set_adc_gain()
-^^^^^^^^^^^^^^^^^^^^^^^
-
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.set_adc_gain
 
    (does not apply to AnyMeas mode). (write-only)
@@ -461,9 +419,6 @@ set_adc_gain()
 
    .. tip:: The official example code from Cirque for a curved overlay uses a value of ``1``.
 
-tune_edge_sensitivity()
-^^^^^^^^^^^^^^^^^^^^^^^
-
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.tune_edge_sensitivity
 
    This function was ported from Cirque's example code and doesn't seem to have corresponding
@@ -472,9 +427,6 @@ tune_edge_sensitivity()
 
 AnyMeas mode
 *************
-
-anymeas_mode_config()
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.anymeas_mode_config
 
@@ -501,28 +453,27 @@ anymeas_mode_config()
       Erroneous values are clamped/truncated to this range.
 
       .. note:: The ``apperture_width`` parameter has a inverse relationship/affect on the
-            ``frequency`` parameter. The approximated frequencies described in this
-            documentation are based on an aperture width of 500 nanoseconds, and they will
-            shrink as the apperture width grows or grow as the aperture width shrinks.
+         ``frequency`` parameter. The approximated frequencies described in this
+         documentation are based on an aperture width of 500 nanoseconds, and they will
+         shrink as the apperture width grows or grow as the aperture width shrinks.
 
    :param int ctrl_pwr_cnt: Configure the Pinnacle to perform a number of measurements for
       each call to `measure_adc()`. Defaults to 1. Constants defined in
       `AnyMeas mode Control`_ can be used to specify if is sleep
       is allowed (:attr:`~circuitpython_cirque_pinnacle.glidepoint.CRTL_PWR_IDLE` -- this
-      is not default) or if repetive measurements is allowed (
-      :attr:`~circuitpython_cirque_pinnacle.glidepoint.CRTL_REPEAT`) if number of
+      is not default) or if repetitive measurements is allowed
+      (:attr:`~circuitpython_cirque_pinnacle.glidepoint.CRTL_REPEAT`) if number of
       measurements is more than 1.
 
-      .. warning:: There is no bounds checking on the number of measurements specified
-            here. Specifying more than 63 will trigger sleep mode after performing
-            measuements.
+      .. warning::
+         There is no bounds checking on the number of measurements specified
+         here. Specifying more than 63 will trigger sleep mode after performing
+         measurements.
 
-      .. tip:: Be aware that allowing the Pinnacle to enter sleep mode after taking
-            measurements will slow consecutive calls to `measure_adc()` as the Pinnacle
-            requires about 300 milliseconds to wake up.
-
-measure_adc()
-^^^^^^^^^^^^^^^^^^^^^^^
+      .. tip::
+         Be aware that allowing the Pinnacle to enter sleep mode after taking
+         measurements will slow consecutive calls to `measure_adc()` as the Pinnacle
+         requires about 300 milliseconds to wake up.
 
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.measure_adc
 
@@ -531,22 +482,22 @@ measure_adc()
    :attr:`~circuitpython_cirque_pinnacle.glidepoint.ANYMEAS` before calling this function
    otherwise it will do nothing.
 
-   :parameters:
+   :Parameters' Context:
       Each of the parameters are a 4-byte integer (see format table below) in which each bit
-      corresponds to a capacitance sensing eletrode in the sensor's matrix (12 electrodes for
+      corresponds to a capacitance sensing electrode in the sensor's matrix (12 electrodes for
       Y-axis, 16 electrodes for X-axis). They are used to compensate for varying capacitances in
       the electrodes during measurements. **It is highly recommended that the trackpad be
       installed in a finished/prototyped housing when determining what electrodes to
       manipulate.** See `AnyMeas mode example <examples.html#anymeas-mode-example>`_ to
       understand how to use these 4-byte integers.
 
-      * bits_to_toggle (`int <https://docs.python.org/3.7/library/functions.html#int>`_) - A bit
-        of ``1`` flags that electrode's ouput for toggling, and a bit of ``0`` signifies that
-        the electrode's output should remain unaffected.
-      * toggle_polarity (`int <https://docs.python.org/3.7/library/functions.html#int>`_) - This
-        specifies which polarity the output of the electrode(s) (specified with corresponding
-        bits in ``bits_to_toggle`` parameter) should be toggled (forced). A bit of ``1`` toggles
-        that bit positve, and a bit of ``0`` toggles that bit negative.
+   :param int bits_to_toggle: A bit
+      of ``1`` flags that electrode's output for toggling, and a bit of ``0`` signifies that
+      the electrode's output should remain unaffected.
+   :param int toggle_polarity: This
+      specifies which polarity the output of the electrode(s) (specified with corresponding
+      bits in ``bits_to_toggle`` parameter) should be toggled (forced). A bit of ``1`` toggles
+      that bit positive, and a bit of ``0`` toggles that bit negative.
 
    :Returns:
       A 2-byte `bytearray` that represents a signed short integer. If `data_mode` is not set
@@ -563,40 +514,34 @@ measure_adc()
       bits must be flagged in both ``bits_to_toggle`` & ``toggle_polarity`` parameters.
 
       .. csv-table:: byte 3 (MSByte)
-            :stub-columns: 1
-            :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
+         :stub-columns: 1
+         :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
 
-            "bit position",31,30,29,28,27,26,25,24
-            "representation",N/A,N/A,Ref1,Ref0,Y11,Y10,Y9,Y8
+         "bit position",31,30,29,28,27,26,25,24
+         "representation",N/A,N/A,Ref1,Ref0,Y11,Y10,Y9,Y8
       .. csv-table:: byte 2
-            :stub-columns: 1
-            :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
+         :stub-columns: 1
+         :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
 
-            "bit position",23,22,21,20,19,18,17,16
-            "representation",Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0
+         "bit position",23,22,21,20,19,18,17,16
+         "representation",Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0
       .. csv-table:: byte 1
-            :stub-columns: 1
-            :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
+         :stub-columns: 1
+         :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
 
-            "bit position",15,14,13,12,11,10,9,8
-            "representation",X15,X14,X13,X12,X11,X10,X9,X8
+         "bit position",15,14,13,12,11,10,9,8
+         "representation",X15,X14,X13,X12,X11,X10,X9,X8
       .. csv-table:: byte 0 (LSByte)
-            :stub-columns: 1
-            :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
+         :stub-columns: 1
+         :widths: 10, 5, 5, 5, 5, 5, 5, 5, 5
 
-            "bit position",7,6,5,4,3,2,1,0
-            "representation",X7,X6,X5,X4,X3,X2,X1,X0
-
-start_measure_adc()
-^^^^^^^^^^^^^^^^^^^^
+         "bit position",7,6,5,4,3,2,1,0
+         "representation",X7,X6,X5,X4,X3,X2,X1,X0
 
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.start_measure_adc
 
    See the parameters and table in `measure_adc()` as this is its helper function, and all
    parameters there are used the same way here.
-
-get_measure_adc()
-^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.get_measure_adc
 
@@ -605,7 +550,7 @@ get_measure_adc()
 
    :returns:
       * `None` if `data_mode` is not set to `ANYMEAS` or if the "data ready" pin's signal is not
-        active (while `data_mode` is set to `ANYMEAS`) meaing the Pinnacle ASIC is still computing
+        active (while `data_mode` is set to `ANYMEAS`) meaning the Pinnacle ASIC is still computing
         the ADC measurements based on the 4-byte polynomials passed to `start_measure_adc()`.
       * a `bytearray` that represents a signed 16-bit integer upon completed ADC measurements based
         on the 4-byte polynomials passed to `start_measure_adc()`.
@@ -620,9 +565,9 @@ SPI & I2C Interfaces
 
    :param ~busio.SPI spi: The object of the SPI bus to use. This object must be shared among
       other driver classes that use the same SPI bus (MOSI, MISO, & SCK pins).
-   :param ~microcontroller.Pin ss_pin: The "slave select" pin output to the Pinnacle ASIC.
+   :param ~digitalio.DigitalInOut ss_pin: The "slave select" pin output to the Pinnacle ASIC.
    :param int spi_frequency: The SPI bus speed in Hz. Default is 12 MHz.
-   :param ~microcontroller.Pin dr_pin: |dr_pin_parameter|
+   :param ~digitalio.DigitalInOut dr_pin: |dr_pin_parameter|
 
       .. important:: |dr_pin_note|
 
@@ -634,6 +579,6 @@ SPI & I2C Interfaces
    :param ~busio.I2C i2c: The object of the I2C bus to use. This object must be shared among
       other driver classes that use the same I2C bus (SDA & SCL pins).
    :param int address: The slave I2C address of the Pinnacle ASIC. Defaults to ``0x2A``.
-   :param ~microcontroller.Pin dr_pin: |dr_pin_parameter|
+   :param ~digitalio.DigitalInOut dr_pin: |dr_pin_parameter|
 
       .. important:: |dr_pin_note|

@@ -1,9 +1,5 @@
 # pylint: disable=invalid-name,too-few-public-methods
 """This file is for `sphinx-build` configuration"""
-# import os
-# import sys
-
-# sys.path.insert(0, os.path.abspath("../circuitpython_cirque_pinnacle"))
 
 # -- General configuration
 # ------------------------------------------------
@@ -24,7 +20,7 @@ extensions = [
 # Uncomment the below if you use native CircuitPython modules such as
 # digitalio, micropython and busio. List the modules you use. Without it, the
 # autodoc module docs will fail to generate with a warning.
-autodoc_mock_imports = ["digitalio", "busio", "usb_hid", "microcontroller"]
+# autodoc_mock_imports = ["digitalio", "busio", "usb_hid", "microcontroller"]
 autodoc_member_order = "bysource"
 
 intersphinx_mapping = {
@@ -41,9 +37,9 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"Circuitpython Cirque Pinnacle Library"
-copyright = u"2020 Brendan Doherty"
-author = u"Brendan Doherty"
+project = "Circuitpython Cirque Pinnacle Library"
+copyright = "2020 Brendan Doherty"  # pylint: disable=redefined-builtin
+author = "Brendan Doherty"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -52,7 +48,7 @@ author = u"Brendan Doherty"
 # The short X.Y version.
 version = "dev"
 # The full version, including alpha/beta/rc tags.
-release = u"1.0"
+release = "1.0"
 
 html_baseurl = "https://circuitpython-cirque-pinnacle.readthedocs.io/"
 
@@ -71,7 +67,8 @@ exclude_patterns = [
     "Thumbs.db",
     ".DS_Store",
     ".env",
-    "CODE_OF_CONDUCT.md" "requirements.txt",
+    "CODE_OF_CONDUCT.md",
+    "requirements.txt",
 ]
 
 # The reST default role (used for this markup: `text`) to use for all
@@ -105,7 +102,7 @@ html_theme_options = {
         {
             "media": "(prefers-color-scheme: light)",
             "scheme": "default",
-            "primary": "blue",
+            "primary": "green",
             "accent": "light-blue",
             "toggle": {
                 "icon": "material/toggle-switch-off-outline",
@@ -115,7 +112,7 @@ html_theme_options = {
         {
             "media": "(prefers-color-scheme: dark)",
             "scheme": "slate",
-            "primary": "blue",
+            "primary": "green",
             "accent": "light-blue",
             "toggle": {
                 "icon": "material/toggle-switch",
@@ -130,6 +127,13 @@ html_theme_options = {
     "globaltoc_collapse": False,
 }
 
+python_type_aliases = {
+    "DigitalInOut": "digitalio.DigitalInOut",
+}
+
+object_description_options = [
+    ("py:.*", dict(generate_synopses="first_sentence")),
+]
 
 # Set link name generated in the top bar.
 html_title = "Introduction"
@@ -141,7 +145,7 @@ html_static_path = ["_static"]
 
 # These paths are either relative to html_static_path
 # or fully qualified paths (eg. https://...)
-# html_css_files = []
+html_css_files = ["extra_css.css"]
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -173,7 +177,7 @@ latex_documents = [
     (
         master_doc,
         "CircuitPythonCirquePinnacleLibrary.tex",
-        u"CircuitPython Cirque Pinnacle Library Documentation",
+        "CircuitPython Cirque Pinnacle Library Documentation",
         author,
         "manual",
     ),
@@ -188,7 +192,7 @@ man_pages = [
     (
         master_doc,
         "CircuitPythonCirquePinnacleLibrary",
-        u"CircuitPython Cirque Pinnacle Library Documentation",
+        "CircuitPython Cirque Pinnacle Library Documentation",
         [author],
         1,
     )
@@ -204,7 +208,7 @@ texinfo_documents = [
     (
         master_doc,
         "CircuitpythonCirquePinnacleLibrary",
-        u"Circuitpython Cirque Pinnacle Library Documentation",
+        "Circuitpython Cirque Pinnacle Library Documentation",
         author,
         "CircuitpythonCirquePinnacleLibrary",
         "CircuitPython Library for Cirque Pinnacle touch Controller.",
@@ -220,8 +224,8 @@ texinfo_documents = [
 pdf_documents = [
     (
         "index",
-        u"CircuitPython-Cirque-Pinnacle",
-        u"CircuitPython-Cirque-Pinnacle library documentation",
-        u"Brendan Doherty",
+        "CircuitPython-Cirque-Pinnacle",
+        "CircuitPython-Cirque-Pinnacle library documentation",
+        "Brendan Doherty",
     ),
 ]
