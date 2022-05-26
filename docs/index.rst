@@ -15,6 +15,8 @@
 
     about_lite
     api
+    rel_abs
+    anymeas
 
 .. toctree::
     :caption: Related Products

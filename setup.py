@@ -14,6 +14,9 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, "README.rst"), encoding="utf-8") as f:
     long_description = f.read()
 
+with open(path.join(here, "requirements.txt"), encoding="utf-8") as f:
+    req = f.readlines()
+
 setup(
     name="circuitpython-cirque-pinnacle",
     use_scm_version=True,
@@ -27,7 +30,7 @@ setup(
     # Author details
     author="Brendan Doherty",
     author_email="2bndy5@gmail.com",
-    install_requires=["Adafruit-Blinka", "adafruit-circuitpython-busdevice"],
+    install_requires=req,
     # Choose your license
     license="MIT",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers

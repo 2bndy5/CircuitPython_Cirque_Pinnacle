@@ -93,10 +93,11 @@ napoleon_numpy_docstring = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = "sphinx_immaterial"
-# Material theme options
-html_sidebars = {"**": ["globaltoc.html", "localtoc.html", "searchbox.html"]}
 
 html_theme_options = {
+    "features": [
+        "search.share",
+    ],
     # Set the color and the accent color
     "palette": [
         {
@@ -123,8 +124,6 @@ html_theme_options = {
     # Set the repo location to get a badge with stats
     "repo_url": "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/",
     "repo_name": "CircuitPython_Cirque_Pinnacle",
-    # If False, expand all TOC entries
-    "globaltoc_collapse": False,
 }
 
 python_type_aliases = {

@@ -29,12 +29,12 @@ t_pad.data_mode = glidepoint.ANYMEAS
 class MeasVector:
     """A blueprint matrix used to manipulate the measurements' vector"""
 
-    def __init__(self, toggle, polarity):
+    def __init__(self, toggle: int, polarity: int):
         self.toggle = toggle
         self.polarity = polarity
 
 
-vectors = []
+vectors: list[MeasVector] = []
 # This toggles Y0 only and toggles it positively
 vectors.append(MeasVector(0x00010000, 0x00010000))
 # This toggles Y0 only and toggles it negatively
