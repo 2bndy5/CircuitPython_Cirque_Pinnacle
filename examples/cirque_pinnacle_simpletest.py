@@ -5,6 +5,7 @@ import time
 import struct
 import board
 from digitalio import DigitalInOut
+
 # if running this on a ATSAMD21 M0 based board
 # from circuitpython_cirque_pinnacle import glidepoint_lite as glidepoint
 from circuitpython_cirque_pinnacle import glidepoint
@@ -21,8 +22,9 @@ t_pad = glidepoint.PinnacleTouchSPI(spi, ss_pin)
 # i2c = board.I2C()
 # t_pad = glidepoint.PinnacleTouchI2C(i2c)
 
-t_pad.data_mode = glidepoint.ABSOLUTE # ensure Absolute mode is enabled
-t_pad.absolute_mode_config(z_idle_count=1) # limit idle packet count to 1
+t_pad.data_mode = glidepoint.ABSOLUTE  # ensure Absolute mode is enabled
+t_pad.absolute_mode_config(z_idle_count=1)  # limit idle packet count to 1
+
 
 def print_data(timeout=6):
     """Print available data reports from the Pinnacle touch controller
@@ -33,7 +35,7 @@ def print_data(timeout=6):
         print("using Absolute mode")
     start = time.monotonic()
     while time.monotonic() - start < timeout:
-        if dr_pin.value: # is there new data?
+        if dr_pin.value:  # is there new data?
             data = t_pad.read()
 
             if t_pad.data_mode == glidepoint.ABSOLUTE and data[3]:
@@ -44,6 +46,6 @@ def print_data(timeout=6):
                 data[2] = max(64, min(1472, data[2]))  # Y-axis
             elif t_pad.data_mode == glidepoint.RELATIVE:
                 # convert 2's compliment form into natural numbers
-                data = struct.unpack('Bbbb', data)
+                data = struct.unpack("Bbbb", data)
             print(data)
             start = time.monotonic()

@@ -6,6 +6,7 @@ import time
 import board
 from digitalio import DigitalInOut
 import usb_hid
+
 # if running this on a ATSAMD21 M0 based board
 # from circuitpython_cirque_pinnacle import glidepoint_lite as glidepoint
 from circuitpython_cirque_pinnacle import glidepoint
@@ -48,4 +49,4 @@ def move(timeout=10):
         if data:  # is there fresh data?
             mouse.send_report(data)  # no scrolling or backward/forward
             start = time.monotonic()
-    mouse.send_report(b'\x00' * 4)  # release buttons (just in case)
+    mouse.send_report(b"\x00" * 4)  # release buttons (just in case)

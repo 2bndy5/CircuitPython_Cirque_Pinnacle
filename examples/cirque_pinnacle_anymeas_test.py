@@ -6,6 +6,7 @@ import time
 import struct
 import board
 from digitalio import DigitalInOut
+
 # This example does NOT work with glidepoint_lite.py
 from circuitpython_cirque_pinnacle import glidepoint
 
@@ -55,13 +56,12 @@ idle_vectors = [0] * len(vectors)
 
 
 def compensate(count=5):
-    """take ``count`` measurements, then average them together  """
+    """take ``count`` measurements, then average them together"""
     for i, vector in enumerate(vectors):
         idle_vectors[i] = 0
         for _ in range(count):
             result = struct.unpack(
-                "h",
-                t_pad.measure_adc(vector.toggle, vector.polarity)
+                "h", t_pad.measure_adc(vector.toggle, vector.polarity)
             )[0]
             idle_vectors[i] += result
         idle_vectors[i] /= count
@@ -75,8 +75,7 @@ def take_measurements(timeout=10):
     while time.monotonic() - start < timeout:
         for i, vector in enumerate(vectors):
             result = struct.unpack(
-                "h",
-                t_pad.measure_adc(vector.toggle, vector.polarity)
+                "h", t_pad.measure_adc(vector.toggle, vector.polarity)
             )[0]
             print("vector{}: {}".format(i, result - idle_vectors[i]), end="\t")
         print()
