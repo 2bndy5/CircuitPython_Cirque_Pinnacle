@@ -9,6 +9,11 @@ from digitalio import DigitalInOut
 # This example does NOT work with glidepoint_lite.py
 from circuitpython_cirque_pinnacle import glidepoint
 
+try:
+    from typing import List
+except ImportError:
+    pass
+
 dr_pin = DigitalInOut(board.D2)
 # NOTE The dr_pin is a required keyword argument to the
 # constructor when using AnyMeas mode
@@ -34,7 +39,7 @@ class MeasVector:
         self.polarity = polarity
 
 
-vectors: list[MeasVector] = []
+vectors: List[MeasVector] = []
 # This toggles Y0 only and toggles it positively
 vectors.append(MeasVector(0x00010000, 0x00010000))
 # This toggles Y0 only and toggles it negatively
