@@ -9,7 +9,7 @@ import struct
 from micropython import const
 
 try:
-    from typing import Optional
+    from typing import Optional, List
 except ImportError:
     pass
 
@@ -144,7 +144,7 @@ class PinnacleTouch:
             return bool(self._rap_read(2) & 4)
         return self.dr_pin.value
 
-    def read(self) -> list[int]:
+    def read(self) -> List[int]:
         """This function will return touch event data from the Pinnacle ASIC
         (including empty packets on ending of a touch event)."""
         if self._mode == ANYMEAS:
@@ -243,7 +243,7 @@ class PinnacleTouch:
                 self.clear_status_flags()  # now that calibration is done
 
     @property
-    def calibration_matrix(self) -> list[int]:
+    def calibration_matrix(self) -> List[int]:
         """This attribute returns a `list` of the 46 signed 16-bit (short)
         values stored in the Pinnacle ASIC's memory that is used for taking
         measurements."""
@@ -252,7 +252,7 @@ class PinnacleTouch:
         return list(struct.unpack("46h", self._era_read_bytes(0x01DF, 92)))
 
     @calibration_matrix.setter
-    def calibration_matrix(self, matrix: list[int]):
+    def calibration_matrix(self, matrix: List[int]):
         matrix += [0] * (46 - len(matrix))  # pad short matrices w/ 0s
         for index in range(46):
             buf = struct.pack("h", matrix[index])
@@ -310,7 +310,7 @@ class PinnacleTouch:
         """A non-blocking function that starts measuring ADC values in
         AnyMeas mode."""
         if self._mode == ANYMEAS:
-            tog_pol: list[int] = []  # assemble list of register buffers
+            tog_pol: List[int] = []  # assemble list of register buffers
             for i in range(3, -1, -1):
                 tog_pol.append((bits_to_toggle >> (i * 8)) & 0xFF)
             for i in range(3, -1, -1):
@@ -340,7 +340,7 @@ class PinnacleTouch:
     def _rap_write(self, reg: int, value: int):
         raise NotImplementedError()
 
-    def _rap_write_bytes(self, reg: int, values: list[int]):
+    def _rap_write_bytes(self, reg: int, values: List[int]):
         raise NotImplementedError()
 
     def _era_read(self, reg: int) -> int:
@@ -423,7 +423,7 @@ class PinnacleTouchI2C(PinnacleTouch):
     def _rap_write(self, reg: int, value: int):
         self._rap_write_bytes(reg, [value])
 
-    def _rap_write_bytes(self, reg: int, values: list[int]):
+    def _rap_write_bytes(self, reg: int, values: List[int]):
         buf = b""
         for index, byte in enumerate(values):
             # Pinnacle doesn't auto-increment register
@@ -468,6 +468,6 @@ class PinnacleTouchSPI(PinnacleTouch):
         with self._spi as spi:
             spi.write(buf)
 
-    def _rap_write_bytes(self, reg: int, values: list[int]):
+    def _rap_write_bytes(self, reg: int, values: List[int]):
         for i, val in enumerate(values):
             self._rap_write(reg + i, val)

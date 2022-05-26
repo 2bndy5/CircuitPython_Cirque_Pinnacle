@@ -3,6 +3,11 @@ This example uses CircuitPython's built-in `usb_hid` API
 to emulate a mouse with the Cirque circle trackpad
 """
 import time
+try:
+    from typing import List
+except ImportError:
+    pass
+
 import board
 from digitalio import DigitalInOut
 import usb_hid
