@@ -7,19 +7,16 @@ __repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
 import time
 import struct
 from micropython import const
+import digitalio
+import busio
 
 try:
-    from typing import Optional, List
+    from typing import Optional, List, Union
 except ImportError:
     pass
 
-try:
-    from ubus_device import SPIDevice, I2CDevice
-except ImportError:
-    from adafruit_bus_device.spi_device import SPIDevice
-    from adafruit_bus_device.i2c_device import I2CDevice
-import digitalio
-import busio
+from adafruit_bus_device.spi_device import SPIDevice
+from adafruit_bus_device.i2c_device import I2CDevice
 
 RELATIVE = const(0x00)
 ANYMEAS = const(0x01)
@@ -49,7 +46,7 @@ class PinnacleTouch:
 
     def __init__(self, dr_pin: Optional[digitalio.DigitalInOut] = None):
         self.dr_pin = dr_pin
-        if dr_pin is not None:
+        if self.dr_pin is not None:
             self.dr_pin.switch_to_input()
         firmware_id, firmware_ver = self._rap_read_bytes(0, 2)
         if firmware_id != 7 or firmware_ver != 0x3A:
@@ -144,12 +141,12 @@ class PinnacleTouch:
             return bool(self._rap_read(2) & 4)
         return self.dr_pin.value
 
-    def read(self) -> List[int]:
+    def read(self) -> Optional[Union[List[int], bytearray]]:
         """This function will return touch event data from the Pinnacle ASIC
         (including empty packets on ending of a touch event)."""
         if self._mode == ANYMEAS:
             return None
-        return_vals = None
+        return_vals: Optional[Union[List[int], bytearray]] = None
         if self.data_mode == ABSOLUTE:  # if absolute mode
             return_vals = list(self._rap_read_bytes(0x12, 6))
             return_vals[0] &= 0x3F  # buttons
@@ -325,7 +322,7 @@ class PinnacleTouch:
         completion."""
         if self._mode != ANYMEAS:
             return None
-        if not self.dr_pin.value:
+        if self.dr_pin is not None and not self.dr_pin.value:
             return None
         result = self._rap_read_bytes(0x11, 2)
         self.clear_status_flags()
@@ -409,7 +406,7 @@ class PinnacleTouchI2C(PinnacleTouch):
         super().__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg: int) -> int:
-        return self._rap_read_bytes(reg, 1)
+        return self._rap_read_bytes(reg, 1)[0]
 
     def _rap_read_bytes(self, reg: int, numb_bytes: int) -> bytearray:
         buf = bytes([reg | 0xA0])  # per datasheet

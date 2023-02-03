@@ -1,5 +1,10 @@
 # pylint: disable=invalid-name,too-few-public-methods
 """This file is for `sphinx-build` configuration"""
+import os
+import sys
+
+
+sys.path.insert(0, os.path.abspath(".."))
 
 # -- General configuration
 # ------------------------------------------------
@@ -108,7 +113,7 @@ html_theme_options = {
             "toggle": {
                 "icon": "material/toggle-switch-off-outline",
                 "name": "Switch to dark mode",
-            }
+            },
         },
         {
             "media": "(prefers-color-scheme: dark)",
@@ -118,13 +123,49 @@ html_theme_options = {
             "toggle": {
                 "icon": "material/toggle-switch",
                 "name": "Switch to light mode",
-            }
+            },
         },
     ],
     # Set the repo location to get a badge with stats
     "repo_url": "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/",
     "repo_name": "CircuitPython_Cirque_Pinnacle",
 }
+
+sphinx_immaterial_custom_admonitions = [
+    {
+        "name": "warning",
+        "color": (255, 66, 66),
+        "icon": "octicons/alert-24",
+        "override": True,
+    },
+    {
+        "name": "note",
+        "icon": "octicons/pencil-24",
+        "override": True,
+    },
+    {
+        "name": "seealso",
+        "color": (255, 66, 252),
+        "icon": "octicons/eye-24",
+        "title": "See Also",
+        "override": True,
+    },
+    {
+        "name": "hint",
+        "icon": "material/school",
+        "override": True,
+    },
+    {
+        "name": "tip",
+        "icon": "material/school",
+        "override": True,
+    },
+    {
+        "name": "important",
+        "icon": "material/school",
+        "override": True,
+    },
+]
 
 python_type_aliases = {
     "DigitalInOut": "digitalio.DigitalInOut",

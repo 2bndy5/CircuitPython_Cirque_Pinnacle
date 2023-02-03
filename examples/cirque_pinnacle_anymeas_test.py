@@ -32,7 +32,7 @@ t_pad = glidepoint.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 t_pad.data_mode = glidepoint.ANYMEAS
 
 # setup toggle and polarity bits for measuring with PNP gate muxing
-class MeasVector:
+class MeasVector:  # pylint: disable=too-few-public-methods
     """A blueprint matrix used to manipulate the measurements' vector"""
 
     def __init__(self, toggle: int, polarity: int):
