@@ -111,7 +111,7 @@ html_theme_options = {
             "primary": "green",
             "accent": "light-blue",
             "toggle": {
-                "icon": "material/toggle-switch-off-outline",
+                "icon": "material/lightbulb-outline",
                 "name": "Switch to dark mode",
             },
         },
@@ -121,7 +121,7 @@ html_theme_options = {
             "primary": "green",
             "accent": "light-blue",
             "toggle": {
-                "icon": "material/toggle-switch",
+                "icon": "material/lightbulb",
                 "name": "Switch to light mode",
             },
         },
@@ -129,6 +129,33 @@ html_theme_options = {
     # Set the repo location to get a badge with stats
     "repo_url": "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/",
     "repo_name": "CircuitPython_Cirque_Pinnacle",
+    "social": [
+        {
+            "icon": "fontawesome/brands/github",
+            "link": "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle",
+        },
+        {
+            "icon": "fontawesome/brands/python",
+            "link": "https://pypi.org/project/circuitpython-cirque-pinnacle/",
+        },
+        {
+            "icon": "fontawesome/brands/discord",
+            "link": "https://adafru.it/discord",
+        },
+        {
+            "icon": "simple/adafruit",
+            "link": "https://www.adafruit.com/",
+        },
+        {
+            "icon": "simple/sparkfun",
+            "link": "https://www.sparkfun.com/",
+        },
+        {
+            "name": "CircuitPython Downloads",
+            "icon": "octicons/download-24",
+            "link": "https://circuitpython.org",
+        },
+    ],
 }
 
 sphinx_immaterial_custom_admonitions = [

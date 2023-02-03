@@ -19,22 +19,15 @@
     anymeas
 
 .. toctree::
-    :caption: Related Products
     :hidden:
+
+    contributing
+
+.. toctree::
+    :caption: Related Products
 
     Cirque Glidepoint circle trackpads <https://www.mouser.com/Search/Refine?Ntk=P_MarCom&Ntt=118816186>
     12-pin FPC cable (0.5mm pitch) <https://www.mouser.com/Connectors/FFC-FPC/FFC-FPC-Jumper-Cables/_/N-axro3?P=1yc8ojpZ1z0wxjx>
-
-.. toctree::
-    :caption: Other Links
-    :hidden:
-
-    Download <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/releases>
-    CircuitPython Reference Documentation <https://circuitpython.readthedocs.io>
-    CircuitPython Support Forum <https://forums.adafruit.com/viewforum.php?f=60>
-    Adafruit Learning System <https://learn.adafruit.com>
-    Adafruit Blog <https://blog.adafruit.com>
-    Adafruit Store <https://www.adafruit.com>
 
 Introduction
 ============
@@ -97,14 +90,14 @@ bottom). The following table shows how the pins are connected in the `examples <
     1, SCK, SCK, "SPI clock line"
     2, SO, MISO, "Master Input Slave Output"
     3, SS, D7, "Slave Select (AKA Chip Select)"
-    4, DR, D2, """data ready"" interrupt"
+    4, DR, D2, "Data Ready interrupt"
     5, SI, MOSI, "SPI Master Output Slave Input"
     6, B2, N/A, "Hardware input button #2"
     7, B3, N/A, "Hardware input button #3"
     8, B1, N/A, "Hardware input button #1"
     9, SCL, SCL, "I2C clock line"
     10, SDA, SDA, "I2C data line"
-    11, GND, GND, "Ground"
+    11, GND, GND, Ground
     12, VDD, 3V, "3V power supply"
 
 .. tip:: Of course, you can capture button data manually (if your application utilizes more
@@ -149,15 +142,26 @@ This is easily achieved by downloading `the Adafruit library and driver bundle
 How to Install
 **************
 
+Using ``pip``
+~~~~~~~~~~~~~
+
 This library is deployed to pypi.org, so you can easily install this library
-using ``pip3 install circuitpython-cirque-pinnacle`` or use the following
-commands:
+using
+
+.. code-block:: shell
+
+    pip3 install circuitpython-cirque-pinnacle
+
+Using git source
+~~~~~~~~~~~~~~~~
+
+This library can also be installed from the git source repository.
 
 .. code-block:: shell
 
     git clone https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git
     cd CircuitPython_Cirque_Pinnacle
-    python3 setup.py install
+    python3 -m pip install .
 
 Usage Example
 *************
@@ -172,31 +176,13 @@ Contributions are welcome! Please read our `Code of Conduct
 <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/blob/master/CODE_OF_CONDUCT.md>`_
 before contributing to help this project stay welcoming.
 
+Please review our :doc:`contributing` for details on the development workflow and linting tools.
+
+To initiate a discussion of idea(s), you need only open an issue on the
+`source's git repository <https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle>`_
+(it doesn't have to be a bug report).
+
 Sphinx documentation
 ********************
 
-Sphinx is used to build the documentation based on rST files and comments in the code. First,
-install dependencies (feel free to reuse the virtual environment from above):
-
-.. code-block:: shell
-
-    python3 -m venv .env
-    source .env/bin/activate
-    pip install Sphinx sphinx-rtd-theme
-
-Now, once you have the virtual environment activated:
-
-.. code-block:: shell
-
-    cd docs
-    sphinx-build -E -W -b html . _build/html
-
-This will output the documentation to ``docs/_build/html``. Open the index.html in your browser to
-view them. It will also (due to -W) error out on any warning like Travis will. This is a good way to
-locally verify it will pass.
-
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
+Please read our :doc:`contributing` for instructions on how to build the documentation.
