@@ -1,3 +1,7 @@
+
+Examples
+========
+
 Simple Test
 -----------
 

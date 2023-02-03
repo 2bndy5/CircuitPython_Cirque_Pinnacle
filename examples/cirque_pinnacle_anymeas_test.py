@@ -1,11 +1,19 @@
-""" a test example using SPI to read ADC measurements from the Pinnacle touch
-controller in "AnyMeas" mode. This example does NOT work with
-glidepoint_lite.py"""
+"""
+A test example using SPI to read ADC measurements from the Pinnacle touch
+controller in "AnyMeas" mode
+"""
 import time
 import struct
 import board
 from digitalio import DigitalInOut
-import circuitpython_cirque_pinnacle.glidepoint as Pinnacle
+
+# This example does NOT work with glidepoint_lite.py
+from circuitpython_cirque_pinnacle import glidepoint
+
+try:
+    from typing import List
+except ImportError:
+    pass
 
 dr_pin = DigitalInOut(board.D2)
 # NOTE The dr_pin is a required keyword argument to the
@@ -14,25 +22,25 @@ dr_pin = DigitalInOut(board.D2)
 # if using a trackpad configured for SPI
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
-tpad = Pinnacle.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+t_pad = glidepoint.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # if using a trackpad configured for I2C
 # i2c = board.I2C()
-# tpad = Pinnacle.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
+# t_pad = glidepoint.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
 
 # if dr_pin was not specified upon instantiation.
 # this command will raise an AttributeError exception
-tpad.data_mode = Pinnacle.ANYMEAS
+t_pad.data_mode = glidepoint.ANYMEAS
 
 # setup toggle and polarity bits for measuring with PNP gate muxing
-class MeasVector:
+class MeasVector:  # pylint: disable=too-few-public-methods
     """A blueprint matrix used to manipulate the measurements' vector"""
 
-    def __init__(self, toggle, polarity):
+    def __init__(self, toggle: int, polarity: int):
         self.toggle = toggle
         self.polarity = polarity
 
 
-vectors = []
+vectors: List[MeasVector] = []
 # This toggles Y0 only and toggles it positively
 vectors.append(MeasVector(0x00010000, 0x00010000))
 # This toggles Y0 only and toggles it negatively
@@ -48,13 +56,12 @@ idle_vectors = [0] * len(vectors)
 
 
 def compensate(count=5):
-    """take ``count`` measurements, then average them together  """
+    """take ``count`` measurements, then average them together"""
     for i, vector in enumerate(vectors):
         idle_vectors[i] = 0
         for _ in range(count):
             result = struct.unpack(
-                "h",
-                tpad.measure_adc(vector.toggle, vector.polarity)
+                "h", t_pad.measure_adc(vector.toggle, vector.polarity)
             )[0]
             idle_vectors[i] += result
         idle_vectors[i] /= count
@@ -68,8 +75,7 @@ def take_measurements(timeout=10):
     while time.monotonic() - start < timeout:
         for i, vector in enumerate(vectors):
             result = struct.unpack(
-                "h",
-                tpad.measure_adc(vector.toggle, vector.polarity)
+                "h", t_pad.measure_adc(vector.toggle, vector.polarity)
             )[0]
             print("vector{}: {}".format(i, result - idle_vectors[i]), end="\t")
         print()

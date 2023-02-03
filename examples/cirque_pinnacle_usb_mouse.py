@@ -1,25 +1,29 @@
-""" This example uses CircuitPython's built-in `usb_hid` API
-to emulate a mouse with the Cirque circle trackpad. This example
-also works with glidepoint_lite.py"""
+"""
+This example uses CircuitPython's built-in `usb_hid` API
+to emulate a mouse with the Cirque circle trackpad
+"""
 import time
 import board
 from digitalio import DigitalInOut
 import usb_hid
-import circuitpython_cirque_pinnacle.glidepoint as Pinnacle
+
+# if running this on a ATSAMD21 M0 based board
+# from circuitpython_cirque_pinnacle import glidepoint_lite as glidepoint
+from circuitpython_cirque_pinnacle import glidepoint
 
 dr_pin = DigitalInOut(board.D2)
 # NOTE Specifying the optional keyword argument ``dr_pin`` to the
-# constructor expedites ``report()`` when using Absolute or Relative modes
+# constructor expedites ``read()`` when using Absolute or Relative modes
 
 # if using a trackpad configured for SPI
 spi = board.SPI()
 ss_pin = DigitalInOut(board.D7)
-tpad = Pinnacle.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+t_pad = glidepoint.PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
 # if using a trackpad configured for I2C
 # i2c = board.I2C()
-# tpad = Pinnacle.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
+# t_pad = glidepoint.PinnacleTouchI2C(i2c, dr_pin=dr_pin)
 
-tpad.data_mode = Pinnacle.RELATIVE  # ensure mouse mode is enabled
+t_pad.data_mode = glidepoint.RELATIVE  # ensure mouse mode is enabled
 
 mouse = None
 for dev in usb_hid.devices:
@@ -32,16 +36,17 @@ for dev in usb_hid.devices:
 #   byte1 = delta x-axis
 #   byte2 = delta y-axis
 #   byte3 = delta scroll wheel
+if mouse is None:
+    raise OSError("mouse HID device not available.")
+
 
 def move(timeout=10):
     """Send mouse X & Y reported data from the Pinnacle touch controller
     until there's no input for a period of ``timeout`` seconds."""
-    if mouse is None:
-        raise OSError("mouse HID device not available.")
     start = time.monotonic()
     while time.monotonic() - start < timeout:
-        data = tpad.report()  # only returns fresh data (if any)
+        data = t_pad.read()  # only returns fresh data (if any)
         if data:  # is there fresh data?
             mouse.send_report(data)  # no scrolling or backward/forward
             start = time.monotonic()
-    mouse.send_report(b'\x00' * 4)  # release buttons (just in case)
+    mouse.send_report(b"\x00" * 4)  # release buttons (just in case)
