@@ -134,6 +134,7 @@ class PinnacleTouch:
                 self._rap_write(0x0A, 30)  # 30 z-idle packets
             else:  # not leaving AnyMeas mode
                 self._rap_write(4, 1 | mode)  # set mode flag, enable feed
+            self._mode = mode
         else:  # for AnyMeas mode
             if self.dr_pin is None:  # AnyMeas requires the DR pin
                 raise AttributeError(
@@ -142,8 +143,8 @@ class PinnacleTouch:
             # disable tracking computations for AnyMeas mode
             self._rap_write(3, sys_config | 0x08)
             time.sleep(0.01)  # wait for tracking computations to expire
+            self._mode = mode
             self.anymeas_mode_config()  # configure registers for AnyMeas
-        self._mode = mode
 
     @property
     def hard_configured(self) -> bool:
@@ -694,7 +695,7 @@ class PinnacleTouch:
             # write toggle and polarity parameters to register 0x13 - 0x1A
             self._rap_write_bytes(0x13, tog_pol)
             # initiate measurements
-            self._rap_write(3, self._rap_read(3) | 0x18)
+            self._rap_write(3, 0x18)
 
     def get_measure_adc(self) -> Optional[bytearray]:
         """A non-blocking function that returns ADC measurement on
