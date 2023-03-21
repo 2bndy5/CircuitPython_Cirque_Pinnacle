@@ -78,9 +78,10 @@ Pinout
 
 The above picture is an example of the Cirque GlidePoint circle trackpad. This picture
 is chosen as the test pads (larger copper circular pads) are clearly labeled. The test pads
-are extended to the `12-pin FFC/FPC cable <https://www.mouser.com/Connectors/FFC-FPC/
-FFC-FPC-Jumper-Cables/_/N-axro3?P=1yc8ojpZ1z0wxjx>`_ connector (the white block near the
-bottom). The following table shows how the pins are connected in the `examples <examples.html>`_ (tested on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_)
+are extended to the `12-pin FFC/FPC cable
+<https://www.mouser.com/c/connectors/ffc-fpc/ffc-fpc-jumper-cables/?number%20of%20conductors=12%20Conductor&pitch=0.5%20mm>`_
+connector (the white block near the bottom). The following table shows how the pins are connected
+in the `examples <examples.html>`_ (tested on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_)
 
 .. csv-table:: pinout (ordered the same as the FFC/FPC cable connector)
     :header: "cable pin number", Label, "MCU pin", Description
@@ -94,15 +95,23 @@ bottom). The following table shows how the pins are connected in the `examples <
     6, B2, N/A, "Hardware input button #2"
     7, B3, N/A, "Hardware input button #3"
     8, B1, N/A, "Hardware input button #1"
-    9, SCL, SCL, "I2C clock line"
-    10, SDA, SDA, "I2C data line"
+    9, SCL, SCL, "I2C clock line (no builtin pull-up resistor)"
+    10, SDA, SDA, "I2C data line (no builtin pull-up resistor)"
     11, GND, GND, Ground
     12, VDD, 3V, "3V power supply"
 
-.. tip:: Of course, you can capture button data manually (if your application utilizes more
+.. tip::
+    Of course, you can capture button data manually (if your application utilizes more
     than 3 buttons), but if you connect the pins B1, B2, B3 to momentary push buttons that
     (when pressed) provide a path to ground, the Pinnacle touch controller will report all 3
     buttons' states for each touch (or even button only) events.
+
+.. note::
+    These trackpads have no builtin pull-up resistors on the I2C bus' SDA and SCL lines.
+    Examples were tested with a 10 kohm resistor for each I2C line tied to 3v.
+
+    The Raspberry Pi boards (excluding any RP2040 boards) all have builtin 1.8 kohm pull-up
+    resistors, so the Linux examples were tested with no addition pull-up resistance.
 
 .. _HCO:
 
