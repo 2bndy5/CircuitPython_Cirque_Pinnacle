@@ -1,32 +1,44 @@
 Relative or Absolute mode API
 =============================
 
-.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.feed_enable
+Data Structures
+---------------
 
-.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.hard_configured
+.. autoclass:: circuitpython_cirque_pinnacle.RelativeReport
+    :members:
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.relative_mode_config
+.. autoclass:: circuitpython_cirque_pinnacle.AbsoluteReport
+    :members:
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.absolute_mode_config
+PinnacleTouch API
+-----------------
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.available
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.feed_enable
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.read
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.hard_configured
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.clear_status_flags
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.relative_mode_config
 
-.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.allow_sleep
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.absolute_mode_config
 
-.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.shutdown
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.available
 
-.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.sample_rate
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.read
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.detect_finger_stylus
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.clear_status_flags
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.calibrate
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.allow_sleep
 
-.. autoattribute:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.calibration_matrix
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.shutdown
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.set_adc_gain
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.sample_rate
 
-.. automethod:: circuitpython_cirque_pinnacle.glidepoint.PinnacleTouch.tune_edge_sensitivity
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.detect_finger_stylus
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.calibrate
+
+.. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.calibration_matrix
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.set_adc_gain
+
+.. automethod:: circuitpython_cirque_pinnacle.PinnacleTouch.tune_edge_sensitivity

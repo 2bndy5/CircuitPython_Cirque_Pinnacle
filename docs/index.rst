@@ -13,7 +13,6 @@
     :caption: API Reference
     :hidden:
 
-    about_lite
     api
     rel_abs
     anymeas
@@ -89,8 +88,8 @@ bottom). The following table shows how the pins are connected in the `examples <
 
     1, SCK, SCK, "SPI clock line"
     2, SO, MISO, "Master Input Slave Output"
-    3, SS, D7, "Slave Select (AKA Chip Select)"
-    4, DR, D2, "Data Ready interrupt"
+    3, SS, D2, "Slave Select (AKA Chip Select)"
+    4, DR, D7, "Data Ready interrupt"
     5, SI, MOSI, "SPI Master Output Slave Input"
     6, B2, N/A, "Hardware input button #2"
     7, B3, N/A, "Hardware input button #3"
@@ -104,6 +103,8 @@ bottom). The following table shows how the pins are connected in the `examples <
     than 3 buttons), but if you connect the pins B1, B2, B3 to momentary push buttons that
     (when pressed) provide a path to ground, the Pinnacle touch controller will report all 3
     buttons' states for each touch (or even button only) events.
+
+.. _HCO:
 
 Model Labeling Scheme
 *********************

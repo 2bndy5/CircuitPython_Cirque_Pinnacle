@@ -2,29 +2,47 @@
 Examples
 ========
 
-Simple Test
------------
+Relative Mode example
+---------------------
 
-Ensure your device works with this simple test.
+A simple example of using the Pinnacle ASIC in relative mode.
 
-.. literalinclude:: ../examples/cirque_pinnacle_simpletest.py
-    :caption: examples/cirque_pinnacle_simpletest.py
+.. literalinclude:: ../examples/cirque_pinnacle_relative_mode.py
+    :caption: examples/cirque_pinnacle_relative_mode.py
     :linenos:
+    :start-at: import time
+    :end-before: def set_role()
+
+Absolute Mode example
+---------------------
+
+A simple example of using the Pinnacle ASIC in absolute mode.
+
+.. literalinclude:: ../examples/cirque_pinnacle_absolute_mode.py
+    :caption: examples/cirque_pinnacle_absolute_mode.py
+    :linenos:
+    :start-at: import time
+    :end-before: def set_role()
+
+Anymeas mode example
+--------------------
+
+This example uses the Pinnacle touch controller's anymeas mode to fetch raw ADC values.
+
+.. literalinclude:: ../examples/cirque_pinnacle_anymeas_mode.py
+    :caption: examples/cirque_pinnacle_anymeas_mode.py
+    :linenos:
+    :start-at: import time
+    :end-before: def set_role()
 
 USB Mouse example
 -----------------
 
-This example uses CircuitPython's built-in `usb_hid` API to emulate a mouse with the Cirque circle trackpad.
+This example uses CircuitPython's built-in `usb_hid` API to emulate a mouse with the
+Cirque circle trackpad.
 
 .. literalinclude:: ../examples/cirque_pinnacle_usb_mouse.py
     :caption: examples/cirque_pinnacle_usb_mouse.py
     :linenos:
-
-AnyMeas mode example
---------------------
-
-This example uses the Pinnacle touch controller's AnyMeas mode to fetch raw ADC values.
-
-.. literalinclude:: ../examples/cirque_pinnacle_anymeas_test.py
-    :caption: examples/cirque_pinnacle_anymeas_test.py
-    :linenos:
+    :start-at: import time
+    :end-before: def set_role()
