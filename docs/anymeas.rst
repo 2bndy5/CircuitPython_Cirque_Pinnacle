@@ -16,16 +16,16 @@ AnyMeas mode Gain
 Allowed ADC gain configurations of AnyMeas mode. The percentages defined here are approximate
 values.
 
-.. autodata:: circuitpython_cirque_pinnacle.GAIN_100
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_GAIN_100
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.GAIN_133
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_GAIN_133
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.GAIN_166
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_GAIN_166
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.GAIN_200
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_GAIN_200
    :no-value:
 
 AnyMeas mode Frequencies
@@ -36,28 +36,28 @@ approximated based on an aperture width of 500 nanoseconds. If the ``aperture_wi
 parameter to `anymeas_mode_config()` specified is less than 500 nanoseconds, then the
 frequency will be larger than what is described here (& vice versa).
 
-.. autodata:: circuitpython_cirque_pinnacle.FREQ_0
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_FREQ_0
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.FREQ_1
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_FREQ_1
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.FREQ_2
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_FREQ_2
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.FREQ_3
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_FREQ_3
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.FREQ_4
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_FREQ_4
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.FREQ_5
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_FREQ_5
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.FREQ_6
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_FREQ_6
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.FREQ_7
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_FREQ_7
    :no-value:
 
 AnyMeas mode Muxing
@@ -70,16 +70,16 @@ Combining these values (with ``+`` operator) is allowed.
    The sign of the measurements taken in AnyMeas mode is inverted depending on which
    muxing gate is specified (when specifying an individual gate polarity).
 
-.. autodata:: circuitpython_cirque_pinnacle.MUX_REF1
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_MUX_REF1
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.MUX_REF0
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_MUX_REF0
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.MUX_PNP
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_MUX_PNP
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.MUX_NPN
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_MUX_NPN
    :no-value:
 
 AnyMeas mode Control
@@ -88,8 +88,8 @@ AnyMeas mode Control
 These constants control the number of measurements performed in `measure_adc()`.
 The number of measurements can range [0, 63].
 
-.. autodata:: circuitpython_cirque_pinnacle.CRTL_REPEAT
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_CRTL_REPEAT
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.CRTL_PWR_IDLE
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_CRTL_PWR_IDLE
    :no-value:

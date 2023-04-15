@@ -81,24 +81,24 @@ is chosen as the test pads (larger copper circular pads) are clearly labeled. Th
 are extended to the `12-pin FFC/FPC cable
 <https://www.mouser.com/c/connectors/ffc-fpc/ffc-fpc-jumper-cables/?number%20of%20conductors=12%20Conductor&pitch=0.5%20mm>`_
 connector (the white block near the bottom). The following table shows how the pins are connected
-in the `examples <examples.html>`_ (tested on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_)
+in the `examples <examples.html>`_ (tested on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_ and a Raspberry Pi 2)
 
 .. csv-table:: pinout (ordered the same as the FFC/FPC cable connector)
-    :header: "cable pin number", Label, "MCU pin", Description
-    :widths: 4, 5, 5, 13
+    :header: "cable pin number", Label, "MCU pin","RPi pin", Description
+    :widths: 4, 5, 5, 5, 13
 
-    1, SCK, SCK, "SPI clock line"
-    2, SO, MISO, "Master Input Slave Output"
-    3, SS, D2, "Slave Select (AKA Chip Select)"
-    4, DR, D7, "Data Ready interrupt"
-    5, SI, MOSI, "SPI Master Output Slave Input"
-    6, B2, N/A, "Hardware input button #2"
-    7, B3, N/A, "Hardware input button #3"
-    8, B1, N/A, "Hardware input button #1"
-    9, SCL, SCL, "I2C clock line (no builtin pull-up resistor)"
-    10, SDA, SDA, "I2C data line (no builtin pull-up resistor)"
-    11, GND, GND, Ground
-    12, VDD, 3V, "3V power supply"
+    1, SCK, SCK, SCK, "SPI clock line"
+    2, SO, MISO, MISO, "Master Input Slave Output"
+    3, SS, D2, "CE0 (GPIO8)", "Slave Select (AKA Chip Select)"
+    4, DR, D7, GPIO25, "Data Ready interrupt"
+    5, SI, MOSI, MOSI, "SPI Master Output Slave Input"
+    6, B2, N/A, N/A, "Hardware input button #2"
+    7, B3, N/A, N/A, "Hardware input button #3"
+    8, B1, N/A, N/A, "Hardware input button #1"
+    9, SCL, SCL,, SCL "I2C clock line (no builtin pull-up resistor)"
+    10, SDA, SDA, SDA, "I2C data line (no builtin pull-up resistor)"
+    11, GND, GND, GND, Ground
+    12, VDD, 3V, 3V, "3V power supply"
 
 .. tip::
     Of course, you can capture button data manually (if your application utilizes more

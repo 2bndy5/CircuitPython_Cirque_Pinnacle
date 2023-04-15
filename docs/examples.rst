@@ -34,6 +34,7 @@ This example uses the Pinnacle touch controller's anymeas mode to fetch raw ADC 
     :linenos:
     :start-at: import time
     :end-before: def set_role()
+    :emphasize-lines: 30-35
 
 USB Mouse example
 -----------------

@@ -8,9 +8,9 @@ Data Modes
 Allowed symbols for configuring the Pinnacle ASIC's data reporting/measurements.
 These are used as valid values for `PinnacleTouch.data_mode`.
 
-.. autodata:: circuitpython_cirque_pinnacle.RELATIVE
-.. autodata:: circuitpython_cirque_pinnacle.ANYMEAS
-.. autodata:: circuitpython_cirque_pinnacle.ABSOLUTE
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_RELATIVE
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_ANYMEAS
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_ABSOLUTE
 
 PinnacleTouch class
 -------------------
