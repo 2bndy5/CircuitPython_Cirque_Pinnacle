@@ -73,6 +73,11 @@ Unsupported Features
 Pinout
 ------
 
+.. warning::
+    The GPIO pins on these trackpads are **not** 5V tolerant. If your microcontroller uses 5V logic
+    (ie Arduino Nano, Uno, Pro, Micro), then you must remove the resistors at junctions "R7" and "R8".
+    Reportedly, this allows powering the trackpad with 5V (to VDD pin) and the trackpad GPIO pins become
+    tolerant of 5V logic levels.
 .. image:: https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/raw/master/docs/_static/Cirque_GlidePoint-Circle-Trackpad.png
     :target: https://www.mouser.com/new/cirque/glidepoint-circle-trackpads/
 
@@ -108,9 +113,9 @@ in the `examples <examples.html>`_ (tested on an `ItsyBitys M4 <https://www.adaf
 
 .. note::
     These trackpads have no builtin pull-up resistors on the I2C bus' SDA and SCL lines.
-    Examples were tested with a 10 kohm resistor for each I2C line tied to 3v.
+    Examples were tested with a 4.7K ohm resistor for each I2C line tied to 3v.
 
-    The Raspberry Pi boards (excluding any RP2040 boards) all have builtin 1.8 kohm pull-up
+    The Raspberry Pi boards (excluding any RP2040 boards) all have builtin 1.8K ohm pull-up
     resistors, so the Linux examples were tested with no addition pull-up resistance.
 
 .. _HCO:
