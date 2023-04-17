@@ -68,7 +68,10 @@ log_format = "%(levelname)s\t%(name)s: %(message)s"
 
 [tool.mypy]
 show_error_codes = true
-show_column_numbers = true
+pretty = true
+files = ["circuitpython_cirque_pinnacle.py"]
+exclude = "setup.py"
+check_untyped_defs = true
 
 [tool.pylint.main]
 # Analyse import fallback blocks. This can be used to support both Python 2 and 3

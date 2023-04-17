@@ -8,7 +8,7 @@ import time
 import struct
 
 try:
-    from typing import Optional, List, Union
+    from typing import Optional, List, Union, Iterable
 except ImportError:
     pass
 
@@ -186,7 +186,7 @@ class PinnacleTouch:
         self._mode = PINNACLE_RELATIVE
         self.detect_finger_stylus()
         self._rap_write(_Z_IDLE, 30)  # z-idle packet count
-        self._rap_write_bytes(_SYS_CONFIG, [0, 0, 0])  # config data mode, power, etc
+        self._rap_write_bytes(_SYS_CONFIG, bytes(3))  # config data mode, power, etc
         self.set_adc_gain(0)
         while self.available():
             self.clear_status_flags()
@@ -240,7 +240,7 @@ class PinnacleTouch:
                 self._mode = mode
                 self.sample_rate = 100
                 # set mode flag, enable feed, disable taps in Relative mode
-                self._rap_write_bytes(_SYS_CONFIG, [sys_config, 1 | mode, 2])
+                self._rap_write_bytes(_SYS_CONFIG, bytes([sys_config, 1 | mode, 2]))
             else:  # not leaving AnyMeas mode
                 self._mode = mode
                 self._rap_write(_FEED_CONFIG_1, 1 | mode)  # set mode flag, enable feed
@@ -680,14 +680,15 @@ class PinnacleTouch:
                 Pinnacle requires about 300 milliseconds to wake up.
         """
         if self._mode == PINNACLE_ANYMEAS:
-            anymeas_config = [2, 3, 4, 0, 4, 0, 19, 0, 0, 1]
-            anymeas_config[0] = gain | frequency
-            anymeas_config[1] = max(1, min(int(sample_length / 128), 3))
-            anymeas_config[2] = mux_ctrl
-            anymeas_config[4] = max(2, min(int(apperture_width / 125), 15))
-            anymeas_config[9] = ctrl_pwr_cnt
-            self._rap_write_bytes(_FEED_CONFIG_2, anymeas_config)
-            self._rap_write_bytes(_PACKET_BYTE_1, [0] * 8)
+            buffer = bytearray(10)
+            buffer[0] = gain | frequency
+            buffer[1] = max(1, min(int(sample_length / 128), 3))
+            buffer[2] = mux_ctrl
+            buffer[4] = max(2, min(int(apperture_width / 125), 15))
+            buffer[6] = _PACKET_BYTE_1
+            buffer[9] = ctrl_pwr_cnt
+            self._rap_write_bytes(_FEED_CONFIG_2, buffer)
+            self._rap_write_bytes(_PACKET_BYTE_1, bytes(8))
             self.clear_status_flags()
 
     def measure_adc(self, bits_to_toggle: int, toggle_polarity: int) -> Optional[int]:
@@ -772,15 +773,14 @@ class PinnacleTouch:
         and all parameters there are used the same way here.
         """
         if self._mode == PINNACLE_ANYMEAS:
-            tog_pol: List[int] = []  # assemble list of register buffers
+            tog_pol = bytearray(8)  # assemble list of register buffers
             for i in range(3, -1, -1):
-                tog_pol.append((bits_to_toggle >> (i * 8)) & 0xFF)
-            for i in range(3, -1, -1):
-                tog_pol.append((toggle_polarity >> (i * 8)) & 0xFF)
+                tog_pol[3 - i] = (bits_to_toggle >> (i * 8)) & 0xFF
+                tog_pol[3 - i + 4] = (toggle_polarity >> (i * 8)) & 0xFF
             # write toggle and polarity parameters to register 0x13 - 0x1A
             self._rap_write_bytes(_PACKET_BYTE_1, tog_pol)
-            # initiate measurements
-            self._rap_write(_SYS_CONFIG, 0x18)
+            # clear_status_flags() and initiate measurements
+            self._rap_write_bytes(_STATUS, b"\0\x18")
 
     def get_measure_adc(self) -> Optional[int]:
         """A non-blocking function that returns ADC measurement on
@@ -818,14 +818,14 @@ class PinnacleTouch:
     def _rap_write_cmd(self, cmd: bytes):
         raise NotImplementedError()
 
-    def _rap_write_bytes(self, reg: int, values: List[int]):
+    def _rap_write_bytes(self, reg: int, values: Iterable[int]):
         raise NotImplementedError()
 
     def _era_read(self, reg: int) -> int:
         prev_feed_state = self.feed_enable
         if prev_feed_state:
             self.feed_enable = False  # accessing raw memory, so do this
-        self._rap_write_bytes(_ERA_ADDR, [reg >> 8, reg & 0xFF])
+        self._rap_write_bytes(_ERA_ADDR, bytes([reg >> 8, reg & 0xFF]))
         self._rap_write(_ERA_CONTROL, 1)  # indicate reading only 1 byte
         while self._rap_read(_ERA_CONTROL):  # read until reg == 0
             pass  # also sets Command Complete flag in Status register
@@ -840,7 +840,7 @@ class PinnacleTouch:
         prev_feed_state = self.feed_enable
         if prev_feed_state:
             self.feed_enable = False  # accessing raw memory, so do this
-        self._rap_write_bytes(_ERA_ADDR, [reg >> 8, reg & 0xFF])
+        self._rap_write_bytes(_ERA_ADDR, bytes([reg >> 8, reg & 0xFF]))
         for _ in range(numb_bytes):
             self._rap_write(_ERA_CONTROL, 5)  # indicate reading sequential bytes
             while self._rap_read(_ERA_CONTROL):  # read until reg == 0
@@ -856,7 +856,7 @@ class PinnacleTouch:
         if prev_feed_state:
             self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write(_ERA_VALUE, value)  # write value
-        self._rap_write_bytes(_ERA_ADDR, [reg >> 8, reg & 0xFF])
+        self._rap_write_bytes(_ERA_ADDR, bytes([reg >> 8, reg & 0xFF]))
         self._rap_write(_ERA_CONTROL, 2)  # indicate writing only 1 byte
         while self._rap_read(_ERA_CONTROL):  # read until reg == 0
             pass  # also sets Command Complete flag in Status register
@@ -870,7 +870,7 @@ class PinnacleTouch:
         if prev_feed_state:
             self.feed_enable = False  # accessing raw memory, so do this
         self._rap_write(_ERA_VALUE, value)  # write value
-        self._rap_write_bytes(_ERA_ADDR, [reg >> 8, reg & 0xFF])
+        self._rap_write_bytes(_ERA_ADDR, bytes([reg >> 8, reg & 0xFF]))
         self._rap_write(_ERA_CONTROL, 0x0A)  # indicate writing sequential bytes
         for _ in range(numb_bytes):
             while self._rap_read(_ERA_CONTROL):  # read until reg == 0
@@ -914,9 +914,9 @@ class PinnacleTouchI2C(PinnacleTouch):
         return buf
 
     def _rap_write(self, reg: int, value: int):
-        self._rap_write_bytes(reg, [value])
+        self._rap_write_bytes(reg, bytes([value]))
 
-    def _rap_write_bytes(self, reg: int, values: List[int]):
+    def _rap_write_bytes(self, reg: int, values: Iterable[int]):
         buf = b""
         for index, byte in enumerate(values):
             # Pinnacle doesn't auto-increment register
@@ -973,6 +973,6 @@ class PinnacleTouchSPI(PinnacleTouch):
     def _rap_write(self, reg: int, value: int):
         self._rap_write_cmd(bytes([(reg | 0x80), value]))
 
-    def _rap_write_bytes(self, reg: int, values: List[int]):
+    def _rap_write_bytes(self, reg: int, values: Iterable[int]):
         for i, val in enumerate(values):
             self._rap_write(reg + i, val)
