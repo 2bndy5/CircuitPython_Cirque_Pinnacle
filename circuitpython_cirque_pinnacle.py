@@ -119,17 +119,17 @@ class RelativeReport:
         """The button data is a byte in which each bit represents a button.
         The bit to button order is as follows:
 
-        0. [LSBit] Button 1 (thought of as Left button of a mouse). If the ``taps``
+        0. [LSBit] Button 1 (thought of as Left button on a mouse). If the ``taps``
            parameter is ``True`` when calling `relative_mode_config()`, a single tap
            will be reflected here.
-        1. Button 2 (thought of as Right button of a mouse). If ``taps`` and
+        1. Button 2 (thought of as Right button on a mouse). If ``taps`` and
            ``secondary_tap`` parameters are ``True`` when calling
            `relative_mode_config()`, a single tap in the perspective top-left-most
            corner will be reflected here; secondary taps are constantly disabled if
            `hard_configured` returns ``True``. Note that the top-left-most corner can be
            perspectively moved if ``rotate90`` parameter is ``True`` when calling
            `relative_mode_config()`.
-        2. Button 3 (thought of as Middle or scroll wheel button of a mouse)
+        2. Button 3 (thought of as Middle or scroll wheel button on a mouse)
         """
         self.x: int = data[1]  #: The change in X-axis ranging [-127, 127].
         self.y: int = data[2]  #: The change in Y-axis ranging [-127, 127].
@@ -285,11 +285,11 @@ class PinnacleTouch:
         :param taps: Specifies if all taps should be reported (``True``) or not
             (``False``). Default is ``True``. This affects the ``secondary_tap``
             parameter as well.
+        :param rotate90: Specifies if the axis data is altered for 90 degree rotation
+            before reporting it (essentially swaps the axis data). Default is ``False``.
         :param secondary_tap: Specifies if tapping in the top-left corner (depending on
             orientation) triggers the secondary button data. Defaults to ``True``. This
             feature is always disabled if `hard_configured` is ``True``.
-        :param rotate90: Specifies if the axis data is altered for 90 degree rotation
-            before reporting it (essentially swaps the axis data). Default is ``False``.
         :param intellimouse: Specifies if the data reported includes a byte about scroll
             data. Default is ``False``. Because this flag is specific to scroll data,
             this feature is always disabled if `hard_configured` is ``True``.
@@ -357,15 +357,17 @@ class PinnacleTouch:
 
         :param report: A `AbsoluteReport` or `RelativeReport` object (depending on the
             currently set `data_mode`) that is used to store the described touch and/or
-            button event.
+            button event data.
         :param read_buttons: A flag that can be used to skip reading the button data
             from the Pinnacle. Default (``True``) will read the button data and store it
-            in the ``report`` object's ``buttons`` attribute. This is really only useful
-            to speed up read operations when not using the Pinnacle's button input pins.
+            in the ``report`` object's :attr:`~RelativeReport.buttons` attribute. This
+            is really only useful to speed up read operations when not using the
+            Pinnacle's button input pins.
 
             .. warning::
-                If relative mode's tap detection is enabled, then setting this parameter
-                to ``False`` can be deceptively inaccurate when reporting tap gestures.
+                If `PINNACLE_RELATIVE` mode's tap detection is enabled, then setting
+                this parameter to ``False`` can be deceptively inaccurate when reporting
+                tap gestures.
         """
         if self._mode == PINNACLE_ABSOLUTE:  # if absolute mode
             skip = (not read_buttons) * 2
@@ -411,10 +413,11 @@ class PinnacleTouch:
         after about 5 seconds of idle (no input event).
 
         Set this attribute to ``True`` if you want the Pinnacle ASIC to enter sleep (low
-        power) mode after about 5 seconds of inactivity (does not apply to AnyMeas
-        mode). While the touch controller is in sleep mode, if a touch event or button
-        press is detected, the Pinnacle ASIC will take about 300 milliseconds to wake up
-        (does not include handling the touch event or button press data).
+        power) mode after about 5 seconds of inactivity (does not apply to
+        `PINNACLE_ANYMEAS` mode). While the touch controller is in sleep mode, if a
+        touch event or button press is detected, the Pinnacle ASIC will take about 300
+        milliseconds to wake up (does not include handling the touch event or button
+        press data).
         """
         return bool(self._rap_read(_SYS_CONFIG) & 4)
 
@@ -487,10 +490,10 @@ class PinnacleTouch:
         finger, stylus, or both.
 
         :param enable_finger: ``True`` enables the Pinnacle ASIC's measurements to
-            detect if the touch event was caused by a finger or 5.25mm stylus. ``False``
-            disables this feature. Default is ``True``.
+            detect if the touch event was caused by a finger or 5.25 mm stylus.
+            ``False`` disables this feature. Default is ``True``.
         :param enable_stylus: ``True`` enables the Pinnacle ASIC's measurements to
-            detect if the touch event was caused by a 2mm stylus. ``False`` disables
+            detect if the touch event was caused by a 2 mm stylus. ``False`` disables
             this feature. Default is ``True``.
         :param sample_rate: See the `sample_rate` attribute as this parameter
             manipulates that attribute.
