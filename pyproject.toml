@@ -46,7 +46,7 @@ Source =  "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle"
 Tracker = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/issues"
 
 [tool.setuptools]
-packages = ["circuitpython_cirque_pinnacle"]
+py-modules = ["circuitpython_cirque_pinnacle"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
@@ -68,25 +68,10 @@ log_format = "%(levelname)s\t%(name)s: %(message)s"
 
 [tool.mypy]
 show_error_codes = true
-show_column_numbers = true
-
-[tool.coverage]
-[tool.coverage.run]
-dynamic_context = "test_function"
-
-[tool.coverage.json]
-pretty_print = true
-
-[tool.coverage.html]
-show_contexts = true
-
-[tool.coverage.report]
-# Regexes for lines to exclude from consideration
-exclude_lines = [
-    # Have to re-enable the standard pragma
-    "pragma: no cover",
-    "except ImportError",
-]
+pretty = true
+files = ["circuitpython_cirque_pinnacle.py"]
+exclude = "setup.py"
+check_untyped_defs = true
 
 [tool.pylint.main]
 # Analyse import fallback blocks. This can be used to support both Python 2 and 3
@@ -358,7 +343,7 @@ min-public-methods = 1
 
 [tool.pylint.exceptions]
 # Exceptions that will emit a warning when caught.
-overgeneral-exceptions = ["Exception"]
+overgeneral-exceptions = ["builtins.Exception"]
 
 [tool.pylint.format]
 # Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
@@ -445,7 +430,12 @@ confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFIN
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
-disable = ["raw-checker-failed", "bad-inline-option", "locally-disabled", "file-ignored", "suppressed-message", "useless-suppression", "deprecated-pragma", "use-symbolic-message-instead", "import-error", "duplicate-code", "consider-using-f-string", "too-many-arguments"]
+disable = [
+    "import-error",
+    "duplicate-code",
+    "consider-using-f-string",
+    "too-many-arguments"
+]
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

@@ -29,7 +29,7 @@ extensions = [
 autodoc_member_order = "bysource"
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.7", None),
+    "python": ("https://docs.python.org/3", None),
     "CircuitPython": ("https://circuitpython.readthedocs.io/en/latest/", None),
 }
 
@@ -80,6 +80,13 @@ exclude_patterns = [
 # documents.
 #
 default_role = "any"
+
+rst_prolog = """
+.. role:: python(code)
+   :language: python
+   :class: highlight
+.. default-literal-role:: python
+"""
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #

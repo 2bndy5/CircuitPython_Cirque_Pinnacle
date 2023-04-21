@@ -13,7 +13,6 @@
     :caption: API Reference
     :hidden:
 
-    about_lite
     api
     rel_abs
     anymeas
@@ -74,36 +73,52 @@ Unsupported Features
 Pinout
 ------
 
+.. warning::
+    The GPIO pins on these trackpads are **not** 5V tolerant. If your microcontroller uses 5V logic
+    (ie Arduino Nano, Uno, Pro, Micro), then you must remove the resistors at junctions "R7" and "R8".
+    Reportedly, this allows powering the trackpad with 5V (to VDD pin) and the trackpad GPIO pins become
+    tolerant of 5V logic levels.
 .. image:: https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle/raw/master/docs/_static/Cirque_GlidePoint-Circle-Trackpad.png
     :target: https://www.mouser.com/new/cirque/glidepoint-circle-trackpads/
 
 The above picture is an example of the Cirque GlidePoint circle trackpad. This picture
 is chosen as the test pads (larger copper circular pads) are clearly labeled. The test pads
-are extended to the `12-pin FFC/FPC cable <https://www.mouser.com/Connectors/FFC-FPC/
-FFC-FPC-Jumper-Cables/_/N-axro3?P=1yc8ojpZ1z0wxjx>`_ connector (the white block near the
-bottom). The following table shows how the pins are connected in the `examples <examples.html>`_ (tested on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_)
+are extended to the `12-pin FFC/FPC cable
+<https://www.mouser.com/c/connectors/ffc-fpc/ffc-fpc-jumper-cables/?number%20of%20conductors=12%20Conductor&pitch=0.5%20mm>`_
+connector (the white block near the bottom). The following table shows how the pins are connected
+in the `examples <examples.html>`_ (tested on an `ItsyBitys M4 <https://www.adafruit.com/product/3800>`_ and a Raspberry Pi 2)
 
 .. csv-table:: pinout (ordered the same as the FFC/FPC cable connector)
-    :header: "cable pin number", Label, "MCU pin", Description
-    :widths: 4, 5, 5, 13
+    :header: "cable pin number", Label, "MCU pin","RPi pin", Description
+    :widths: 4, 5, 5, 5, 13
 
-    1, SCK, SCK, "SPI clock line"
-    2, SO, MISO, "Master Input Slave Output"
-    3, SS, D7, "Slave Select (AKA Chip Select)"
-    4, DR, D2, "Data Ready interrupt"
-    5, SI, MOSI, "SPI Master Output Slave Input"
-    6, B2, N/A, "Hardware input button #2"
-    7, B3, N/A, "Hardware input button #3"
-    8, B1, N/A, "Hardware input button #1"
-    9, SCL, SCL, "I2C clock line"
-    10, SDA, SDA, "I2C data line"
-    11, GND, GND, Ground
-    12, VDD, 3V, "3V power supply"
+    1, SCK, SCK, SCK, "SPI clock line"
+    2, SO, MISO, MISO, "Master Input Slave Output"
+    3, SS, D2, "CE0 (GPIO8)", "Slave Select (AKA Chip Select)"
+    4, DR, D7, GPIO25, "Data Ready interrupt"
+    5, SI, MOSI, MOSI, "SPI Master Output Slave Input"
+    6, B2, N/A, N/A, "Hardware input button #2"
+    7, B3, N/A, N/A, "Hardware input button #3"
+    8, B1, N/A, N/A, "Hardware input button #1"
+    9, SCL, SCL,, SCL "I2C clock line (no builtin pull-up resistor)"
+    10, SDA, SDA, SDA, "I2C data line (no builtin pull-up resistor)"
+    11, GND, GND, GND, Ground
+    12, VDD, 3V, 3V, "3V power supply"
 
-.. tip:: Of course, you can capture button data manually (if your application utilizes more
+.. tip::
+    Of course, you can capture button data manually (if your application utilizes more
     than 3 buttons), but if you connect the pins B1, B2, B3 to momentary push buttons that
     (when pressed) provide a path to ground, the Pinnacle touch controller will report all 3
     buttons' states for each touch (or even button only) events.
+
+.. note::
+    These trackpads have no builtin pull-up resistors on the I2C bus' SDA and SCL lines.
+    Examples were tested with a 4.7K ohm resistor for each I2C line tied to 3v.
+
+    The Raspberry Pi boards (excluding any RP2040 boards) all have builtin 1.8K ohm pull-up
+    resistors, so the Linux examples were tested with no addition pull-up resistance.
+
+.. _HCO:
 
 Model Labeling Scheme
 *********************

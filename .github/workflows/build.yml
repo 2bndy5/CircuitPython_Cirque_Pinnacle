@@ -46,30 +46,6 @@ jobs:
       - name: Pre-commit hooks
         run: pre-commit run --all-files
 
-  # test-coverage:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-
-  #     - uses: actions/setup-python@v4
-  #       with:
-  #         python-version: "3.x"
-
-  #     - name: Install testing tools
-  #       run: pip install -r requirements.txt -r tests/requirements.txt
-
-  #     - name: Collect coverage
-  #       run: |
-  #         coverage run -m pytest
-  #         coverage report
-  #         coverage xml
-
-  #     - name: Upload coverage reports to Codecov
-  #       uses: codecov/codecov-action@v3
-  #       with:
-  #         files: ./coverage.xml
-  #         verbose: true # optional (default = false)
-
   build-bundles:
     runs-on: ubuntu-latest
     steps:
@@ -80,14 +56,6 @@ jobs:
           echo ${{ github.repository }} |
           awk -F '\/' '{ print tolower($2) }' |
           tr '_' '-'
-          ) >> $GITHUB_OUTPUT
-
-      - name: Translate Repo Name For Build Tools package_prefix
-        id: pkg-name
-        run: |
-          echo pkg-name=$(
-          echo ${{ github.repository }} |
-          awk -F '\/' '{ print tolower($2) }'
           ) >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
@@ -108,7 +76,7 @@ jobs:
           source actions-ci/install.sh
 
       - name: Build assets
-        run: circuitpython-build-bundles --filename_prefix ${{ steps.repo-name.outputs.repo-name }} --package_folder_prefix ${{ steps.pkg-name.outputs.pkg-name }} --library_location .
+        run: circuitpython-build-bundles --filename_prefix ${{ steps.repo-name.outputs.repo-name }} --library_location .
 
       - name: Archive bundles
         uses: actions/upload-artifact@v3
