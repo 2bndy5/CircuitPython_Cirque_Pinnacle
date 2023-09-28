@@ -2,8 +2,9 @@ name: Build CI
 
 on:
   pull_request:
-    types: [opened, reopened]
+    branches: [master]
   push:
+    branches: [master]
 
 jobs:
   build-wheel:
