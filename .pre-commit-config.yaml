@@ -1,33 +1,20 @@
 repos:
   - repo: https://github.com/python/black
-    rev: 23.1.0
+    rev: 23.11.0
     hooks:
       - id: black
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/pycqa/pylint
-    rev: v2.17.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.7
     hooks:
-      - id: pylint
-        name: pylint (library code)
-        types: [python]
-        args:
-          - --disable=consider-using-f-string,duplicate-code,too-many-public-methods,too-few-public-methods
-        exclude: "^(docs/|examples/|tests/|setup.py$)"
-        additional_dependencies: ["adafruit-circuitpython-busdevice"]
-      - id: pylint
-        name: pylint (example code)
-        description: Run pylint rules on "examples/*.py" files
-        types: [python]
-        files: "^examples/"
-        args:
-          - --disable=missing-docstring,invalid-name,consider-using-f-string,duplicate-code,import-error,unused-import
+      - id: ruff
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.1.1
+    rev: v1.7.1
     hooks:
       - id: mypy
         name: mypy (library code)
