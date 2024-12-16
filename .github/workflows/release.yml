@@ -81,10 +81,10 @@ jobs:
 
       - name: Publish package (to TestPyPI)
         if: github.event_name == 'workflow_dispatch' && github.repository == '2bndy5/CircuitPython_Cirque_Pinnacle'
-        uses: pypa/gh-action-pypi-publish@v1.10.3
+        uses: pypa/gh-action-pypi-publish@v1.12.3
         with:
           repository-url: https://test.pypi.org/legacy/
 
       - name: Publish package (to PyPI)
         if: github.event_name != 'workflow_dispatch' && github.repository == '2bndy5/CircuitPython_Cirque_Pinnacle'
-        uses: pypa/gh-action-pypi-publish@v1.10.3
+        uses: pypa/gh-action-pypi-publish@v1.12.3
