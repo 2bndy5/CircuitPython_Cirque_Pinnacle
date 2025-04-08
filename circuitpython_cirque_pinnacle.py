@@ -215,6 +215,8 @@ class PinnacleTouch:
           is non-operational
         - :py:meth:`~circuitpython_cirque_pinnacle.PinnacleTouch.tune_edge_sensitivity()`
           is non-operational
+        - :py:meth:`~circuitpython_cirque_pinnacle.PinnacleTouch.set_adc_gain()`
+          is non-operational
         - :py:attr:`~circuitpython_cirque_pinnacle.PinnacleTouch.calibration_matrix`
           is non-operational
 
