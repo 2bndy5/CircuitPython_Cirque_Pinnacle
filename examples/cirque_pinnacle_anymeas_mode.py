@@ -16,18 +16,18 @@ IS_ON_LINUX = sys.platform.lower() == "linux"
 
 print("Cirque Pinnacle anymeas mode\n")
 
-# Using HW Data Ready pin as required for Anymeas mode
+# the pin connected to the trackpad's DR pin.
 dr_pin = DigitalInOut(board.D7 if not IS_ON_LINUX else board.D25)
 
 if not input("Is the trackpad configured for I2C? [y/N] ").lower().startswith("y"):
     print("-- Using SPI interface.")
     spi = board.SPI()
     ss_pin = DigitalInOut(board.D2 if not IS_ON_LINUX else board.CE0)
-    trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+    trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin)
 else:
     print("-- Using I2C interface.")
     i2c = board.I2C()
-    trackpad = PinnacleTouchI2C(i2c, dr_pin=dr_pin)
+    trackpad = PinnacleTouchI2C(i2c, dr_pin)
 
 trackpad.data_mode = PINNACLE_ANYMEAS
 

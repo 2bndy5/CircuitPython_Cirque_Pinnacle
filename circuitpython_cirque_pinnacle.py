@@ -164,22 +164,19 @@ class PinnacleTouch:
 
     :param dr_pin: |dr_pin_parameter|
 
-        .. important:: |dr_pin_note|
+        .. versionchanged:: 2.0.0 ``dr_pin`` is a required parameter.
+
+            |dr_pin_required|
 
     .. |dr_pin_parameter| replace:: The input pin connected to the Pinnacle ASIC's "Data
-        Ready" pin. If this parameter is not specified, then the SW_DR (software data
-        ready) flag of the STATUS register is used to determine if the data being
-        reported is new.
-
-    .. |dr_pin_note| replace:: This parameter must be specified if your application is
-        going to use the Pinnacle ASIC's `PINNACLE_ANYMEAS` mode (a rather experimental
-        measuring of raw ADC values).
+        Ready" pin.
+    .. |dr_pin_required| replace::
+        Previously, this parameter was conditionally optional.
     """
 
-    def __init__(self, dr_pin: Optional[digitalio.DigitalInOut] = None):
+    def __init__(self, dr_pin: digitalio.DigitalInOut):
         self.dr_pin = dr_pin
-        if self.dr_pin is not None:
-            self.dr_pin.switch_to_input()
+        self.dr_pin.switch_to_input()
         firmware_id, firmware_ver = self._rap_read_bytes(_FIRMWARE_ID, 2)
         self._rev2025: bool = firmware_id == 0x0E and firmware_ver == 0x75
         if not self._rev2025 and (firmware_id, firmware_ver) != (7, 0x3A):
@@ -196,7 +193,7 @@ class PinnacleTouch:
             self.set_adc_gain(0)
         while self.available():
             self.clear_status_flags()
-        if not self.calibrate() and dr_pin is not None:
+        if not self.calibrate():
             raise AttributeError(
                 "Calibration did not complete. Check wiring to `dr_pin`."
             )
@@ -275,10 +272,6 @@ class PinnacleTouch:
                 self._rap_write(_FEED_CONFIG_1, 1 | mode)  # set mode flag, enable feed
             self._intellimouse = False
         else:  # for AnyMeas mode
-            if self.dr_pin is None:  # AnyMeas requires the DR pin
-                raise AttributeError(
-                    "need the Data Ready (DR) pin specified for AnyMeas mode"
-                )
             # disable tracking computations for AnyMeas mode
             self._rap_write(_SYS_CONFIG, sys_config | 0x08)
             time.sleep(0.01)  # wait for tracking computations to expire
@@ -365,14 +358,10 @@ class PinnacleTouch:
     def available(self) -> bool:
         """Determine if there is fresh data to report.
 
-        If the ``dr_pin`` parameter is specified upon instantiation, then the specified
-        input pin is used to detect if the data is new. Otherwise the SW_DR flag in the
-        STATUS register is used to determine if the data is new.
+        This is just a convenience method to check the ``dr_pin.value``.
 
         :Returns: ``True`` if there is fresh data to report, otherwise ``False``.
         """
-        if self.dr_pin is None:
-            return bool(self._rap_read(_STATUS) & 0x0C)
         return self.dr_pin.value
 
     def read(
@@ -946,14 +935,16 @@ class PinnacleTouchI2C(PinnacleTouch):
     :param address: The slave I2C address of the Pinnacle ASIC. Defaults to ``0x2A``.
     :param dr_pin: |dr_pin_parameter|
 
-        .. important:: |dr_pin_note|
+        .. versionchanged:: 2.0.0 ``dr_pin`` is a required parameter.
+
+            |dr_pin_required|
     """
 
     def __init__(
         self,
         i2c: busio.I2C,
+        dr_pin: digitalio.DigitalInOut,
         address: int = 0x2A,
-        dr_pin: Optional[digitalio.DigitalInOut] = None,
     ):
         self._i2c = I2CDevice(i2c, address)
         super().__init__(dr_pin=dr_pin)
@@ -995,15 +986,17 @@ class PinnacleTouchSPI(PinnacleTouch):
     :param spi_frequency: The SPI bus speed in Hz. Default is the maximum 13 MHz.
     :param dr_pin: |dr_pin_parameter|
 
-        .. important:: |dr_pin_note|
+        .. versionchanged:: 2.0.0 ``dr_pin`` is a required parameter.
+
+            |dr_pin_required|
     """
 
     def __init__(
         self,
         spi: busio.SPI,
         ss_pin: digitalio.DigitalInOut,
+        dr_pin: digitalio.DigitalInOut,
         spi_frequency: int = 13000000,
-        dr_pin: Optional[digitalio.DigitalInOut] = None,
     ):
         self._spi = SPIDevice(spi, chip_select=ss_pin, phase=1, baudrate=spi_frequency)
         super().__init__(dr_pin=dr_pin)
