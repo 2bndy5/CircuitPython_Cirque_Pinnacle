@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name,too-few-public-methods
 """This file is for `sphinx-build` configuration"""
+
 import os
 import sys
 
@@ -86,6 +87,10 @@ rst_prolog = """
    :language: python
    :class: highlight
 .. default-literal-role:: python
+
+.. |rev2025| replace:: not supported on trackpads manufactured on or after 2025.
+    Defer to :py:attr:`~circuitpython_cirque_pinnacle.PinnacleTouch.rev2025`.
+.. |rev2025-no-effect| replace:: on newer trackpads will have no effect
 """
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
@@ -112,6 +117,13 @@ html_theme_options = {
     ],
     # Set the color and the accent color
     "palette": [
+        {
+            "media": "(prefers-color-scheme)",
+            "toggle": {
+                "icon": "material/brightness-auto",
+                "name": "Switch to light mode",
+            },
+        },
         {
             "media": "(prefers-color-scheme: light)",
             "scheme": "default",

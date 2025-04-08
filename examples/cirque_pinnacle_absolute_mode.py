@@ -1,6 +1,7 @@
 """
 A simple example of using the Pinnacle ASIC in absolute mode.
 """
+
 import math
 import sys
 import time

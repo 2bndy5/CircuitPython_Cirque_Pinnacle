@@ -2,6 +2,7 @@
 A driver module for the Cirque Pinnacle ASIC on the Cirque capacitive touch
 based circular trackpads.
 """
+
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/2bndy5/CircuitPython_Cirque_Pinnacle.git"
 import time
@@ -40,9 +41,9 @@ PINNACLE_MUX_REF1: int = const(0x10)  #: enables a builtin capacitor (~0.5 pF).
 PINNACLE_MUX_REF0: int = const(0x08)  #: enables a builtin capacitor (~0.25 pF).
 PINNACLE_MUX_PNP: int = const(0x04)  #: enable PNP sense line
 PINNACLE_MUX_NPN: int = const(0x01)  #: enable NPN sense line
-PINNACLE_CRTL_REPEAT: int = const(0x80)  #: required for more than 1 measurement
+PINNACLE_CTRL_REPEAT: int = const(0x80)  #: required for more than 1 measurement
 #: triggers low power mode (sleep) after completing measurements
-PINNACLE_CRTL_PWR_IDLE: int = const(0x40)
+PINNACLE_CTRL_PWR_IDLE: int = const(0x40)
 
 #  Defined constants for Pinnacle registers
 _FIRMWARE_ID: int = const(0x00)
@@ -180,14 +181,19 @@ class PinnacleTouch:
         if self.dr_pin is not None:
             self.dr_pin.switch_to_input()
         firmware_id, firmware_ver = self._rap_read_bytes(_FIRMWARE_ID, 2)
-        if firmware_id != 7 or firmware_ver != 0x3A:
+        self._rev2025: bool = firmware_id == 0x0E and firmware_ver == 0x75
+        if not self._rev2025 or (firmware_id, firmware_ver) != (7, 0x3A):
             raise RuntimeError("Cirque Pinnacle ASIC not responding")
         self._intellimouse = False
         self._mode = PINNACLE_RELATIVE
-        self.detect_finger_stylus()
+        if not self._rev2025:
+            self.detect_finger_stylus()
+        else:
+            self.sample_rate = 100
         self._rap_write(_Z_IDLE, 30)  # z-idle packet count
         self._rap_write_bytes(_SYS_CONFIG, bytes(3))  # config data mode, power, etc
-        self.set_adc_gain(0)
+        if not self._rev2025:
+            self.set_adc_gain(0)
         while self.available():
             self.clear_status_flags()
         if not self.calibrate() and dr_pin is not None:
@@ -195,6 +201,29 @@ class PinnacleTouch:
                 "Calibration did not complete. Check wiring to `dr_pin`."
             )
         self.feed_enable = True
+
+    @property
+    def rev2025(self) -> bool:
+        """Is this trackpad using a newer firmware version?
+
+        This read-only property describes if the trackpad used has a firmware revision
+        that was deployed on or around 2025. Consequently, some advanced configuration
+        is not possible with this undocumented firmware revision.
+        Thus, the following functionality is affected on the trackpads when this
+        property returns ``True``:
+
+        - :py:attr:`~circuitpython_cirque_pinnacle.PinnacleTouch.sample_rate` cannot
+          exceed ``100``
+        - :py:attr:`~circuitpython_cirque_pinnacle.PinnacleTouch.detect_finger_stylus()`
+          is non-operational
+        - :py:meth:`~circuitpython_cirque_pinnacle.PinnacleTouch.tune_edge_sensitivity()`
+          is non-operational
+        - :py:attr:`~circuitpython_cirque_pinnacle.PinnacleTouch.calibration_matrix`
+          is non-operational
+
+        .. versionadded:: 2.0.0
+        """
+        return self._rev2025
 
     @property
     def feed_enable(self) -> bool:
@@ -308,7 +337,7 @@ class PinnacleTouch:
                 self._rap_write_cmd(req_seq)
                 # verify w/ cmd to read the device ID
                 response = self._rap_read_bytes(0xF2, 3)
-                self._intellimouse = response.startswith(b"\xF3\x03")
+                self._intellimouse = response.startswith(b"\xf3\x03")
 
     def absolute_mode_config(
         self, z_idle_count: int = 30, invert_x: bool = False, invert_y: bool = False
@@ -452,11 +481,15 @@ class PinnacleTouch:
 
         Valid values are ``100``, ``80``, ``60``, ``40``, ``20``, ``10``. Any other
         input values automatically set the sample rate to 100 sps (samples per second).
-        Optionally, ``200`` and ``300`` sps can be specified, but using these values
-        automatically disables palm (referred to as "NERD" in the specification sheet)
-        and noise compensations. These higher values are meant for using a stylus with a
-        2mm diameter tip, while the values less than 200 are meant for a finger or
-        stylus with a 5.25mm diameter tip.
+
+        Optionally (on older trackpads), ``200`` and ``300`` sps can be specified, but
+        using these values automatically disables palm (referred to as "NERD" in the
+        specification sheet) and noise compensations. These higher values are meant for
+        using a stylus with a 2mm diameter tip, while the values less than 200 are meant
+        for a finger or stylus with a 5.25mm diameter tip.
+
+        .. warning:: The values ``200`` and ``300`` are |rev2025| Specifying these values on
+            newer trackpads will be automatically clamped to ``100``.
 
         This attribute only applies to `PINNACLE_RELATIVE` or `PINNACLE_ABSOLUTE` mode.
         Otherwise if `data_mode` is set to `PINNACLE_ANYMEAS`, then this attribute will
@@ -467,7 +500,7 @@ class PinnacleTouch:
     @sample_rate.setter
     def sample_rate(self, val: int):
         if self._mode != PINNACLE_ANYMEAS:
-            if val in (200, 300):
+            if val in (200, 300) and not self._rev2025:
                 # disable palm & noise compensations
                 self._rap_write(_FEED_CONFIG_3, 10)
                 reload_timer = 6 if val == 300 else 0x09
@@ -476,7 +509,8 @@ class PinnacleTouch:
             else:
                 # enable palm & noise compensations
                 self._rap_write(_FEED_CONFIG_3, 0)
-                self._era_write_bytes(0x019E, 0x13, 2)
+                if not self._rev2025:
+                    self._era_write_bytes(0x019E, 0x13, 2)
                 val = val if val in (100, 80, 60, 40, 20, 10) else 100
             self._rap_write(_SAMPLE_RATE, val)
 
@@ -488,6 +522,8 @@ class PinnacleTouch:
     ):
         """This function will configure the Pinnacle ASIC to detect either
         finger, stylus, or both.
+
+        .. warning:: This method is |rev2025| Calling this method |rev2025-no-effect|.
 
         :param enable_finger: ``True`` enables the Pinnacle ASIC's measurements to
             detect if the touch event was caused by a finger or 5.25 mm stylus.
@@ -502,6 +538,8 @@ class PinnacleTouch:
             Consider adjusting the ADC matrix's gain to enhance performance/results
             using `set_adc_gain()`
         """
+        if not self._rev2025:
+            return
         finger_stylus = self._era_read(0x00EB)
         finger_stylus |= (enable_stylus << 2) | enable_finger
         self._era_write(0x00EB, finger_stylus)
@@ -563,6 +601,9 @@ class PinnacleTouch:
         values stored in the Pinnacle ASIC's memory that is used for taking
         measurements.
 
+        .. warning:: This attribute is |rev2025| Using this attribute
+            |rev2025-no-effect| and return an empty `list`.
+
         This matrix is not applicable in AnyMeas mode. Use this attribute to compare a
         prior compensation matrix with a new matrix that was either loaded manually by
         setting this attribute to a `list` of 46 signed 16-bit (short) integers or
@@ -586,12 +627,16 @@ class PinnacleTouch:
             that differ by more than 500 and write this new matrix, with the average
             values, back into Pinnacle ASIC.
         """
+        if self._rev2025:
+            return []
         # combine every 2 bytes from resulting buffer into list of signed
         # 16-bits integers
         return list(struct.unpack("46h", self._era_read_bytes(0x01DF, 92)))
 
     @calibration_matrix.setter
     def calibration_matrix(self, matrix: List[int]):
+        if self._rev2025:
+            return
         matrix += [0] * (46 - len(matrix))  # pad short matrices w/ 0s
         for index in range(46):
             buf = struct.pack("h", matrix[index])
@@ -602,6 +647,8 @@ class PinnacleTouch:
         """Sets the ADC gain in range [0, 3] to enhance performance based on
         the overlay type (does not apply to AnyMeas mode).
 
+        .. warning:: This method is |rev2025| Calling this method |rev2025-no-effect|.
+
         :param sensitivity: Specifies how sensitive the ADC (Analog to Digital
             Converter) component is. ``0`` means most sensitive, and ``3`` means least
             sensitive. A value outside this range will raise a `ValueError` exception.
@@ -610,6 +657,8 @@ class PinnacleTouch:
                 The official example code from Cirque for a curved overlay uses a value
                 of ``1``.
         """
+        if self._rev2025:
+            return
         if not 0 <= sensitivity < 4:
             raise ValueError("sensitivity is out of bounds [0,3]")
         val = self._era_read(0x0187) & 0x3F | (sensitivity << 6)
@@ -620,11 +669,15 @@ class PinnacleTouch:
     ):
         """Changes thresholds to improve detection of fingers.
 
+        .. warning:: This method is |rev2025| Calling this method |rev2025-no-effect|.
+
         .. warning::
             This function was ported from Cirque's example code and doesn't seem to have
             corresponding documentation. This function directly alters values in the
             Pinnacle ASIC's memory. USE AT YOUR OWN RISK!
         """
+        if self._rev2025:
+            return
         self._era_write(0x0149, x_axis_wide_z_min)
         self._era_write(0x0168, y_axis_wide_z_min)
 
@@ -634,7 +687,7 @@ class PinnacleTouch:
         frequency: int = PINNACLE_FREQ_0,
         sample_length: int = 512,
         mux_ctrl: int = PINNACLE_MUX_PNP,
-        apperture_width: int = 500,
+        aperture_width: int = 500,
         ctrl_pwr_cnt: int = 1,
     ):
         """This function configures the Pinnacle ASIC to output raw ADC
@@ -655,21 +708,21 @@ class PinnacleTouch:
             and/or reference capacitors. Valid values are the constants defined in
             `AnyMeas mode Muxing`_. Additional combination of these constants is also
             allowed. Defaults to `PINNACLE_MUX_PNP`.
-        :param apperture_width: Sets the window of time (in nanoseconds) to allow for
+        :param aperture_width: Sets the window of time (in nanoseconds) to allow for
             the ADC to take a measurement. Valid values are multiples of 125 in range
             [``250``, ``1875``]. Erroneous values are clamped/truncated to this range.
 
-            .. note:: The ``apperture_width`` parameter has a inverse
+            .. note:: The ``aperture_width`` parameter has a inverse
                 relationship/affect on the ``frequency`` parameter. The approximated
                 frequencies described in this documentation are based on an aperture
-                width of 500 nanoseconds, and they will shrink as the apperture width
+                width of 500 nanoseconds, and they will shrink as the aperture width
                 grows or grow as the aperture width shrinks.
 
         :param ctrl_pwr_cnt: Configure the Pinnacle to perform a number of measurements
             for each call to `measure_adc()`. Defaults to 1. Constants defined in
             `AnyMeas mode Control`_ can be used to specify if is sleep is allowed
-            (`PINNACLE_CRTL_PWR_IDLE` -- this is not default) or if repetitive
-            measurements is allowed (`PINNACLE_CRTL_REPEAT`) if number of measurements
+            (`PINNACLE_CTRL_PWR_IDLE` -- this is not default) or if repetitive
+            measurements is allowed (`PINNACLE_CTRL_REPEAT`) if number of measurements
             is more than 1.
 
             .. warning::
@@ -687,7 +740,7 @@ class PinnacleTouch:
             buffer[0] = gain | frequency
             buffer[1] = max(1, min(int(sample_length / 128), 3))
             buffer[2] = mux_ctrl
-            buffer[4] = max(2, min(int(apperture_width / 125), 15))
+            buffer[4] = max(2, min(int(aperture_width / 125), 15))
             buffer[6] = _PACKET_BYTE_1
             buffer[9] = ctrl_pwr_cnt
             self._rap_write_bytes(_FEED_CONFIG_2, buffer)
@@ -955,7 +1008,7 @@ class PinnacleTouchSPI(PinnacleTouch):
         super().__init__(dr_pin=dr_pin)
 
     def _rap_read(self, reg: int) -> int:
-        buf_out = bytes([reg | 0xA0]) + b"\xFB" * 3
+        buf_out = bytes([reg | 0xA0]) + b"\xfb" * 3
         buf_in = bytearray(len(buf_out))
         with self._spi as spi:
             spi.write_readinto(buf_out, buf_in)
@@ -963,7 +1016,7 @@ class PinnacleTouchSPI(PinnacleTouch):
 
     def _rap_read_bytes(self, reg: int, numb_bytes: int) -> bytearray:
         # using auto-increment method
-        buf_out = bytes([reg | 0xA0]) + b"\xFC" * (1 + numb_bytes) + b"\xFB"
+        buf_out = bytes([reg | 0xA0]) + b"\xfc" * (1 + numb_bytes) + b"\xfb"
         buf_in = bytearray(len(buf_out))
         with self._spi as spi:
             spi.write_readinto(buf_out, buf_in)

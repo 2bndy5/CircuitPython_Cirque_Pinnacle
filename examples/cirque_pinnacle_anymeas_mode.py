@@ -1,6 +1,7 @@
 """
 A simple example of using the Pinnacle ASIC in anymeas mode.
 """
+
 import sys
 import time
 import board

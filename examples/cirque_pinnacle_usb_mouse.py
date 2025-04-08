@@ -4,6 +4,7 @@ to emulate a mouse with the Cirque circle trackpad.
 
 NOTE: This example won't work on Linux (eg. using Raspberry Pi GPIO pins).
 """
+
 import sys
 import time
 import board

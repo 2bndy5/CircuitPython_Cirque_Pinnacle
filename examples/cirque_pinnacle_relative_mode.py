@@ -1,6 +1,7 @@
 """
 A simple example of using the Pinnacle ASIC in relative mode.
 """
+
 import sys
 import time
 import board
