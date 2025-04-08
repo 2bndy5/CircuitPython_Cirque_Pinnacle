@@ -932,12 +932,12 @@ class PinnacleTouchI2C(PinnacleTouch):
 
     :param i2c: The object of the I2C bus to use. This object must be shared among other
         driver classes that use the same I2C bus (SDA & SCL pins).
-    :param address: The slave I2C address of the Pinnacle ASIC. Defaults to ``0x2A``.
     :param dr_pin: |dr_pin_parameter|
 
         .. versionchanged:: 2.0.0 ``dr_pin`` is a required parameter.
 
             |dr_pin_required|
+    :param address: The slave I2C address of the Pinnacle ASIC. Defaults to ``0x2A``.
     """
 
     def __init__(
@@ -983,12 +983,12 @@ class PinnacleTouchSPI(PinnacleTouch):
     :param spi: The object of the SPI bus to use. This object must be shared among other
         driver classes that use the same SPI bus (MOSI, MISO, & SCK pins).
     :param ss_pin: The "slave select" pin output to the Pinnacle ASIC.
-    :param spi_frequency: The SPI bus speed in Hz. Default is the maximum 13 MHz.
     :param dr_pin: |dr_pin_parameter|
 
         .. versionchanged:: 2.0.0 ``dr_pin`` is a required parameter.
 
             |dr_pin_required|
+    :param spi_frequency: The SPI bus speed in Hz. Default is the maximum 13 MHz.
     """
 
     def __init__(
