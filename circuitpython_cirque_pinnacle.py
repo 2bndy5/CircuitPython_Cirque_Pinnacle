@@ -182,7 +182,7 @@ class PinnacleTouch:
             self.dr_pin.switch_to_input()
         firmware_id, firmware_ver = self._rap_read_bytes(_FIRMWARE_ID, 2)
         self._rev2025: bool = firmware_id == 0x0E and firmware_ver == 0x75
-        if not self._rev2025 or (firmware_id, firmware_ver) != (7, 0x3A):
+        if not self._rev2025 and (firmware_id, firmware_ver) != (7, 0x3A):
             raise RuntimeError("Cirque Pinnacle ASIC not responding")
         self._intellimouse = False
         self._mode = PINNACLE_RELATIVE
@@ -206,7 +206,7 @@ class PinnacleTouch:
     def rev2025(self) -> bool:
         """Is this trackpad using a newer firmware version?
 
-        This read-only property describes if the trackpad used has a firmware revision
+        This read-only property describes if the Pinnacle ASIC uses a firmware revision
         that was deployed on or around 2025. Consequently, some advanced configuration
         is not possible with this undocumented firmware revision.
         Thus, the following functionality is affected on the trackpads when this
@@ -480,7 +480,8 @@ class PinnacleTouch:
         """This attribute controls how many samples (of data) per second are reported.
 
         Valid values are ``100``, ``80``, ``60``, ``40``, ``20``, ``10``. Any other
-        input values automatically set the sample rate to 100 sps (samples per second).
+        input values automatically set the sample rate to ``100`` sps (samples per
+        second).
 
         Optionally (on older trackpads), ``200`` and ``300`` sps can be specified, but
         using these values automatically disables palm (referred to as "NERD" in the
@@ -538,7 +539,7 @@ class PinnacleTouch:
             Consider adjusting the ADC matrix's gain to enhance performance/results
             using `set_adc_gain()`
         """
-        if not self._rev2025:
+        if self._rev2025:
             return
         finger_stylus = self._era_read(0x00EB)
         finger_stylus |= (enable_stylus << 2) | enable_finger
