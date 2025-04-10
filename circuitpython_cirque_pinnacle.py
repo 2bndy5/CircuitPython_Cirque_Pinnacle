@@ -873,10 +873,16 @@ class PinnacleTouch:
         prev_feed_state = self.feed_enable
         if prev_feed_state:
             self.feed_enable = False  # accessing raw memory, so do this
+        if self._rev2025:
+            self.clear_status_flags()
         self._rap_write_bytes(_ERA_ADDR, bytes([reg >> 8, reg & 0xFF]))
         self._rap_write(_ERA_CONTROL, 1)  # indicate reading only 1 byte
-        while self._rap_read(_ERA_CONTROL):  # read until reg == 0
-            pass  # also sets Command Complete flag in Status register
+        if self._rev2025:
+            while not self.dr_pin.value:  # wait for command to complete
+                pass
+        else:
+            while self._rap_read(_ERA_CONTROL):  # read until reg == 0
+                pass  # also sets Command Complete flag in Status register
         buf = self._rap_read(_ERA_VALUE)  # get value
         self.clear_status_flags()
         if prev_feed_state:
@@ -888,11 +894,17 @@ class PinnacleTouch:
         prev_feed_state = self.feed_enable
         if prev_feed_state:
             self.feed_enable = False  # accessing raw memory, so do this
+        if self._rev2025:
+            self.clear_status_flags()
         self._rap_write_bytes(_ERA_ADDR, bytes([reg >> 8, reg & 0xFF]))
         for _ in range(numb_bytes):
             self._rap_write(_ERA_CONTROL, 5)  # indicate reading sequential bytes
-            while self._rap_read(_ERA_CONTROL):  # read until reg == 0
-                pass  # also sets Command Complete flag in Status register
+            if self._rev2025:
+                while not self.dr_pin.value:  # wait for command to complete
+                    pass
+            else:
+                while self._rap_read(_ERA_CONTROL):  # read until reg == 0
+                    pass  # also sets Command Complete flag in Status register
             buf += bytes([self._rap_read(_ERA_VALUE)])  # get value
             self.clear_status_flags()
         if prev_feed_state:
@@ -903,11 +915,17 @@ class PinnacleTouch:
         prev_feed_state = self.feed_enable
         if prev_feed_state:
             self.feed_enable = False  # accessing raw memory, so do this
+        if self._rev2025:
+            self.clear_status_flags()
         self._rap_write(_ERA_VALUE, value)  # write value
         self._rap_write_bytes(_ERA_ADDR, bytes([reg >> 8, reg & 0xFF]))
         self._rap_write(_ERA_CONTROL, 2)  # indicate writing only 1 byte
-        while self._rap_read(_ERA_CONTROL):  # read until reg == 0
-            pass  # also sets Command Complete flag in Status register
+        if self._rev2025:
+            while not self.dr_pin.value:  # wait for command to complete
+                pass
+        else:
+            while self._rap_read(_ERA_CONTROL):  # read until reg == 0
+                pass  # also sets Command Complete flag in Status register
         self.clear_status_flags()
         if prev_feed_state:
             self.feed_enable = prev_feed_state  # resume previous feed state
@@ -917,12 +935,18 @@ class PinnacleTouch:
         prev_feed_state = self.feed_enable
         if prev_feed_state:
             self.feed_enable = False  # accessing raw memory, so do this
+        if self._rev2025:
+            self.clear_status_flags()
         self._rap_write(_ERA_VALUE, value)  # write value
         self._rap_write_bytes(_ERA_ADDR, bytes([reg >> 8, reg & 0xFF]))
         self._rap_write(_ERA_CONTROL, 0x0A)  # indicate writing sequential bytes
         for _ in range(numb_bytes):
-            while self._rap_read(_ERA_CONTROL):  # read until reg == 0
-                pass  # also sets Command Complete flag in Status register
+            if self._rev2025:
+                while not self.dr_pin.value:  # wait for command to complete
+                    pass
+            else:
+                while self._rap_read(_ERA_CONTROL):  # read until reg == 0
+                    pass  # also sets Command Complete flag in Status register
             self.clear_status_flags()
         if prev_feed_state:
             self.feed_enable = prev_feed_state  # resume previous feed state
