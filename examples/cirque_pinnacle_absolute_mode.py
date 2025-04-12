@@ -1,6 +1,7 @@
 """
 A simple example of using the Pinnacle ASIC in absolute mode.
 """
+
 import math
 import sys
 import time
@@ -17,21 +18,18 @@ IS_ON_LINUX = sys.platform.lower() == "linux"
 
 print("Cirque Pinnacle absolute mode\n")
 
-# a HW ``dr_pin`` is more efficient, but not required for Absolute or Relative modes
-dr_pin = None
-if not input("Use SW Data Ready? [y/N] ").lower().startswith("y"):
-    print("-- Using HW Data Ready pin.")
-    dr_pin = DigitalInOut(board.D7 if not IS_ON_LINUX else board.D25)
+# the pin connected to the trackpad's DR pin.
+dr_pin = DigitalInOut(board.D7 if not IS_ON_LINUX else board.D25)
 
 if not input("Is the trackpad configured for I2C? [y/N] ").lower().startswith("y"):
     print("-- Using SPI interface.")
     spi = board.SPI()
     ss_pin = DigitalInOut(board.D2 if not IS_ON_LINUX else board.CE0)
-    trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin=dr_pin)
+    trackpad = PinnacleTouchSPI(spi, ss_pin, dr_pin)
 else:
     print("-- Using I2C interface.")
     i2c = board.I2C()
-    trackpad = PinnacleTouchI2C(i2c, dr_pin=dr_pin)
+    trackpad = PinnacleTouchI2C(i2c, dr_pin)
 
 trackpad.data_mode = PINNACLE_ABSOLUTE  # ensure Absolute mode is enabled
 trackpad.absolute_mode_config(z_idle_count=1)  # limit idle packet count to 1

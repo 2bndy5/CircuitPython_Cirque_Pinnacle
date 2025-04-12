@@ -19,6 +19,7 @@ PinnacleTouch class
    :no-members:
 
    .. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.data_mode
+   .. autoattribute:: circuitpython_cirque_pinnacle.PinnacleTouch.rev2025
 
 SPI & I2C Interfaces
 --------------------

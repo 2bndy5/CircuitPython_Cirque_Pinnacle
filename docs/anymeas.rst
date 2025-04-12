@@ -88,8 +88,8 @@ AnyMeas mode Control
 These constants control the number of measurements performed in `measure_adc()`.
 The number of measurements can range [0, 63].
 
-.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_CRTL_REPEAT
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_CTRL_REPEAT
    :no-value:
 
-.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_CRTL_PWR_IDLE
+.. autodata:: circuitpython_cirque_pinnacle.PINNACLE_CTRL_PWR_IDLE
    :no-value:
