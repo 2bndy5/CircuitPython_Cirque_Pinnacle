@@ -15,6 +15,8 @@ jobs:
           python-version: "3.x"
 
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Build wheel
         run: pip wheel -w dist --no-deps .
@@ -37,6 +39,8 @@ jobs:
           python-version: "3.x"
 
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Install pre-commit and deps
         run: pip install pre-commit -r requirements.txt
@@ -60,6 +64,8 @@ jobs:
           ) >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up Python 3.x
         uses: actions/setup-python@v6
@@ -69,6 +75,7 @@ jobs:
       - name: Checkout tools repo
         uses: actions/checkout@v6
         with:
+          persist-credentials: false
           repository: adafruit/actions-ci-circuitpython-libs
           path: actions-ci
 
@@ -89,6 +96,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up Python 3.x
         uses: actions/setup-python@v6
